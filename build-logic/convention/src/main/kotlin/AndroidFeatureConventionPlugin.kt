@@ -23,6 +23,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project>{
             dependencies {
                 implementation(project(":core:domain"))
                 implementation(project(":core:ui"))
+                implementation(project(":core:designsystem"))
 
                 implementationBundle(libs, "kotlin")
                 implementationBundle(libs, "androidx")

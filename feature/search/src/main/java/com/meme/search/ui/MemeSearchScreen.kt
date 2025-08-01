@@ -8,16 +8,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
@@ -32,9 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.meme.search.R
 import com.meme.search.component.MimSearchItem
 import com.mimu_bird.ui.model.TEST_MEME
 
@@ -47,6 +52,7 @@ fun MemeSearchScreen(
 ) {
     // TODO ViewModel 로 이동 예정
     val keyword = remember { mutableStateOf("퉤사") }
+    val memes = remember { (0..20).toList() }
 
     Column(
         modifier = modifier
@@ -59,21 +65,61 @@ fun MemeSearchScreen(
             keyword = keyword.value,
             onChangeKeyword = { keyword.value = it }
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(count = 20, key = { it }) {
-                MimSearchItem(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(12.dp)),
-                    meme = TEST_MEME
-                )
+        if (memes.isEmpty()) {
+            MemeSearchEmpty()
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(
+                    if (keyword.value.isEmpty()) 2
+                    else 1
+                ),
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(items = memes, key = { it }) {
+                    MimSearchItem(
+                        modifier = Modifier
+                            .then(
+                                if (keyword.value.isEmpty()) Modifier.aspectRatio(1f)
+                                else Modifier.height(240.dp)
+                            )
+                            .clip(RoundedCornerShape(12.dp)),
+                        meme = TEST_MEME,
+                        isKeyword = keyword.value.isNotEmpty()
+                    )
+                }
             }
         }
+    }
+}
+
+/**
+ * 검색 결과가 없는 경우 Empty
+ */
+@Composable
+private fun MemeSearchEmpty(
+    modifier: Modifier = Modifier
+) {
+    Column (
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Spacer(Modifier.weight(1f))
+        Image(
+            modifier = Modifier.size(128.dp),
+            painter = painterResource(R.drawable.img_search_empty),
+            contentDescription = "검색 결과 없음"
+        )
+        Text(
+            modifier = Modifier.padding(top = 16.dp),
+            text = "검색 결과가 없습니다.\n다시 입력해주세요.",
+            fontSize = 14.sp,
+            fontWeight = FontWeight(400),
+            color = Color(0xFF8C8F93),
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.weight(2f))
     }
 }
 

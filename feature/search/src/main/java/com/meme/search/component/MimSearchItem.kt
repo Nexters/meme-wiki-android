@@ -1,9 +1,11 @@
 package com.meme.search.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -156,22 +157,25 @@ internal fun MimSearchItem(
                 color = Color(0xFF1F2021)
             )
         }
-        MimSearchInfo(
-            modifier = Modifier.padding(top = 12.dp),
-            icon = R.drawable.img_search_usage,
-            title = "용도",
-            desc = meme.usage
-        )
-        MimSearchInfo(
-            modifier = Modifier.padding(top = 8.dp),
-            icon = R.drawable.img_search_source,
-            title = "유래",
-            desc = meme.source
-        )
+        if (isKeyword) {
+            MimSearchInfo(
+                modifier = Modifier.padding(top = 12.dp),
+                icon = R.drawable.img_search_usage,
+                title = "용도",
+                desc = meme.usage
+            )
+            MimSearchInfo(
+                modifier = Modifier.padding(top = 8.dp),
+                icon = R.drawable.img_search_source,
+                title = "유래",
+                desc = meme.source
+            )
+        }
     }
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun MimSearchInfo(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int,
@@ -199,15 +203,20 @@ private fun MimSearchInfo(
             style = Subhead2.toTextStyle(),
             color = Color(0xFFFBFBFB)
         )
-        Text(
+        Box(
             modifier = Modifier
+                .weight(1f)
                 .padding(start = 10.dp, end = 8.dp)
-                .horizontalScroll(rememberScrollState()),
-            text = desc,
-            style = Body1.toTextStyle(),
-            color = Color(0xFFD4D6D9),
-            maxLines = 1
-        )
+        ) {
+            Text(
+                modifier = Modifier
+                    .basicMarquee(animationMode = MarqueeAnimationMode.Immediately),
+                text = desc,
+                style = Body1.toTextStyle(),
+                color = Color(0xFFD4D6D9),
+                maxLines = 1
+            )
+        }
     }
 }
 

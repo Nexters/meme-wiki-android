@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,67 +71,73 @@ private enum class GradientPalette(
 @Composable
 internal fun MimSearchItem(
     modifier: Modifier = Modifier,
-    meme: MimUiModel
+    meme: MimUiModel,
+    isKeyword: Boolean
 ) {
     val gradient = remember { GradientPalette.entries.random() }
 
-    Box(
+    Column (
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-    ) {
-        AsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = meme.imageUrl,
-            contentDescription = meme.title,
-            contentScale = ContentScale.Crop
-        )
-        Spacer(
+    ){
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colorStops = arrayOf(
-                            0.0f to gradient.background.copy(alpha = 0f),
-                            0.4f to gradient.background.copy(alpha = 0f),
-                            0.7f to gradient.background.copy(alpha = 0.2f),
-                            1.0f to gradient.background.copy(alpha = 0.5f)
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            AsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = meme.imageUrl,
+                contentDescription = meme.title,
+                contentScale = ContentScale.Crop
+            )
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colorStops = arrayOf(
+                                0.0f to gradient.background.copy(alpha = 0f),
+                                0.4f to gradient.background.copy(alpha = 0f),
+                                0.7f to gradient.background.copy(alpha = 0.2f),
+                                1.0f to gradient.background.copy(alpha = 0.5f)
+                            )
                         )
                     )
-                )
-        )
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            Text(
-                text = meme.title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight(700),
-                color = Color.White
             )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(
+                    text = meme.title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(700),
+                    color = Color.White
+                )
+                Text(
+                    text = meme.tags.joinToString(" ") { "#${it}" },
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight(400),
+                    color = Color.White
+                )
+            }
             Text(
-                text = meme.tags.joinToString(" ") { "#${it}" },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .background(
+                        color = gradient.chip,
+                        shape = RoundedCornerShape(100)
+                    )
+                    .padding(horizontal = 8.dp),
+                text = "${meme.year}",
                 fontSize = 12.sp,
                 fontWeight = FontWeight(400),
-                color = Color.White
+                color = Color(0xFF1F2021),
+                lineHeight = 18.sp
             )
         }
-        Text(
-            modifier = Modifier
-                .padding(8.dp)
-                .background(
-                    color = gradient.chip,
-                    shape = RoundedCornerShape(100)
-                )
-                .padding(horizontal = 8.dp),
-            text = "${meme.year}",
-            fontSize = 12.sp,
-            fontWeight = FontWeight(400),
-            color = Color(0xFF1F2021),
-            lineHeight = 18.sp
-        )
+
     }
 }
 
@@ -138,7 +145,8 @@ internal fun MimSearchItem(
 @Composable
 private fun MimSearchItemPreview() {
     MimSearchItem(
-        modifier = Modifier.size(168.dp),
-        meme = TEST_MEME
+        modifier = Modifier.height(240.dp),
+        meme = TEST_MEME,
+        isKeyword = true
     )
 }

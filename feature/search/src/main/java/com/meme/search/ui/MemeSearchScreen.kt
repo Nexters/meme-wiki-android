@@ -77,11 +77,19 @@ fun MemeSearchScreen(
                     else 1
                 ),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(
+                    if (keyword.value.isEmpty()) 12.dp
+                    else 24.dp
+                ),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(items = memes, key = { it }) {
                     MimSearchItem(
+                        modifier = Modifier
+                            .then(
+                                if (keyword.value.isEmpty()) Modifier
+                                else Modifier.padding(bottom = 24.dp)
+                            ),
                         meme = TEST_MEME,
                         isKeyword = keyword.value.isNotEmpty()
                     )

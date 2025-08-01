@@ -41,6 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.meme.search.R
 import com.meme.search.component.MimSearchItem
+import com.mimu_bird.designsystem.theme.Body1
+import com.mimu_bird.designsystem.theme.Subhead_Long2
+import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.TEST_MEME
 
 /**
@@ -79,12 +82,6 @@ fun MemeSearchScreen(
             ) {
                 items(items = memes, key = { it }) {
                     MimSearchItem(
-                        modifier = Modifier
-                            .then(
-                                if (keyword.value.isEmpty()) Modifier.aspectRatio(1f)
-                                else Modifier.height(240.dp)
-                            )
-                            .clip(RoundedCornerShape(12.dp)),
                         meme = TEST_MEME,
                         isKeyword = keyword.value.isNotEmpty()
                     )
@@ -114,8 +111,7 @@ private fun MemeSearchEmpty(
         Text(
             modifier = Modifier.padding(top = 16.dp),
             text = "검색 결과가 없습니다.\n다시 입력해주세요.",
-            fontSize = 14.sp,
-            fontWeight = FontWeight(400),
+            style = Body1.toTextStyle(),
             color = Color(0xFF8C8F93),
             textAlign = TextAlign.Center
         )
@@ -156,10 +152,7 @@ private fun MemeSearchBox(
             value = keyword,
             onValueChange = onChangeKeyword,
             singleLine = true,
-            textStyle = TextStyle.Default.copy(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp,
+            textStyle = Subhead_Long2.toTextStyle().copy(
                 color = Color(0xFFFBFBFB)
             ),
             decorationBox = { inputField ->
@@ -167,9 +160,7 @@ private fun MemeSearchBox(
                     if (keyword.isEmpty()) {
                         Text(
                             text = "검색어를 입력해주세요,",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            lineHeight = 24.sp,
+                            style = Subhead_Long2.toTextStyle(),
                             color = Color(0xFF7E8185)
                         )
                     }

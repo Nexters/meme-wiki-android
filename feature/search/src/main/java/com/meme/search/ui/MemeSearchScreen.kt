@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.meme.search.R
 import com.meme.search.component.MimSearchItem
@@ -65,7 +66,7 @@ fun MemeSearchScreen(
         )
         if (memes.itemCount == 0) {
             MemeSearchEmpty()
-        } else {
+        } else if (memes.loadState.refresh is LoadState.NotLoading) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(
                     if (keyword.isEmpty()) 2
@@ -78,7 +79,13 @@ fun MemeSearchScreen(
                 ),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(count = memes.itemCount, key = { it }) {
+                items(
+                    count = when (memes.loadState.refresh) {
+                        LoadState.Loading -> if (keyword.isEmpty()) 5 else 20
+                        else -> memes.itemCount
+                    },
+                    key = { it }
+                ) {
                     memes.get(it)?.let { meme ->
                         MimSearchItem(
                             modifier = Modifier
@@ -103,10 +110,10 @@ fun MemeSearchScreen(
 private fun MemeSearchEmpty(
     modifier: Modifier = Modifier
 ) {
-    Column (
+    Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         Spacer(Modifier.weight(1f))
         Image(
             modifier = Modifier.size(128.dp),

@@ -20,7 +20,7 @@ data class MemeResponse(
     val trendPeriod: String, // 유행한 연도
     @SerialName("imgUrl")
     val imageUrl: String, // 이미지 Url
-//    @SerialName("hashtags")
-//    val hashTags: List<String>? = null
+    @SerialName("hashtags")
+    val hashTags: List<String>
 )
 

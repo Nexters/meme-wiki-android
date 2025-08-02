@@ -36,6 +36,7 @@ import com.mimu_bird.designsystem.theme.Body1
 import com.mimu_bird.designsystem.theme.Body_Long2_Point
 import com.mimu_bird.designsystem.theme.Caption
 import com.mimu_bird.designsystem.theme.Display1
+import com.mimu_bird.designsystem.theme.GradientPalette
 import com.mimu_bird.designsystem.theme.Headline2
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle

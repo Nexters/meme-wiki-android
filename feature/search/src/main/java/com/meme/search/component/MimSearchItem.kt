@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -41,7 +43,6 @@ import com.mimu_bird.designsystem.theme.Headline2
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.MimUiModel
-import com.mimu_bird.ui.model.TEST_MEME
 
 /**
  * 밈 Gradient 색상 팔레트
@@ -90,7 +91,7 @@ internal fun MimSearchItem(
     meme: MimUiModel,
     isKeyword: Boolean
 ) {
-    val gradient = remember { GradientPalette.entries.random() }
+    val gradient = rememberSaveable { GradientPalette.entries.random() }
 
     Column(
         modifier = modifier
@@ -108,6 +109,19 @@ internal fun MimSearchItem(
                 model = meme.imageUrl,
                 contentDescription = meme.title,
                 contentScale = ContentScale.Crop
+            )
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colorStops = arrayOf(
+                                0.0f to Color.Black.copy(alpha = 0f),
+                                0.65f to Color.Black.copy(alpha = 0.2f),
+                                1.0f to Color.Black.copy(alpha = 1f)
+                            )
+                        )
+                    )
             )
             Spacer(
                 modifier = Modifier
@@ -136,13 +150,17 @@ internal fun MimSearchItem(
                     text = meme.title,
                     style = if (isKeyword) Display1.toTextStyle()
                     else Headline2.toTextStyle(),
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = meme.tags.joinToString(" ") { "#${it}" },
+                    text = meme.tags.joinToString(" "),
                     style = if (isKeyword) Subhead2.toTextStyle()
                     else Caption.toTextStyle(),
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip
                 )
             }
             Text(
@@ -219,13 +237,4 @@ private fun MimSearchInfo(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun MimSearchItemPreview() {
-    MimSearchItem(
-        meme = TEST_MEME,
-        isKeyword = true
-    )
 }

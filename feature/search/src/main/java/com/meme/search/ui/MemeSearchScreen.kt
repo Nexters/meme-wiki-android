@@ -18,39 +18,36 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import com.meme.search.R
 import com.meme.search.component.MimSearchItem
 import com.mimu_bird.designsystem.theme.Body1
 import com.mimu_bird.designsystem.theme.Subhead_Long2
 import com.mimu_bird.designsystem.typography.toTextStyle
-import com.mimu_bird.ui.model.TEST_MEME
+import com.mimu_bird.ui.model.MimUiModel
 
 /**
  * 검색 화면 Screen
  */
 @Composable
 fun MemeSearchScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    keyword: String,
+    memes: LazyPagingItems<MimUiModel>,
+    onChangeKeyword: (String) -> Unit
 ) {
-    // TODO ViewModel 로 이동 예정
-    val keyword = remember { mutableStateOf("퉤사") }
-    val memes = remember { (0..20).toList() }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -59,34 +56,42 @@ fun MemeSearchScreen(
     ) {
         MemeSearchBox(
             modifier = Modifier.padding(top = 20.dp, end = 14.dp, bottom = 12.dp, start = 14.dp),
-            keyword = keyword.value,
-            onChangeKeyword = { keyword.value = it }
+            keyword = keyword,
+            onChangeKeyword = onChangeKeyword
         )
-        if (memes.isEmpty()) {
+        if (memes.itemCount == 0) {
             MemeSearchEmpty()
-        } else {
+        } else if (memes.loadState.refresh is LoadState.NotLoading) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(
-                    if (keyword.value.isEmpty()) 2
+                    if (keyword.isEmpty()) 2
                     else 1
                 ),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(
-                    if (keyword.value.isEmpty()) 12.dp
+                    if (keyword.isEmpty()) 12.dp
                     else 24.dp
                 ),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(items = memes, key = { it }) {
-                    MimSearchItem(
-                        modifier = Modifier
-                            .then(
-                                if (keyword.value.isEmpty()) Modifier
-                                else Modifier.padding(bottom = 24.dp)
-                            ),
-                        meme = TEST_MEME,
-                        isKeyword = keyword.value.isNotEmpty()
-                    )
+                items(
+                    count = when (memes.loadState.refresh) {
+                        LoadState.Loading -> if (keyword.isEmpty()) 5 else 20
+                        else -> memes.itemCount
+                    },
+                    key = { it }
+                ) {
+                    memes.get(it)?.let { meme ->
+                        MimSearchItem(
+                            modifier = Modifier
+                                .then(
+                                    if (keyword.isEmpty()) Modifier
+                                    else Modifier.padding(bottom = 24.dp)
+                                ),
+                            meme = meme,
+                            isKeyword = keyword.isNotEmpty()
+                        )
+                    }
                 }
             }
         }
@@ -100,10 +105,10 @@ fun MemeSearchScreen(
 private fun MemeSearchEmpty(
     modifier: Modifier = Modifier
 ) {
-    Column (
+    Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         Spacer(Modifier.weight(1f))
         Image(
             modifier = Modifier.size(128.dp),
@@ -180,10 +185,4 @@ private fun MemeSearchBox(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun MemeSearchScreenPreview() {
-    MemeSearchScreen()
 }

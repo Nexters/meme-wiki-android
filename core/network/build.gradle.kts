@@ -11,4 +11,6 @@ android {
 dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.retrofit)
+
+    implementation(project(":core:common"))
 }

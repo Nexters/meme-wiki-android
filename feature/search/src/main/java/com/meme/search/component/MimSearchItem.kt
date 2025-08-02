@@ -6,7 +6,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +42,43 @@ import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.MimUiModel
 import com.mimu_bird.ui.model.TEST_MEME
+
+/**
+ * 밈 Gradient 색상 팔레트
+ */
+private enum class GradientPalette(
+    val background: Color,
+    val chip: Color
+) {
+    PURPLE(
+        background = Color(0xFF7B00FF),
+        chip = Color(0xFFF2D6FF)
+    ),
+    PINK(
+        background = Color(0xFFD331B8),
+        chip = Color(0xFFFED3F7)
+    ),
+    VIOLET(
+        background = Color(0xFF3A16C9),
+        chip = Color(0xFFDBD3FE)
+    ),
+    LIGHT_BLUE(
+        background = Color(0xFF008ECF),
+        chip = Color(0xFFC4ECFE)
+    ),
+    GREEN(
+        background = Color(0xFF1ED45A),
+        chip = Color(0xFFACFCC7)
+    ),
+    RED(
+        background = Color(0xFFFF4242),
+        chip = Color(0xFFFED5D5)
+    ),
+    YELLOW(
+        background = Color(0xFFFEF08C),
+        chip = Color(0xFFFEF08C)
+    )
+}
 
 /**
  * 밈 검색  결과 item

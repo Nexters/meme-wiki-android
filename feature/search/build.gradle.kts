@@ -10,4 +10,7 @@ android {
 dependencies {
     implementation(libs.coil)
     implementation(project(":core:designsystem"))
+
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.compose.paging)
 }

@@ -10,7 +10,7 @@ import com.mimu_bird.network.model.response.search.MemeSearchResponse
  */
 class MemePagingSource (
     private val query: String,
-    private val getMemes: suspend (next: Int, query: String, limit: Int) -> MemeSearchResponse
+    private val getMemes: suspend (next: Int?, query: String, limit: Int) -> MemeSearchResponse
 ): PagingSource<Int, MemeResponse> (){
     override fun getRefreshKey(state: PagingState<Int, MemeResponse>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -39,7 +39,7 @@ class MemePagingSource (
     }
 
     companion object {
-        const val INIT_KEY = 1
+        val INIT_KEY = null
         const val LIMIT_PER_PAGE = 10
     }
 }

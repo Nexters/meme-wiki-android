@@ -13,7 +13,7 @@ interface SearchService {
      * @param query 검색 query
      * @param limit 페이지 당 결과 개수
      */
-    @GET("/memes")
+    @GET("/api/memes")
     suspend fun getMemes(
         @Query("next") next: Int?,
         @Query("query") query: String,

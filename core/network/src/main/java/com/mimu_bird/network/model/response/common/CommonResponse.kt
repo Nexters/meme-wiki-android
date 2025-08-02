@@ -11,9 +11,9 @@ data class CommonResponse<T>(
     @SerialName("resultType")
     val resultType: String,
     @SerialName("success")
-    val success: T,
+    val success: T?,
     @SerialName("error")
-    val error: CommonErrorResponse
+    val error: CommonErrorResponse?
 )
 
 @Serializable
@@ -23,5 +23,5 @@ data class CommonErrorResponse (
     @SerialName("message")
     val message: String,
     @SerialName("data")
-    val data: String
+    val data: String?
 )

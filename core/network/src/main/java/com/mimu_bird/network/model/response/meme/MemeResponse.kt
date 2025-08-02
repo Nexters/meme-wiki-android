@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MemeResponse(
     @SerialName("id")
-    val id: String, // 밈 식별자
+    val id: Int, // 밈 식별자
     @SerialName("title")
     val title: String, // 밈 제목
     @SerialName("usageContext")
@@ -20,7 +20,7 @@ data class MemeResponse(
     val trendPeriod: String, // 유행한 연도
     @SerialName("imgUrl")
     val imageUrl: String, // 이미지 Url
-    @SerialName("hashtags")
-    val hashTags: String
+//    @SerialName("hashtags")
+//    val hashTags: List<String>? = null
 )
 

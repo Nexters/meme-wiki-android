@@ -1,6 +1,7 @@
 package com.mimu_bird.network.util
 
 import com.mimu_bird.common.exception.CommonErrorException
+import com.mimu_bird.common.exception.NoneSuccessBodyException
 import com.mimu_bird.network.model.response.common.CommonResponse
 
 object ApiCallUtil {
@@ -11,10 +12,10 @@ object ApiCallUtil {
         val error = response.error
 
         return when (response.resultType) {
-            "SUCCESS" -> response.success
+            "SUCCESS" -> response.success ?: throw NoneSuccessBodyException()
             else -> throw CommonErrorException(
-                code = error.code,
-                message = error.message
+                code = error?.code ?: "UnKnown",
+                message = error?.message ?: ""
             )
         }
     }

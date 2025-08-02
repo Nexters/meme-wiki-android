@@ -11,6 +11,6 @@ fun MemeResponse.toModel(): MemeModel {
         origin = origin,
         year = trendPeriod,
         imageUrl = imageUrl,
-        hashTags = emptyList()
+        hashTags = hashTags
     )
 }

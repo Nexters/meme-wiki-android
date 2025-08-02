@@ -35,7 +35,6 @@ class MemeSearchViewModel @Inject constructor(
 
     init {
         memes = keyword
-            .debounce(700)
             .flatMapLatest { fetchMemes(query = it) }
             .cachedIn(viewModelScope)
     }

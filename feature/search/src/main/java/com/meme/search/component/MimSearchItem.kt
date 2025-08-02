@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -117,7 +118,7 @@ internal fun MimSearchItem(
                             colorStops = arrayOf(
                                 0.0f to Color.Black.copy(alpha = 0f),
                                 0.65f to Color.Black.copy(alpha = 0.2f),
-                                1.0f to Color.Black.copy(alpha = 0.8f)
+                                1.0f to Color.Black.copy(alpha = 1f)
                             )
                         )
                     )
@@ -131,8 +132,7 @@ internal fun MimSearchItem(
                                 0.0f to gradient.background.copy(alpha = 0f),
                                 0.4f to gradient.background.copy(alpha = 0f),
                                 0.7f to gradient.background.copy(alpha = 0.2f),
-                                0.85f to gradient.background.copy(alpha = 0.5f),
-                                1.0f to gradient.background.copy(alpha = 0.8f)
+                                1.0f to gradient.background.copy(alpha = 0.5f)
                             )
                         )
                     )
@@ -150,13 +150,17 @@ internal fun MimSearchItem(
                     text = meme.title,
                     style = if (isKeyword) Display1.toTextStyle()
                     else Headline2.toTextStyle(),
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = meme.tags.joinToString(" "),
                     style = if (isKeyword) Subhead2.toTextStyle()
                     else Caption.toTextStyle(),
-                    color = Color.White
+                    color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip
                 )
             }
             Text(

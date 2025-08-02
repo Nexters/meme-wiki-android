@@ -1,7 +1,7 @@
 package com.mimu_bird.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.mimu_bird.network.api.SampleService
+import com.mimu_bird.network.api.SearchService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,12 +17,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    // TODO Service 선언
+    // 검색 서비스
     @Provides
     @Singleton
-    fun provideSampleService(
+    fun provideSearchService(
         retrofit: Retrofit
-    ): SampleService = retrofit.create(SampleService::class.java)
+    ): SearchService = retrofit.create(SearchService::class.java)
 }
 
 @Module
@@ -35,7 +35,7 @@ object RetrofitModule {
         okHttpClient: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("")
+            .baseUrl("http://13.124.157.213:8080")
             .client(okHttpClient)
             .addConverterFactory(converter)
             .build()

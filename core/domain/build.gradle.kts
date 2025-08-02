@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.mimu_bird.domain"
 }
+
+dependencies {
+    implementation(libs.androidx.paging)
+}

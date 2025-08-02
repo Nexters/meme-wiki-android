@@ -14,5 +14,6 @@ android {
 
 dependencies {
     implementation(libs.coil)
+    implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
 }

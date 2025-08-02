@@ -12,4 +12,5 @@ dependencies {
     implementation(project(":core:domain"))
 
     implementation(libs.bundles.retrofit)
+    implementation(libs.androidx.paging)
 }

@@ -1,7 +1,7 @@
 package com.mimu_bird.data.di
 
-import com.mimu_bird.data.repository.sample.DefaultSampleRepository
-import com.mimu_bird.domain.repository.sample.SampleRepository
+import com.mimu_bird.data.repository.search.DefaultSearchRepository
+import com.mimu_bird.domain.repository.search.SearchRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 interface RepositoryModule {
     @Binds
     @Singleton
-    fun bindSampleRepository(
-        sampleRepository: DefaultSampleRepository
-    ): SampleRepository
+    fun bindSearchRepository(
+        searchRepository: DefaultSearchRepository
+    ): SearchRepository
 }

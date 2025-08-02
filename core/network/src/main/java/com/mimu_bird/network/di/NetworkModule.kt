@@ -35,7 +35,7 @@ object RetrofitModule {
         okHttpClient: OkHttpClient
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://13.124.157.213:8080")
+            .baseUrl("https://api.meme-wiki.net/")
             .client(okHttpClient)
             .addConverterFactory(converter)
             .build()
@@ -62,6 +62,7 @@ object OkHttpClientModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)

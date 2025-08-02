@@ -59,7 +59,6 @@ import com.mimu_bird.designsystem.theme.Violet90
 import com.mimu_bird.designsystem.theme.Yellow90
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.MimUiModel
-import com.mimu_bird.ui.model.TEST_MEME
 
 /**
  * 밈 Gradient 색상 팔레트
@@ -136,7 +135,7 @@ internal fun MimSearchItem(
                     color = Color.White
                 )
                 Text(
-                    text = meme.tags.joinToString(" ") { "#${it}" },
+                    text = meme.tags.joinToString(" "),
                     style = if (isKeyword) Subhead2.toTextStyle()
                     else Caption.toTextStyle(),
                     color = Color.White
@@ -216,13 +215,4 @@ private fun MimSearchInfo(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun MimSearchItemPreview() {
-    MimSearchItem(
-        meme = TEST_MEME,
-        isKeyword = true
-    )
 }

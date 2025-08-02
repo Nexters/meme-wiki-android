@@ -1,10 +1,12 @@
 package com.mimu_bird.domain.usercase.search
 
+import androidx.paging.Pager
 import androidx.paging.PagingData
 import com.mimu_bird.domain.model.meme.MemeModel
 import com.mimu_bird.domain.repository.search.SearchRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 /**

@@ -11,10 +11,12 @@ import com.mimu_bird.domain.repository.search.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * 검색 관련 로직 관리 Repository
  */
+@Singleton
 class DefaultSearchRepository @Inject constructor(
     private val searchDataSource: SearchDataSource
 ) : SearchRepository {

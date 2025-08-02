@@ -21,7 +21,7 @@ data class MemeSearchResponse(
 @Serializable
 data class MemeSearchPagingBody(
     @SerialName("next")
-    val next: Int,
+    val next: Int?,
     @SerialName("hasMore")
     val hasMore: Boolean,
     @SerialName("pageSize")

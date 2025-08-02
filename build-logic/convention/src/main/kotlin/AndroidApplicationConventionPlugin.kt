@@ -13,6 +13,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
+import java.util.Properties
 
 /**
  * Application Extension 을 위한 Plugin
@@ -37,6 +38,29 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
                 }
 
+                signingConfigs {
+                    create("release") {
+                        val localPropertiesFile = project.rootProject.file("local.properties")
+                        if (localPropertiesFile.exists()) {
+                            val properties = Properties()
+                            properties.load(localPropertiesFile.inputStream())
+
+                            // local.properties의 값 사용
+                            val keyAlias = properties["key-alias"]?.toString()
+                            val keyPassword = properties["key-password"]?.toString()
+                            val storePassword = properties["store-password"]?.toString()
+                            val storeFile = properties["store-file"]?.toString()
+
+                            if (keyAlias != null && keyPassword != null && storePassword != null && storeFile != null) {
+                                this.keyAlias = keyAlias
+                                this.keyPassword = keyPassword
+                                this.storePassword = storePassword
+                                this.storeFile = file(storeFile)
+                            }
+                        }
+                    }
+                }
+
                 buildTypes {
                     release {
                         isMinifyEnabled = false
@@ -44,6 +68,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                             getDefaultProguardFile("proguard-android-optimize.txt"),
                             "proguard-rules.pro"
                         )
+                        signingConfig = signingConfigs.getByName("release")
                     }
                 }
 

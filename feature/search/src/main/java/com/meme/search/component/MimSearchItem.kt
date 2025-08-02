@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,7 +90,7 @@ internal fun MimSearchItem(
     meme: MimUiModel,
     isKeyword: Boolean
 ) {
-    val gradient = remember { GradientPalette.entries.random() }
+    val gradient = rememberSaveable { GradientPalette.entries.random() }
 
     Column(
         modifier = modifier
@@ -114,10 +115,24 @@ internal fun MimSearchItem(
                     .background(
                         brush = Brush.verticalGradient(
                             colorStops = arrayOf(
+                                0.0f to Color.Black.copy(alpha = 0f),
+                                0.65f to Color.Black.copy(alpha = 0.2f),
+                                1.0f to Color.Black.copy(alpha = 0.8f)
+                            )
+                        )
+                    )
+            )
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colorStops = arrayOf(
                                 0.0f to gradient.background.copy(alpha = 0f),
                                 0.4f to gradient.background.copy(alpha = 0f),
                                 0.7f to gradient.background.copy(alpha = 0.2f),
-                                1.0f to gradient.background.copy(alpha = 0.5f)
+                                0.85f to gradient.background.copy(alpha = 0.5f),
+                                1.0f to gradient.background.copy(alpha = 0.8f)
                             )
                         )
                     )

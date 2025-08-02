@@ -1,15 +1,10 @@
 plugins {
-    id("mimu.android.library")
+    id("mimu.android.feature")
     id("mimu.android.library.compose")
 }
 
 android {
-    namespace = "com.mimu_bird.ui"
-    
-    // R 클래스 생성 설정
-    buildFeatures {
-        buildConfig = true
-    }
+    namespace = "com.meme.search"
 }
 
 dependencies {

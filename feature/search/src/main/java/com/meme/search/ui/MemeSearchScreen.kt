@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.meme.search.R
-import com.meme.search.component.MimSearchItem
+import com.mimu_bird.ui.component.MimSearchItem
 import com.mimu_bird.designsystem.theme.Body1
 import com.mimu_bird.designsystem.theme.Gray1
 import com.mimu_bird.designsystem.theme.Gray10

@@ -81,7 +81,7 @@ private enum class GradientPalette(
  * @param meme 밈 정보
  */
 @Composable
-internal fun MimSearchItem(
+fun MimSearchItem(
     modifier: Modifier = Modifier,
     meme: MimUiModel,
     isKeyword: Boolean

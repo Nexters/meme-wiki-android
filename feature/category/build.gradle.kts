@@ -1,3 +1,5 @@
+import ext.implementation
+
 plugins {
     id("mimu.android.feature")
     id("mimu.android.library.compose")
@@ -5,4 +7,8 @@ plugins {
 
 android {
     namespace = "com.seomseom.category"
+}
+
+dependencies {
+    implementation(libs.coil)
 }

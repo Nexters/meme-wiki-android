@@ -2,7 +2,16 @@ package com.mimu_bird.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -22,7 +31,6 @@ import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.BriefMemeUiModel
 import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
-import com.mimu_bird.ui.model.TEST_MEME
 
 @Composable
 fun ShareMemItem(
@@ -55,10 +63,15 @@ fun ShareMemItem(
                 style = Subhead2.toTextStyle(),
                 color = Color.Black,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().height(36.dp).wrapContentHeight(align = Alignment.CenterVertically)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .wrapContentHeight(align = Alignment.CenterVertically)
             )
             Column(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 36.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 36.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // 메인 이미지 컨테이너
@@ -89,7 +102,11 @@ fun ShareMemItem(
 @Composable
 fun ShareMemItemPreview() {
     Column(Modifier.fillMaxSize()) {
-        LazyRow(Modifier.height(172.dp), contentPadding = PaddingValues(end = 11.dp), horizontalArrangement = Arrangement.spacedBy(11.dp)) {
+        LazyRow(
+            Modifier.height(172.dp),
+            contentPadding = PaddingValues(end = 11.dp),
+            horizontalArrangement = Arrangement.spacedBy(11.dp)
+        ) {
             items(count = 5) {
                 ShareMemItem(
                     item = TEST_BRIEF_MEME_UI,

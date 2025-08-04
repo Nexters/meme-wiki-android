@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +33,12 @@ import androidx.paging.compose.LazyPagingItems
 import com.meme.search.R
 import com.meme.search.component.MimSearchItem
 import com.mimu_bird.designsystem.theme.Body1
+import com.mimu_bird.designsystem.theme.Gray1
+import com.mimu_bird.designsystem.theme.Gray10
+import com.mimu_bird.designsystem.theme.Gray4
+import com.mimu_bird.designsystem.theme.Gray5
+import com.mimu_bird.designsystem.theme.Gray6
+import com.mimu_bird.designsystem.theme.Gray8
 import com.mimu_bird.designsystem.theme.Subhead_Long2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.MimUiModel
@@ -52,7 +57,7 @@ fun MemeSearchScreen(
         modifier = modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
-            .background(color = Color(0xFF121212))
+            .background(color = Gray10)
     ) {
         MemeSearchBox(
             modifier = Modifier.padding(top = 20.dp, end = 14.dp, bottom = 12.dp, start = 14.dp),
@@ -119,7 +124,7 @@ private fun MemeSearchEmpty(
             modifier = Modifier.padding(top = 16.dp),
             text = "검색 결과가 없습니다.\n다시 입력해주세요.",
             style = Body1.toTextStyle(),
-            color = Color(0xFF8C8F93),
+            color = Gray5,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.weight(2f))
@@ -141,7 +146,7 @@ private fun MemeSearchBox(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFF313133),
+                color = Gray8,
                 shape = RoundedCornerShape(100)
             )
             .padding(vertical = 10.dp, horizontal = 16.dp),
@@ -152,7 +157,7 @@ private fun MemeSearchBox(
             modifier = Modifier.size(20.dp),
             painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_search_20_white),
             contentDescription = "검색 키워드 입력",
-            tint = Color(0xFFB6B9BD)
+            tint = Gray4
         )
         BasicTextField(
             modifier = Modifier.weight(1f),
@@ -160,7 +165,7 @@ private fun MemeSearchBox(
             onValueChange = onChangeKeyword,
             singleLine = true,
             textStyle = Subhead_Long2.toTextStyle().copy(
-                color = Color(0xFFFBFBFB)
+                color = Gray1
             ),
             decorationBox = { inputField ->
                 Box {
@@ -168,7 +173,7 @@ private fun MemeSearchBox(
                         Text(
                             text = "검색어를 입력해주세요,",
                             style = Subhead_Long2.toTextStyle(),
-                            color = Color(0xFF7E8185)
+                            color = Gray6
                         )
                     }
                     inputField()

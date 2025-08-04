@@ -38,9 +38,27 @@ import com.mimu_bird.designsystem.theme.Body1
 import com.mimu_bird.designsystem.theme.Body_Long2_Point
 import com.mimu_bird.designsystem.theme.Caption
 import com.mimu_bird.designsystem.theme.Display1
+import com.mimu_bird.designsystem.theme.Gra_Green
+import com.mimu_bird.designsystem.theme.Gra_Light_Blue
+import com.mimu_bird.designsystem.theme.Gra_Pink
+import com.mimu_bird.designsystem.theme.Gra_Purple
+import com.mimu_bird.designsystem.theme.Gra_Red
+import com.mimu_bird.designsystem.theme.Gra_Violet
+import com.mimu_bird.designsystem.theme.Gra_Yellow
 import com.mimu_bird.designsystem.theme.GradientPalette
+import com.mimu_bird.designsystem.theme.Gray1
+import com.mimu_bird.designsystem.theme.Gray3
+import com.mimu_bird.designsystem.theme.Gray8
+import com.mimu_bird.designsystem.theme.Gray9
+import com.mimu_bird.designsystem.theme.Green90
 import com.mimu_bird.designsystem.theme.Headline2
+import com.mimu_bird.designsystem.theme.Light_Blue90
+import com.mimu_bird.designsystem.theme.Pink90
+import com.mimu_bird.designsystem.theme.Purple90
+import com.mimu_bird.designsystem.theme.Red90
 import com.mimu_bird.designsystem.theme.Subhead2
+import com.mimu_bird.designsystem.theme.Violet90
+import com.mimu_bird.designsystem.theme.Yellow90
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.MimUiModel
 
@@ -51,34 +69,13 @@ private enum class GradientPalette(
     val background: Color,
     val chip: Color
 ) {
-    PURPLE(
-        background = Color(0xFF7B00FF),
-        chip = Color(0xFFF2D6FF)
-    ),
-    PINK(
-        background = Color(0xFFD331B8),
-        chip = Color(0xFFFED3F7)
-    ),
-    VIOLET(
-        background = Color(0xFF3A16C9),
-        chip = Color(0xFFDBD3FE)
-    ),
-    LIGHT_BLUE(
-        background = Color(0xFF008ECF),
-        chip = Color(0xFFC4ECFE)
-    ),
-    GREEN(
-        background = Color(0xFF1ED45A),
-        chip = Color(0xFFACFCC7)
-    ),
-    RED(
-        background = Color(0xFFFF4242),
-        chip = Color(0xFFFED5D5)
-    ),
-    YELLOW(
-        background = Color(0xFFFEF08C),
-        chip = Color(0xFFFEF08C)
-    )
+    PURPLE(background = Gra_Purple, chip = Purple90),
+    PINK(background = Gra_Pink, chip = Pink90),
+    VIOLET(background = Gra_Violet, chip = Violet90),
+    LIGHT_BLUE(background = Gra_Light_Blue, chip = Light_Blue90),
+    GREEN(background = Gra_Green, chip = Green90),
+    RED(background = Gra_Red, chip = Red90),
+    YELLOW(background = Gra_Yellow, chip = Yellow90)
 }
 
 /**
@@ -173,7 +170,7 @@ internal fun MimSearchItem(
                     .padding(horizontal = 8.dp, vertical = 3.dp),
                 text = "${meme.year}",
                 style = Body_Long2_Point.toTextStyle(),
-                color = Color(0xFF1F2021)
+                color = Gray9
             )
         }
         if (isKeyword) {
@@ -205,7 +202,7 @@ private fun MimSearchInfo(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = Color(0xFF313133),
+                color = Gray8,
                 shape = RoundedCornerShape(6.dp)
             )
             .padding(horizontal = 10.dp, vertical = 9.dp),
@@ -220,7 +217,7 @@ private fun MimSearchInfo(
             modifier = Modifier.padding(start = 6.dp),
             text = title,
             style = Subhead2.toTextStyle(),
-            color = Color(0xFFFBFBFB)
+            color = Gray1
         )
         Box(
             modifier = Modifier
@@ -232,7 +229,7 @@ private fun MimSearchInfo(
                     .basicMarquee(animationMode = MarqueeAnimationMode.Immediately),
                 text = desc,
                 style = Body1.toTextStyle(),
-                color = Color(0xFFD4D6D9),
+                color = Gray3,
                 maxLines = 1
             )
         }

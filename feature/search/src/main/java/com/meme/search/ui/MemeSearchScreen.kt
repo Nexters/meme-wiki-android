@@ -28,16 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.meme.search.R
 import com.mimu_bird.designsystem.theme.Body1
-import com.mimu_bird.designsystem.theme.Gray1
-import com.mimu_bird.designsystem.theme.Gray10
-import com.mimu_bird.designsystem.theme.Gray4
-import com.mimu_bird.designsystem.theme.Gray5
-import com.mimu_bird.designsystem.theme.Gray6
-import com.mimu_bird.designsystem.theme.Gray8
 import com.mimu_bird.designsystem.theme.Subhead_Long2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.component.MimSearchItem

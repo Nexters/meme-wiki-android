@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.meme.search.business.MemeSearchViewModel
 import com.meme.search.ui.MemeSearchScreen
-import com.seomseom.category.ui.CategoryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,14 +20,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            CategoryScreen()
-//            val keyword = viewModel.keyword.collectAsState()
-//            val memes = viewModel.memes.collectAsLazyPagingItems()
-//            MemeSearchScreen(
-//                keyword = keyword.value,
-//                memes = memes,
-//                onChangeKeyword = { viewModel.changeKeyword(it) }
-//            )
+            val keyword = viewModel.keyword.collectAsState()
+            val memes = viewModel.memes.collectAsLazyPagingItems()
+            MemeSearchScreen(
+                keyword = keyword.value,
+                memes = memes,
+                onChangeKeyword = { viewModel.changeKeyword(it) }
+            )
         }
     }
 }

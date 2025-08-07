@@ -1,4 +1,4 @@
-package com.meme.search.component
+package com.mimu_bird.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.meme.search.R
 import com.mimu_bird.designsystem.theme.Body1
 import com.mimu_bird.designsystem.theme.Body_Long2_Point
 import com.mimu_bird.designsystem.theme.Caption
@@ -60,6 +57,7 @@ import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.theme.Violet90
 import com.mimu_bird.designsystem.theme.Yellow90
 import com.mimu_bird.designsystem.typography.toTextStyle
+import com.mimu_bird.ui.R
 import com.mimu_bird.ui.model.MimUiModel
 
 /**
@@ -83,7 +81,7 @@ private enum class GradientPalette(
  * @param meme 밈 정보
  */
 @Composable
-internal fun MimSearchItem(
+fun MimSearchItem(
     modifier: Modifier = Modifier,
     meme: MimUiModel,
     isKeyword: Boolean

@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":feature:search"))
+    implementation(project(":feature:category"))
 
     implementation(libs.androidx.compose.paging)
 }

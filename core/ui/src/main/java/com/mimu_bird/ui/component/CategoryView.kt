@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -20,9 +21,17 @@ import com.mimu_bird.designsystem.typography.toTextStyle
 
 
 @Composable
-fun CategoryView(drawableResId: Int, title: String, modifier: Modifier = Modifier) {
-    Column {
-        Column(Modifier.clip(RoundedCornerShape(8.dp))) {
+fun CategoryView(
+    drawableResId: Int,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Column(
+            Modifier.clip(RoundedCornerShape(8.dp))
+        ) {
             androidx.compose.foundation.Image(
                 painter = painterResource(id = drawableResId),
                 contentDescription = "Category image",
@@ -30,7 +39,12 @@ fun CategoryView(drawableResId: Int, title: String, modifier: Modifier = Modifie
                 modifier = modifier
             )
         }
-        Text(text = title, modifier = Modifier.padding(top = 8.dp), color = Color.White, style = Subhead2.toTextStyle())
+        Text(
+            text = title,
+            modifier = Modifier.padding(top = 8.dp),
+            color = Color.White,
+            style = Subhead2.toTextStyle()
+        )
     }
 }
 

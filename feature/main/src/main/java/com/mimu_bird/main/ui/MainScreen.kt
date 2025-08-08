@@ -1,9 +1,8 @@
 package com.mimu_bird.main.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -33,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Body2
+import com.mimu_bird.designsystem.theme.Display1
 import com.mimu_bird.designsystem.theme.Display2
 import com.mimu_bird.designsystem.theme.Display3
 import com.mimu_bird.designsystem.theme.PastelGradientPalette
@@ -47,7 +46,6 @@ import com.mimu_bird.ui.component.CategoryView
 import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
     navigator: MainNavigator
@@ -58,17 +56,26 @@ fun MainScreen(
         PastelGradientPalette.MAGENTA,
         PastelGradientPalette.YELLOW
     )
-    val bottomCategoryColor = listOf(
+    val topSharedMemeColor1 = listOf(
+        PastelGradientPalette.LIGHT_BLUE,
+        PastelGradientPalette.YELLOW,
+        PastelGradientPalette.PINK,
+        PastelGradientPalette.GREEN,
+        PastelGradientPalette.PURPLE,
+    )
+    val topSharedMemeColor2 = listOf(
+        PastelGradientPalette.BLUE,
+        PastelGradientPalette.MAGENTA,
+        PastelGradientPalette.PURPLE,
         PastelGradientPalette.GREEN,
         PastelGradientPalette.PINK,
-        PastelGradientPalette.BLUE,
-        PastelGradientPalette.ORANGE
     )
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
+            .padding(top = 44.dp)
     ) {
         item {
             Row(
@@ -102,10 +109,18 @@ fun MainScreen(
             Spacer(Modifier.height(60.dp))
         }
         item {
+            Text(
+                text = "뭘 좋아하는지 몰라서\n" +
+                        "그냥 다 준비했어\uD83D\uDC40",
+                style = Display1.toTextStyle(),
+                modifier = Modifier.padding(horizontal = 14.dp),
+                color = Color.White
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 14.dp),
+                    .padding(horizontal = 14.dp)
+                    .padding(top = 18.dp),
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 repeat(4) {
@@ -130,38 +145,6 @@ fun MainScreen(
                     }
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp)
-                    .padding(top = 17.dp),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
-            ) {
-                repeat(4) {
-                    Box(modifier = Modifier.weight(0.17f)) {
-                        CategoryView(
-                            drawableResId = R.drawable.business_products_magic_rabbit,
-                            title = "카테고리 이름",
-                            modifier = Modifier
-                                .fillMaxWidth(1f)
-                                .aspectRatio(1f)
-                                .background(
-                                    brush = Brush.linearGradient(
-                                        listOf(
-                                            bottomCategoryColor[it].leftTop,
-                                            bottomCategoryColor[it].rightBottom
-                                        )
-                                    ),
-                                    alpha = 1f
-                                )
-                                .padding(15.dp)
-                                .clickable {
-                                    navigator.navigate(MainNavigationAction.NavigateToCategory)
-                                }
-                        )
-                    }
-                }
-            }
             Column(
                 Modifier
                     .fillMaxWidth(1f)
@@ -173,7 +156,7 @@ fun MainScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "BEST",
+                    text = "\uD83D\uDD25인급밈\uD83D\uDD25",
                     style = Display3.toTextStyle(),
                     modifier = Modifier.padding(top = 24.dp)
                 )
@@ -198,15 +181,16 @@ fun MainScreen(
         }
         item {
             Text(
-                text = "지금 공유할 타이밍",
+                text = "단톡방행 밈 셔틀,\n" +
+                        "지금 탑승하세요 \uD83D\uDE82",
                 style = Display2.toTextStyle(),
                 color = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 50.dp, bottom = 18.dp, start = 14.dp)
+                    .padding(top = 50.dp, bottom = 4.dp, start = 14.dp)
             )
             Text(
-                text = "지금 공유할 타이밍",
+                text = "지금 가장 많이 공유된 미만 골라 실었어요",
                 style = Body2.toTextStyle(),
                 color = Color.White,
                 modifier = Modifier
@@ -220,12 +204,11 @@ fun MainScreen(
                     .height(172.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                flingBehavior = rememberSnapFlingBehavior(lazyListState = rememberLazyListState())
             ) {
                 items(count = 5) { index ->
                     ShareMemItem(
                         item = TEST_BRIEF_MEME_UI,
-                        color = topCategoryColor.get(index)
+                        color = topSharedMemeColor1.get(index)
                     )
                 }
             }
@@ -240,12 +223,11 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 reverseLayout = true, // 오른쪽으로 스크롤
-                flingBehavior = rememberSnapFlingBehavior(lazyListState = rememberLazyListState())
             ) {
                 items(count = 5) { index ->
                     ShareMemItem(
                         item = TEST_BRIEF_MEME_UI,
-                        color = bottomCategoryColor.get(index)
+                        color = topSharedMemeColor2.get(index)
                     )
                 }
             }

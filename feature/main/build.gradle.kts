@@ -9,6 +9,9 @@ android {
 
 dependencies {
     implementation(libs.coil)
+    implementation(project(":core:common"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.hilt.navigation.compose)
 }

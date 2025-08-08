@@ -16,4 +16,6 @@ dependencies {
     implementation(libs.coil)
     implementation(project(":core:domain"))
     implementation(project(":core:designsystem"))
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.hilt.navigation.compose)
 }

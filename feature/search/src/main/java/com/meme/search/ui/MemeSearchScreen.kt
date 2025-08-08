@@ -20,21 +20,35 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.paging.compose.LazyPagingItems
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.meme.search.R
+import com.meme.search.business.MemeSearchViewModel
+import com.meme.search.navigation.SearchNavigator
 import com.mimu_bird.designsystem.theme.Body1
+import com.mimu_bird.designsystem.theme.Gray1
+import com.mimu_bird.designsystem.theme.Gray10
+import com.mimu_bird.designsystem.theme.Gray4
+import com.mimu_bird.designsystem.theme.Gray5
+import com.mimu_bird.designsystem.theme.Gray6
+import com.mimu_bird.designsystem.theme.Gray8
 import com.mimu_bird.designsystem.theme.Subhead_Long2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.component.MimSearchItem
-import com.mimu_bird.ui.model.MimUiModel
 
 /**
  * 검색 화면 Screen
@@ -42,20 +56,41 @@ import com.mimu_bird.ui.model.MimUiModel
 @Composable
 fun MemeSearchScreen(
     modifier: Modifier = Modifier,
-    keyword: String,
-    memes: LazyPagingItems<MimUiModel>,
-    onChangeKeyword: (String) -> Unit
+    viewModel: MemeSearchViewModel = hiltViewModel(),
+    navController: NavController,
+    navigator: SearchNavigator? = null
 ) {
+    val keyword by viewModel.keyword.collectAsState()
+    val memes = viewModel.memes.collectAsLazyPagingItems()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
             .background(color = Gray10)
     ) {
+        // 뒤로가기 버튼
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "뒤로가기",
+                tint = Gray1,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        navController.popBackStack()
+                    }
+            )
+        }
         MemeSearchBox(
             modifier = Modifier.padding(top = 20.dp, end = 14.dp, bottom = 12.dp, start = 14.dp),
             keyword = keyword,
-            onChangeKeyword = onChangeKeyword
+            onChangeKeyword = { viewModel.changeKeyword(it) }
         )
         if (memes.itemCount == 0) {
             MemeSearchEmpty()

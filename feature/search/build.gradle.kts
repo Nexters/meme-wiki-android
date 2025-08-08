@@ -9,8 +9,11 @@ android {
 
 dependencies {
     implementation(libs.coil)
+    implementation(project(":core:common"))
     implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.paging)
     implementation(libs.androidx.compose.paging)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.compose.navigation)
 }

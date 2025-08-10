@@ -15,4 +15,5 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(libs.androidx.compose.navigation)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.foundation)
 }

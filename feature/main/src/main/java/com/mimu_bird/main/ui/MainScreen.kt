@@ -48,6 +48,7 @@ import com.mimu_bird.main.navigation.MainNavigationAction
 import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
 import com.mimu_bird.ui.component.ShareMemItem
+import com.mimu_bird.ui.model.BriefMemeUiModel
 import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
@@ -56,6 +57,7 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val categories by viewModel.categories.collectAsState()
+    val topRatedMemes by viewModel.topRatedMemes.collectAsState()
 
     val topCategoryColor = listOf(
         PastelGradientPalette.LIGHT_BLUE,
@@ -181,14 +183,14 @@ fun MainScreen(
                     modifier = Modifier.padding(bottom = 36.dp)
                 )
                 BestMemeView(
-                    items = listOf(
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI
-                    )
+                    items = topRatedMemes.mapIndexed { index, meme ->
+                        BriefMemeUiModel(
+                            id = meme.id.toString(),
+                            imageUrl = meme.imageUrl,
+                            title = meme.title,
+                            rank = index + 1
+                        )
+                    }.take(6)
                 )
                 Spacer(Modifier.height(53.dp))
             }

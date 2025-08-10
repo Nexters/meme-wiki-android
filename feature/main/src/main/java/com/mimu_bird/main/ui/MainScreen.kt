@@ -130,7 +130,9 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 repeat(4) { index ->
-                    val categoryTitle = categories.getOrNull(index)?.name ?: "카테고리 이름"
+                    val category = categories.getOrNull(index)
+                    val categoryTitle = category?.name ?: "카테고리 이름"
+                    val categoryId = category?.id ?: 0
                     Box(modifier = Modifier.weight(0.17f)) {
                         CategoryView(
                             drawableResId = R.drawable.business_products_magic_rabbit,
@@ -148,6 +150,11 @@ fun MainScreen(
                                     alpha = 1f
                                 )
                                 .padding(15.dp)
+                                .clickable {
+                                    navigator.navigate(
+                                        MainNavigationAction.NavigateToCategory(categoryId)
+                                    )
+                                }
                         )
                     }
                 }

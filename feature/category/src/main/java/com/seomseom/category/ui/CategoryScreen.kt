@@ -22,11 +22,18 @@ import com.mimu_bird.ui.model.CategoryUiModel
 import com.mimu_bird.ui.model.MimUiModel
 import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 import com.seomseom.category.component.CategoryTab
+import com.seomseom.category.navigation.CategoryNavigator
 
 @Preview
 @Composable
 private fun CategoryScreenPreview() {
-    CategoryScreen()
+    CategoryScreen(
+        navigator = object : CategoryNavigator {
+            override fun navigate(action: com.seomseom.category.navigation.CategoryNavigationAction) {
+                // Preview에서는 아무것도 하지 않음
+            }
+        }
+    )
 }
 
 /**
@@ -34,7 +41,8 @@ private fun CategoryScreenPreview() {
  */
 @Composable
 fun CategoryScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigator: CategoryNavigator? = null
 ) {
     Column (
         modifier = modifier

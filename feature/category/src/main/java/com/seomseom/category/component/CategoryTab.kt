@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,7 +61,7 @@ internal fun CategoryTab(
     modifier: Modifier = Modifier,
     tabs: List<CategoryUiModel>,
     selectedTabIndex: Int,
-    onSelectCategory: (CategoryUiModel) -> Unit
+    onSelectCategory: (Int) -> Unit
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
@@ -92,7 +93,7 @@ internal fun CategoryTab(
                     modifier = Modifier
                         .padding(bottom = 14.dp),
                     selected = selectedTabIndex == index,
-                    onClick = { onSelectCategory(category) }
+                    onClick = { onSelectCategory(index) }
                 ) {
                     Box(
                         modifier = Modifier
@@ -116,9 +117,12 @@ internal fun CategoryTab(
                         AsyncImage(
                             modifier = Modifier
                                 .align(Alignment.Center)
-                                .size(38.dp),
+                                .size(64.dp),
                             model = category.imageUrl,
-                            contentDescription = category.name
+                            contentDescription = category.name,
+                            colorFilter = ColorFilter.tint(
+                                color = if (selectedTabIndex == index) Gray9 else Gray5
+                            )
                         )
                     }
                     Text(

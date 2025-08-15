@@ -1,6 +1,8 @@
 package com.mimu_bird.data.di
 
+import com.mimu_bird.data.repository.category.DefaultCategoryRepository
 import com.mimu_bird.data.repository.search.DefaultSearchRepository
+import com.mimu_bird.domain.repository.category.CategoryRepository
 import com.mimu_bird.domain.repository.search.SearchRepository
 import dagger.Binds
 import dagger.Module
@@ -16,4 +18,10 @@ interface RepositoryModule {
     fun bindSearchRepository(
         searchRepository: DefaultSearchRepository
     ): SearchRepository
+
+    @Binds
+    @Singleton
+    fun bindCategoryRepository(
+        categoryRepository: DefaultCategoryRepository
+    ): CategoryRepository
 }

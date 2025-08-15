@@ -124,7 +124,10 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 repeat(4) {
-                    Box(modifier = Modifier.weight(0.17f)) {
+                    Box(
+                        modifier = Modifier.weight(0.17f)
+                            .clickable { navigator.navigate(MainNavigationAction.NavigateToCategory) }
+                    ) {
                         CategoryView(
                             drawableResId = R.drawable.business_products_magic_rabbit,
                             title = "카테고리 이름",

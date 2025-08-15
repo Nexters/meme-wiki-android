@@ -1,7 +1,11 @@
 package com.mimu_bird.data.di
 
 import com.mimu_bird.data.repository.search.DefaultSearchRepository
+import com.mimu_bird.data.repository.category.DefaultCategoryRepository
+import com.mimu_bird.data.repository.meme.TopRatedMemeRepositoryImpl
 import com.mimu_bird.domain.repository.search.SearchRepository
+import com.mimu_bird.domain.repository.category.CategoryRepository
+import com.mimu_bird.domain.repository.meme.TopRatedMemeRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,4 +20,16 @@ interface RepositoryModule {
     fun bindSearchRepository(
         searchRepository: DefaultSearchRepository
     ): SearchRepository
+
+    @Binds
+    @Singleton
+    fun bindCategoryRepository(
+        categoryRepository: DefaultCategoryRepository
+    ): CategoryRepository
+
+    @Binds
+    @Singleton
+    fun bindTopRatedMemeRepository(
+        topRatedMemeRepository: TopRatedMemeRepositoryImpl
+    ): TopRatedMemeRepository
 }

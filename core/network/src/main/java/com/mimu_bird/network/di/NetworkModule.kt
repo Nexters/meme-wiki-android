@@ -2,6 +2,8 @@ package com.mimu_bird.network.di
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.mimu_bird.network.api.SearchService
+import com.mimu_bird.network.api.CategoryService
+import com.mimu_bird.network.api.TopRatedMemeService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +25,20 @@ object NetworkModule {
     fun provideSearchService(
         retrofit: Retrofit
     ): SearchService = retrofit.create(SearchService::class.java)
+
+    // 카테고리 서비스
+    @Provides
+    @Singleton
+    fun provideCategoryService(
+        retrofit: Retrofit
+    ): CategoryService = retrofit.create(CategoryService::class.java)
+
+    // Top Rated 밈 서비스
+    @Provides
+    @Singleton
+    fun provideTopRatedMemeService(
+        retrofit: Retrofit
+    ): TopRatedMemeService = retrofit.create(TopRatedMemeService::class.java)
 }
 
 @Module

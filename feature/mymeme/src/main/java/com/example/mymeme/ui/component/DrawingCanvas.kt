@@ -2,9 +2,13 @@ package com.example.mymeme.ui.component
 
 import android.util.Log
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,21 +24,43 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mymeme.ui.model.DrawingPath
 import com.example.mymeme.ui.model.DrawingTool
+import com.example.mymeme.ui.model.TextElement
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun DrawingCanvas(
     imageUrl: String,
     drawingPaths: List<DrawingPath>,
+    textElements: List<TextElement>,
     currentTool: DrawingTool,
+    isTextMode: Boolean,
     onPathAdded: (DrawingPath) -> Unit,
+    onTextAdded: (TextElement) -> Unit,
+    onTextUpdated: (TextElement) -> Unit,
+    onTextDeleted: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentPath by remember { mutableStateOf<Path?>(null) }
     var currentPoints by remember { mutableStateOf<List<Offset>>(emptyList()) }
     var drawingSessionTool by remember { mutableStateOf(currentTool) }
+
+    // 텍스트 편집 상태
+    var currentText by remember { mutableStateOf("") }
+    var currentTextColor by remember { mutableStateOf(currentTool.color) }
+    var currentTextOpacity by remember { mutableStateOf(1.0f) }
+    var isTextEditDialogVisible by remember { mutableStateOf(false) }
+    var selectedTextId by remember { mutableStateOf<String?>(null) }
+    var canvasSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     // currentTool 변경을 로그로만 확인 (currentPath 업데이트 제거)
     LaunchedEffect(currentTool) {
@@ -50,6 +76,7 @@ fun DrawingCanvas(
         modifier = modifier
             .fillMaxSize()
             .clipToBounds()
+            .onSizeChanged { canvasSize = it }
     ) {
         // 배경 이미지
         AsyncImage(
@@ -66,48 +93,68 @@ fun DrawingCanvas(
                 .pointerInput(currentTool) {
                     detectDragGestures(
                         onDragStart = { offset ->
-                            // 새로운 그리기 시작 시 currentTool 설정으로 초기화
-                            drawingSessionTool = currentTool
-                            currentPath = Path().apply {
-                                moveTo(offset.x, offset.y)
+                            if (isTextMode) {
+                                // 텍스트 모드일 때는 텍스트 추가
+                                val newText = TextElement(
+                                    text = currentText.ifEmpty { "텍스트" },
+                                    position = offset,
+                                    color = currentTextColor,
+                                    opacity = currentTextOpacity
+                                )
+                                onTextAdded(newText)
+                                selectedTextId = newText.id
+                            } else {
+                                // 그리기 모드일 때는 선 그리기
+                                drawingSessionTool = currentTool
+                                currentPath = Path().apply {
+                                    moveTo(offset.x, offset.y)
+                                }
+                                currentPoints = listOf(offset)
+                                Log.d(
+                                    "DrawingCanvas",
+                                    "Started drawing with tool: ${drawingSessionTool}"
+                                )
                             }
-                            currentPoints = listOf(offset)
-                            Log.d(
-                                "DrawingCanvas",
-                                "Started drawing with tool: ${drawingSessionTool}"
-                            )
                         },
                         onDrag = { _, dragAmount ->
-                            currentPath?.let { path ->
-                                path.lineTo(
-                                    currentPoints.last().x + dragAmount.x,
-                                    currentPoints.last().y + dragAmount.y
-                                )
-                                currentPoints = currentPoints + Offset(
-                                    currentPoints.last().x + dragAmount.x,
-                                    currentPoints.last().y + dragAmount.y
-                                )
-                            }
-                        },
-                        onDragEnd = {
-                            currentPath?.let { path ->
-                                if (currentPoints.size > 1) {
-                                    // 그리기 세션 시작 시점의 도구 설정으로 DrawingPath 생성
-                                    val newPath = DrawingPath(
-                                        points = currentPoints,
-                                        strokeWidth = drawingSessionTool.strokeWidth.realWidth.toFloat(),
-                                        opacity = drawingSessionTool.opacity,
-                                        color = drawingSessionTool.color
+                            if (isTextMode) {
+                                // 텍스트 모드일 때는 드래그 동작 없음 (텍스트 위치는 개별적으로 조정)
+                            } else {
+                                // 그리기 모드일 때는 선 그리기
+                                currentPath?.let { path ->
+                                    path.lineTo(
+                                        currentPoints.last().x + dragAmount.x,
+                                        currentPoints.last().y + dragAmount.y
                                     )
-                                    onPathAdded(newPath)
-                                    Log.d(
-                                        "DrawingCanvas",
-                                        "Added path with tool: ${drawingSessionTool}"
+                                    currentPoints = currentPoints + Offset(
+                                        currentPoints.last().x + dragAmount.x,
+                                        currentPoints.last().y + dragAmount.y
                                     )
                                 }
                             }
-                            currentPath = null
-                            currentPoints = emptyList()
+                        },
+                        onDragEnd = {
+                            if (!isTextMode) {
+                                // 그리기 모드일 때만 선 그리기 완료
+                                currentPath?.let { path ->
+                                    if (currentPoints.size > 1) {
+                                        // 그리기 세션 시작 시점의 도구 설정으로 DrawingPath 생성
+                                        val newPath = DrawingPath(
+                                            points = currentPoints,
+                                            strokeWidth = drawingSessionTool.strokeWidth.realWidth.toFloat(),
+                                            opacity = drawingSessionTool.opacity,
+                                            color = drawingSessionTool.color
+                                        )
+                                        onPathAdded(newPath)
+                                        Log.d(
+                                            "DrawingCanvas",
+                                            "Added path with tool: ${drawingSessionTool}"
+                                        )
+                                    }
+                                }
+                                currentPath = null
+                                currentPoints = emptyList()
+                            }
                         }
                     )
                 }
@@ -146,6 +193,144 @@ fun DrawingCanvas(
                     )
                 )
             }
+        }
+
+        // 텍스트 요소들 렌더링 (isTextMode와 관계없이 항상 표시)
+        // Canvas에 추가된 모든 텍스트는 모드가 변경되어도 계속 보임
+        textElements.forEach { textElement ->
+            Box(
+                modifier = Modifier
+                    .offset(
+                        x = (textElement.position.x - 50).dp,
+                        y = (textElement.position.y - 20).dp
+                    )
+                    .pointerInput(textElement.id) {
+                        detectDragGestures(
+                            onDrag = { _, dragAmount ->
+                                val newPosition = Offset(
+                                    textElement.position.x + dragAmount.x,
+                                    textElement.position.y + dragAmount.y
+                                )
+                                onTextUpdated(textElement.copy(position = newPosition))
+                            }
+                        )
+                    }
+            ) {
+                BasicTextField(
+                    value = textElement.text,
+                    onValueChange = { newText ->
+                        onTextUpdated(textElement.copy(text = newText))
+                    },
+                    textStyle = TextStyle(
+                        fontSize = textElement.fontSize.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = textElement.color.color.copy(alpha = textElement.opacity)
+                    ),
+                    modifier = Modifier
+                        .size(100.dp, 40.dp)
+                        .clickable {
+                            selectedTextId = textElement.id
+                            currentText = textElement.text
+                            currentTextColor = textElement.color
+                            currentTextOpacity = textElement.opacity
+                            isTextEditDialogVisible = true
+                        }
+                )
+            }
+        }
+
+        // DraggableTextInput을 언제든지 표시
+        var additionalTextInputs by remember { mutableStateOf(0) }
+        
+        // 텍스트 모드가 활성화되면 자동으로 첫 번째 UI 생성
+        LaunchedEffect(isTextMode) {
+            if (isTextMode && additionalTextInputs == 0) {
+                Log.d("DrawingCanvas", "텍스트 모드 활성화, 첫 번째 UI 자동 생성")
+                additionalTextInputs = 1
+            }
+        }
+        
+        // additionalTextInputs 상태 변화 로깅
+        LaunchedEffect(additionalTextInputs) {
+            Log.d("DrawingCanvas", "additionalTextInputs 상태 변화: $additionalTextInputs")
+        }
+        
+        // 실제 화면 크기 가져오기
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp
+        val screenHeight = configuration.screenHeightDp
+        
+        // 모든 DraggableTextInput들을 repeat으로 생성
+        repeat(additionalTextInputs) { index ->
+            var additionalCurrentText by remember { mutableStateOf("") }
+            var additionalTextColor by remember { mutableStateOf(currentTextColor) }
+            var additionalTextOpacity by remember { mutableStateOf(currentTextOpacity) }
+            
+            // positionIndex는 0부터 시작하되, 각 UI마다 다른 위치에 배치
+            val actualPositionIndex = index
+            
+            Log.d("DrawingCanvas", "DraggableTextInput 렌더링: index=$index, actualPositionIndex=$actualPositionIndex, total=$additionalTextInputs")
+            
+            DraggableTextInput(
+                currentText = additionalCurrentText,
+                onTextChange = { additionalCurrentText = it },
+                currentTextColor = additionalTextColor,
+                currentTextOpacity = additionalTextOpacity,
+                onTextAdded = { text ->
+                    Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 텍스트 추가 호출됨: '$text'")
+                    val centerOffset = Offset(
+                        (canvasSize.width / 2).toFloat(),
+                        (canvasSize.height / 2).toFloat()
+                    )
+                    val newText = TextElement(
+                        text = text,
+                        position = centerOffset,
+                        color = additionalTextColor,
+                        opacity = additionalTextOpacity
+                    )
+                    Log.d("DrawingCanvas", "UI[$index]에서 새로운 TextElement 생성: id=${newText.id}, text='${newText.text}', color=${newText.color}, opacity=${newText.opacity}")
+                    onTextAdded(newText)
+                    selectedTextId = newText.id
+                    Log.d("DrawingCanvas", "UI[$index]의 TextElement이 Canvas에 추가됨, selectedTextId: $selectedTextId")
+                },
+                onEditClick = {
+                    Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 편집하기 클릭됨")
+                    isTextEditDialogVisible = true
+                },
+                parentWidth = with(LocalDensity.current) { canvasSize.width.toDp() },
+                parentHeight = with(LocalDensity.current) { canvasSize.height.toDp() },
+                onAddNewInput = {
+                    Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 새로운 UI 생성 요청됨")
+                    val previousCount = additionalTextInputs
+                    additionalTextInputs++
+                    Log.d("DrawingCanvas", "UI[$index]에서 additionalTextInputs 증가: $previousCount -> $additionalTextInputs")
+                },
+                initialOffset = Offset(
+                    (screenWidth / 2).toFloat(),
+                    (screenHeight / 2).toFloat()
+                ), // 화면 정가운데
+                positionIndex = actualPositionIndex // 각 UI마다 다른 positionIndex
+            )
+        }
+
+        // 텍스트 편집 다이얼로그
+        if (isTextEditDialogVisible) {
+            TextEditDialog(
+                currentColor = currentTextColor,
+                onColorChange = { currentTextColor = it },
+                currentOpacity = currentTextOpacity,
+                onOpacityChange = { currentTextOpacity = it },
+                onDelete = {
+                    selectedTextId?.let { id ->
+                        onTextDeleted(id)
+                    }
+                    isTextEditDialogVisible = false
+                },
+                onClose = {
+                    isTextEditDialogVisible = false
+                },
+                modifier = Modifier.offset(x = 20.dp, y = 100.dp)
+            )
         }
     }
 }

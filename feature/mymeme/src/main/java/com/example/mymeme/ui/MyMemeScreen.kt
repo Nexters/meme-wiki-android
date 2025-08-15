@@ -44,6 +44,7 @@ import com.example.mymeme.ui.component.DrawingToolBar
 import com.example.mymeme.ui.model.DrawingColor
 import com.example.mymeme.ui.model.DrawingPath
 import com.example.mymeme.ui.model.DrawingTool
+import com.example.mymeme.ui.model.TextElement
 import com.example.mymeme.ui.model.Width
 import com.mimu_bird.designsystem.theme.Gray7
 import com.mimu_bird.designsystem.theme.Gray8
@@ -55,6 +56,7 @@ fun MyMemeScreen(
     imgUrl: String
 ) {
     var drawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
+    var textElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
     var currentTool by remember {
         mutableStateOf(
             DrawingTool(
@@ -116,9 +118,23 @@ fun MyMemeScreen(
             DrawingCanvas(
                 imageUrl = imgUrl,
                 drawingPaths = drawingPaths,
+                textElements = textElements,
                 currentTool = currentTool,
+                isTextMode = isTextMode,
                 onPathAdded = { path ->
                     drawingPaths = drawingPaths + path
+                },
+                onTextAdded = { textElement ->
+                    textElements = textElements + textElement
+                    // 텍스트 모드는 사용자가 직접 변경해야 함
+                },
+                onTextUpdated = { updatedText ->
+                    textElements = textElements.map {
+                        if (it.id == updatedText.id) updatedText else it
+                    }
+                },
+                onTextDeleted = { textId ->
+                    textElements = textElements.filter { it.id != textId }
                 },
                 modifier = Modifier.fillMaxSize()
             )
@@ -163,6 +179,10 @@ fun MyMemeScreen(
                                     indication = null
                                 ) {
                                     isDrawingToolBarVisible = !isDrawingToolBarVisible
+                                    // 그리기 도구 바가 켜지면 텍스트 모드 끄기
+                                    if (isDrawingToolBarVisible) {
+                                        isTextMode = false
+                                    }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -184,7 +204,12 @@ fun MyMemeScreen(
                                     interactionSource = interactionSource,
                                     indication = null
                                 ) {
-                                    // TODO: 텍스트 모드 구현
+                                    // 오직 플로팅 버튼의 텍스트 아이콘을 클릭했을 때만 텍스트 모드 변경
+                                    isTextMode = !isTextMode
+                                    // 텍스트 모드가 켜지면 그리기 도구 바 끄기
+                                    if (isTextMode) {
+                                        isDrawingToolBarVisible = false
+                                    }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -208,15 +233,11 @@ fun MyMemeScreen(
                         Box(
                             modifier = Modifier
                                 .size(30.dp)
-                                .background(
-                                    color = if (isTextMode) Gray7 else Color.Transparent,
-                                    shape = CircleShape
-                                )
                                 .clickable(
                                     interactionSource = interactionSource,
                                     indication = null
                                 ) {
-                                    // TODO: 텍스트 모드 구현
+                                    // TODO: 실행 취소 구현
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -230,15 +251,11 @@ fun MyMemeScreen(
                         Box(
                             modifier = Modifier
                                 .size(30.dp)
-                                .background(
-                                    color = if (isTextMode) Gray7 else Color.Transparent,
-                                    shape = CircleShape
-                                )
                                 .clickable(
                                     interactionSource = interactionSource,
                                     indication = null
                                 ) {
-                                    // TODO: 텍스트 모드 구현
+                                    // TODO: 다시 실행 구현
                                 },
                             contentAlignment = Alignment.Center
                         ) {

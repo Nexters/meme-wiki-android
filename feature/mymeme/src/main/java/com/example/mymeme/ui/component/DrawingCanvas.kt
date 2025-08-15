@@ -242,15 +242,13 @@ fun DrawingCanvas(
         // DraggableTextInput을 언제든지 표시
         var additionalTextInputs by remember { mutableStateOf(0) }
         
-        // 텍스트 모드가 활성화되면 자동으로 첫 번째 UI 생성
+        // 텍스트 모드가 활성화되면 자동으로 첫 번째 UI 생성 (기존 UI는 유지)
         LaunchedEffect(isTextMode) {
-            if (isTextMode) {
-                Log.d("DrawingCanvas", "텍스트 모드 활성화, UI 생성")
+            if (isTextMode && additionalTextInputs == 0) {
+                Log.d("DrawingCanvas", "텍스트 모드 활성화, 첫 번째 UI 생성")
                 additionalTextInputs = 1
-            } else {
-                Log.d("DrawingCanvas", "텍스트 모드 비활성화, UI 숨김")
-                additionalTextInputs = 0
             }
+            // 텍스트 모드가 false가 되어도 기존 UI들은 유지 (additionalTextInputs = 0으로 설정하지 않음)
         }
         
         // additionalTextInputs 상태 변화 로깅

@@ -2,6 +2,7 @@ package com.example.mymeme.ui.model
 
 import androidx.compose.ui.graphics.Color
 import com.mimu_bird.designsystem.R
+import androidx.compose.ui.geometry.Offset
 
 data class MyMemeUiModel(
     val imageUrl: String,
@@ -9,10 +10,18 @@ data class MyMemeUiModel(
 )
 
 data class DrawingTool(
-    val strokeWidth: Float,
+    val strokeWidth: Width,
     val opacity: Float,
     val color: DrawingColor
 )
+
+enum class Width(val guiWidth:Int, val realWidth:Int){
+    LEVEL1(3,1),
+    LEVEL2(6,2),
+    LEVEL3(9,3),
+    LEVEL4(12,4),
+    LEVEL5(15,5)
+}
 
 enum class DrawingColor(
     val color: Color,
@@ -40,8 +49,17 @@ enum class ColorCrayon(val painterResourceId: Int) {
 }
 
 data class DrawingPath(
-    val points: List<androidx.compose.ui.geometry.Offset>,
+    val points: List<Offset>,
     val strokeWidth: Float,
     val opacity: Float,
     val color: DrawingColor
+)
+
+data class TextElement(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val text: String,
+    val position: Offset,
+    val color: DrawingColor,
+    val opacity: Float,
+    val fontSize: Float = 24f
 ) 

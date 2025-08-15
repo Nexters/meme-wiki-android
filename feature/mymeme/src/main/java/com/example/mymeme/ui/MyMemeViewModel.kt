@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.mymeme.ui.model.DrawingPath
 import com.example.mymeme.ui.model.DrawingTool
 import com.example.mymeme.ui.model.DrawingColor
+import com.example.mymeme.ui.model.Width
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,7 @@ class MyMemeViewModel : ViewModel() {
     
     private val _currentTool = MutableStateFlow(
         DrawingTool(
-            strokeWidth = 4f,
+            strokeWidth = Width.LEVEL3,
             opacity = 1.0f,
             color = DrawingColor.RED
         )

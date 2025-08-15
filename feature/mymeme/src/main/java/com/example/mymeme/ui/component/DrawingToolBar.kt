@@ -29,6 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.mymeme.ui.model.ColorCrayon
 import com.example.mymeme.ui.model.DrawingColor
 import com.example.mymeme.ui.model.DrawingTool
+import com.example.mymeme.ui.model.Width
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Gray5
 import com.mimu_bird.designsystem.theme.Gray7
@@ -55,13 +58,10 @@ fun DrawingToolBar(
     currentTool: DrawingTool,
     onToolChanged: (DrawingTool) -> Unit,
     onClose: () -> Unit,
-    modifier: Modifier = Modifier,
     isExpanded: Boolean,
 ) {
-    val WIDTHS = listOf<Int>(3, 6, 9, 12, 15)
-
     Column(
-        modifier = modifier,
+        modifier = Modifier.padding(bottom = 30.dp),
         horizontalAlignment = Alignment.End
     ) {
 
@@ -84,45 +84,75 @@ fun DrawingToolBar(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                         .padding(top = 14.dp, bottom = 30.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    // 헤더
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = onClose) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "닫기",
-                                tint = Gray5
+                    Column{
+// 헤더
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = onClose) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "닫기",
+                                    tint = Gray5
+                                )
+                            }
+                        }
+                        Column(
+                            Modifier
+                                .fillMaxWidth(1f)
+                                .drawBehind {
+                                    val borderSize = 1.dp.toPx()
+                                    drawLine(
+                                        color = Gray7,
+                                        start = Offset(0f, size.height - 25),
+                                        end = Offset(size.width, size.height - 25),
+                                        strokeWidth = borderSize
+                                    )
+                                },
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            val currentColor = currentTool.color
+                            val widthResourceId = when (currentTool.strokeWidth) {
+                                Width.LEVEL1 -> R.drawable.ic_width1
+                                Width.LEVEL2 -> R.drawable.ic_width2
+                                Width.LEVEL3 -> R.drawable.ic_width3
+                                Width.LEVEL4 -> R.drawable.ic_width4
+                                Width.LEVEL5 -> R.drawable.ic_width5
+                            }
+                            var painterResourceId = when (currentColor) {
+                                DrawingColor.RED -> ColorCrayon.RED.painterResourceId
+                                DrawingColor.ORANGE -> ColorCrayon.ORANGE.painterResourceId
+                                DrawingColor.YELLOW -> ColorCrayon.YELLOW.painterResourceId
+                                DrawingColor.GREEN -> ColorCrayon.GREEN.painterResourceId
+                                DrawingColor.BLUE -> ColorCrayon.BLUE.painterResourceId
+                                DrawingColor.NAVY -> ColorCrayon.NAVY.painterResourceId
+                                DrawingColor.WHITE -> ColorCrayon.WHITE.painterResourceId
+                                DrawingColor.BLACK -> ColorCrayon.BLACK.painterResourceId
+                            }
+                            Row(Modifier.padding(start = 30.dp)) {
+                                Icon(
+                                    modifier = Modifier
+                                        .height(26.dp)
+                                        .width(46.dp),
+                                    painter = painterResource(widthResourceId),
+                                    contentDescription = "width 선택 결과 보여주는 크레용 두께 이미지",
+                                    tint = currentTool.color.color
+                                )
+                            }
+                            Image(
+                                modifier = Modifier
+                                    .height(103.dp)
+                                    .width(26.dp),
+                                painter = painterResource(painterResourceId),
+                                contentDescription = "색상 선택 결과 보여주는 크레용 이미지",
+                                contentScale = ContentScale.FillHeight
                             )
                         }
-                    }
-                    Column(
-                        modifier
-                            .fillMaxWidth(1f)
-                            .padding(top = 16.dp, bottom = 24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        val currentColor = currentTool.color
-                        var painterResourceId = when (currentColor) {
-                            DrawingColor.RED -> ColorCrayon.RED.painterResourceId
-                            DrawingColor.ORANGE -> ColorCrayon.ORANGE.painterResourceId
-                            DrawingColor.YELLOW -> ColorCrayon.YELLOW.painterResourceId
-                            DrawingColor.GREEN -> ColorCrayon.GREEN.painterResourceId
-                            DrawingColor.BLUE -> ColorCrayon.BLUE.painterResourceId
-                            DrawingColor.NAVY -> ColorCrayon.NAVY.painterResourceId
-                            DrawingColor.WHITE -> ColorCrayon.WHITE.painterResourceId
-                            DrawingColor.BLACK -> ColorCrayon.BLACK.painterResourceId
-                        }
-                        Image(
-                            modifier = Modifier.height(129.dp),
-                            painter = painterResource(painterResourceId),
-                            contentDescription = "색상 선택 결과 보여주는 크레용 이미지",
-                            contentScale = ContentScale.FillHeight
-                        )
                     }
 
                     // 펜 굵기 선택
@@ -135,30 +165,32 @@ fun DrawingToolBar(
                             colors = CardDefaults.cardColors(
                                 containerColor = Gray7,
                                 contentColor = Gray7
-                            )
+                            ),
                         ) {
                             Row(
                                 Modifier
                                     .background(color = Gray7)
                                     .fillMaxWidth(1f)
+                                    .height(25.dp)
                                     .padding(horizontal = 20.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                WIDTHS.forEach { width ->
-                                    val isSelected = currentTool.strokeWidth.toInt() == width
+                                Width.entries.forEach { width ->
+                                    val isSelected =
+                                        currentTool.strokeWidth.guiWidth == width.guiWidth
                                     Box(
                                         modifier = Modifier
-                                            .size(if (isSelected) 26.dp else width.dp)
+                                            .size(if (isSelected) 26.dp else width.guiWidth.dp)
                                             .clip(CircleShape)
                                             .background(color = Color.White)
                                             .clickable {
-                                                onToolChanged(currentTool.copy(strokeWidth = width.toFloat()))
+                                                onToolChanged(currentTool.copy(strokeWidth = width))
                                             },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            text = if (isSelected) "$width" else "",
+                                            text = if (isSelected) "${width.realWidth}" else "",
                                             color = Color.Black,
                                             fontSize = 12.sp
                                         )
@@ -199,7 +231,8 @@ fun DrawingToolBar(
                                 if (isSelected) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_check),
-                                        contentDescription = "selected color"
+                                        contentDescription = "selected color",
+                                        tint = Color.White
                                     )
                                 }
                             }

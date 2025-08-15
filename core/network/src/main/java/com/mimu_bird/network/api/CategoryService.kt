@@ -1,6 +1,5 @@
 package com.mimu_bird.network.api
 
-import com.mimu_bird.network.model.response.category.CategoryResponse
 import com.mimu_bird.network.model.response.common.CommonResponse
 import com.mimu_bird.network.model.response.search.MemeSearchResponse
 import retrofit2.http.GET
@@ -9,11 +8,11 @@ import retrofit2.http.Query
 
 interface CategoryService {
     /**
-     * 밈 카테고리 정보 요청
-     * [GET] /memes/categories
+     * 카테고리 목록 요청
+     * [GET] /api/memes/categories
      */
     @GET("/api/memes/categories")
-    suspend fun getCategories():CommonResponse<List<CategoryResponse>>
+    suspend fun getCategories(): CommonResponse<List<CategoryNetworkModel>>
 
     /**
      * 특정 카테고리의 밈 정보 요청

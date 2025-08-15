@@ -1,7 +1,7 @@
 package com.mimu_bird.domain.repository.category
 
 import androidx.paging.PagingData
-import com.mimu_bird.domain.model.category.CategoryModel
+import com.mimu_bird.domain.model.category.BriefMemeModel
 import com.mimu_bird.domain.model.meme.MemeModel
 import kotlinx.coroutines.flow.Flow
 
@@ -12,7 +12,7 @@ interface CategoryRepository {
     /**
      * 카테고리 요청
      */
-    suspend fun getCategories(): List<CategoryModel>
+    suspend fun getCategories(): List<BriefMemeModel>
 
     /**
      * 특정 카테고리의 밈 정보 요청

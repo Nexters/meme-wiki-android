@@ -1,23 +1,17 @@
 package com.mimu_bird.data.datasource.category
 
 import com.mimu_bird.network.api.CategoryService
-import com.mimu_bird.network.model.response.category.CategoryResponse
 import com.mimu_bird.network.model.response.search.MemeSearchResponse
+import com.mimu_bird.network.model.response.category.CategoryNetworkModel
 import com.mimu_bird.network.util.ApiCallUtil
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * 밈 카테고리 관리 Data Source
- */
 @Singleton
 class CategoryDataSource @Inject constructor(
     private val categoryService: CategoryService
-){
-    /**
-     * 밈 카테고리 요청
-     */
-    suspend fun getCategories(): List<CategoryResponse> {
+) {
+    suspend fun getCategories(): List<CategoryNetworkModel> {
         return ApiCallUtil {
             categoryService.getCategories()
         }

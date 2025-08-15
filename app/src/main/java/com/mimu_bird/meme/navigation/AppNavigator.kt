@@ -14,7 +14,9 @@ import com.seomseom.category.navigation.CategoryNavigator
 sealed class Screen(val route: String) {
     object Main : Screen("main")
     object Search : Screen("search")
-    object Category : Screen("category")
+    object Category : Screen("category/{categoryId}") {
+        fun createRoute(categoryId: Int) = "category/$categoryId"
+    }
 }
 
 /**
@@ -34,8 +36,8 @@ class AppNavigator(
             }
 
             is MainNavigationAction.NavigateToCategory -> {
-                println("DEBUG: NavigateToCategory called")
-                navController.navigate(Screen.Category.route)
+                println("DEBUG: NavigateToCategory called: ${'$'}{action.categoryId}")
+                navController.navigate(Screen.Category.createRoute(action.categoryId))
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.mimu_bird.domain.usercase.category
 
-import com.mimu_bird.domain.model.category.CategoryModel
+import com.mimu_bird.domain.model.category.BriefMemeModel
 import com.mimu_bird.domain.repository.category.CategoryRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
@@ -11,10 +11,8 @@ import javax.inject.Inject
 @ViewModelScoped
 class GetCategoriesUseCase @Inject constructor(
     private val categoryRepository: CategoryRepository
-){
-    suspend operator fun invoke(): Result<List<CategoryModel>> {
-        return runCatching {
-            categoryRepository.getCategories()
-        }
+) {
+    suspend operator fun invoke(): List<BriefMemeModel> {
+        return categoryRepository.getCategories()
     }
 }

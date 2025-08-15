@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +25,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -29,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Display1
@@ -37,6 +43,7 @@ import com.mimu_bird.designsystem.theme.Display3
 import com.mimu_bird.designsystem.theme.PastelGradientPalette
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
+import com.mimu_bird.main.business.MainViewModel
 import com.mimu_bird.main.component.BestMemeView
 import com.mimu_bird.main.component.MemeTimer
 import com.mimu_bird.main.component.ScrollableCardCarousel
@@ -44,12 +51,17 @@ import com.mimu_bird.main.navigation.MainNavigationAction
 import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
 import com.mimu_bird.ui.component.ShareMemItem
+import com.mimu_bird.ui.model.BriefMemeUiModel
 import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
 fun MainScreen(
-    navigator: MainNavigator
+    navigator: MainNavigator,
+    viewModel: MainViewModel = hiltViewModel()
 ) {
+    val categories by viewModel.categories.collectAsState()
+    val topRatedMemes by viewModel.topRatedMemes.collectAsState()
+
     val topCategoryColor = listOf(
         PastelGradientPalette.LIGHT_BLUE,
         PastelGradientPalette.PURPLE,
@@ -75,7 +87,7 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .padding(top = 44.dp)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         item {
             Row(
@@ -123,27 +135,32 @@ fun MainScreen(
                     .padding(top = 18.dp),
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                repeat(4) {
-                    Box(
-                        modifier = Modifier.weight(0.17f)
-                            .clickable { navigator.navigate(MainNavigationAction.NavigateToCategory) }
-                    ) {
+                repeat(4) { index ->
+                    val category = categories.getOrNull(index)
+                    val categoryTitle = category?.name ?: "카테고리 이름"
+                    val categoryId = category?.id ?: 0
+                    Box(modifier = Modifier.weight(0.17f)) {
                         CategoryView(
                             drawableResId = R.drawable.business_products_magic_rabbit,
-                            title = "카테고리 이름",
+                            title = categoryTitle,
                             modifier = Modifier
                                 .fillMaxWidth(1f)
                                 .aspectRatio(1f)
                                 .background(
                                     brush = Brush.linearGradient(
                                         listOf(
-                                            topCategoryColor[it].leftTop,
-                                            topCategoryColor[it].rightBottom
+                                            topCategoryColor[index].leftTop,
+                                            topCategoryColor[index].rightBottom
                                         )
                                     ),
                                     alpha = 1f
                                 )
                                 .padding(15.dp)
+                                .clickable {
+                                    navigator.navigate(
+                                        MainNavigationAction.NavigateToCategory(categoryId)
+                                    )
+                                }
                         )
                     }
                 }
@@ -170,14 +187,14 @@ fun MainScreen(
                     modifier = Modifier.padding(bottom = 36.dp)
                 )
                 BestMemeView(
-                    items = listOf(
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI,
-                        TEST_BRIEF_MEME_UI
-                    )
+                    items = topRatedMemes.mapIndexed { index, meme ->
+                        BriefMemeUiModel(
+                            id = meme.id.toString(),
+                            imageUrl = meme.imageUrl,
+                            title = meme.title,
+                            rank = index + 1
+                        )
+                    }.take(6)
                 )
                 Spacer(Modifier.height(53.dp))
             }

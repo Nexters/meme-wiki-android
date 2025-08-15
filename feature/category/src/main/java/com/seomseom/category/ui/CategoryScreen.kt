@@ -25,8 +25,6 @@ import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.component.MimSearchItem
 import com.mimu_bird.ui.model.CategoryUiModel
 import com.mimu_bird.ui.model.MimUiModel
-import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
-import com.seomseom.category.business.CategoryViewModel
 import com.seomseom.category.component.CategoryTab
 import com.seomseom.category.navigation.CategoryNavigator
 
@@ -34,6 +32,7 @@ import com.seomseom.category.navigation.CategoryNavigator
 @Composable
 private fun CategoryScreenPreview() {
     CategoryScreen(
+        categoryId = 0,
         navigator = object : CategoryNavigator {
             override fun navigate(action: com.seomseom.category.navigation.CategoryNavigationAction) {
                 // Preview에서는 아무것도 하지 않음
@@ -47,6 +46,7 @@ private fun CategoryScreenPreview() {
  */
 @Composable
 fun CategoryScreen(
+    categoryId: Int,
     modifier: Modifier = Modifier,
     viewModel: CategoryViewModel = hiltViewModel(),
     navigator: CategoryNavigator? = null

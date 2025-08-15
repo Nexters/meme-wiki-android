@@ -46,12 +46,15 @@ class CategoryViewModel @Inject constructor(
 
     private fun fetchCategories() {
         viewModelScope.launch {
-            getCategoriesUseCase()
-                .onSuccess {
-                    val categories =  it.map { category -> category.toUiModel() }
-                    _categories.value = categories
-                    _selectedCategoryIndex.value = 0
+            try {
+                val categories = getCategoriesUseCase().map { category ->
+                    category.toUiModel()
                 }
+                _categories.value = categories
+                _selectedCategoryIndex.value = 0
+            } catch (exception: Exception) {
+
+            }
         }
     }
 

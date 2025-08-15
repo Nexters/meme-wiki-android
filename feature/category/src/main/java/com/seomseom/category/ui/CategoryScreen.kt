@@ -25,6 +25,7 @@ import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.component.MimSearchItem
 import com.mimu_bird.ui.model.CategoryUiModel
 import com.mimu_bird.ui.model.MimUiModel
+import com.seomseom.category.business.CategoryViewModel
 import com.seomseom.category.component.CategoryTab
 import com.seomseom.category.navigation.CategoryNavigator
 

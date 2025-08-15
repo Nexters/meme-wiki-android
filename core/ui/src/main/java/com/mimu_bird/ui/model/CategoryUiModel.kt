@@ -1,5 +1,6 @@
 package com.mimu_bird.ui.model
 
+import com.mimu_bird.domain.model.category.BriefMemeModel
 import com.mimu_bird.domain.model.category.CategoryModel
 
 /**
@@ -11,7 +12,7 @@ data class CategoryUiModel(
     val imageUrl: String // 카테고리 이미지
 )
 
-fun CategoryModel.toUiModel(): CategoryUiModel {
+fun BriefMemeModel.toUiModel(): CategoryUiModel {
     return CategoryUiModel(
         id = id,
         name = name,

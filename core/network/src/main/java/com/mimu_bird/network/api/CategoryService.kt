@@ -1,5 +1,6 @@
 package com.mimu_bird.network.api
 
+import com.mimu_bird.network.model.response.category.CategoryNetworkModel
 import com.mimu_bird.network.model.response.common.CommonResponse
 import com.mimu_bird.network.model.response.search.MemeSearchResponse
 import retrofit2.http.GET

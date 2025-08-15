@@ -244,9 +244,12 @@ fun DrawingCanvas(
         
         // 텍스트 모드가 활성화되면 자동으로 첫 번째 UI 생성
         LaunchedEffect(isTextMode) {
-            if (isTextMode && additionalTextInputs == 0) {
-                Log.d("DrawingCanvas", "텍스트 모드 활성화, 첫 번째 UI 자동 생성")
+            if (isTextMode) {
+                Log.d("DrawingCanvas", "텍스트 모드 활성화, UI 생성")
                 additionalTextInputs = 1
+            } else {
+                Log.d("DrawingCanvas", "텍스트 모드 비활성화, UI 숨김")
+                additionalTextInputs = 0
             }
         }
         

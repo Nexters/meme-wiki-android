@@ -9,5 +9,6 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
+    implementation(project(":core:common"))
     implementation(libs.androidx.compose.navigation)
 }

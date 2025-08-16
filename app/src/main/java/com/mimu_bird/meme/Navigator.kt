@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import com.example.mymeme.ui.MyMemeScreen
 import com.meme.search.ui.MemeSearchScreen
 import com.mimu_bird.detail.ui.MemeDetailScreen
@@ -66,7 +68,8 @@ fun MemeWikiNavGraph(
             val memeId = backStackEntry.arguments?.getInt("memeId") ?: 0
             MemeDetailScreen(
                 memeId = memeId,
-                navController = navController
+                navController = navController,
+                navigator = appNavigator
             )
         }
 
@@ -79,11 +82,11 @@ fun MemeWikiNavGraph(
         composable(
             route = Screen.MyMeme.route,
             arguments = listOf(
-                navArgument("imgUrl") { type = NavType.StringType }
+                navArgument("id") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val imgUrl = backStackEntry.arguments?.getString("imgUrl") ?: ""
-            MyMemeScreen(imgUrl = imgUrl)
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            MyMemeScreen(id = id)
         }
     }
 }

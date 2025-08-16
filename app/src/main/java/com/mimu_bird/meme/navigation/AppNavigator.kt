@@ -5,10 +5,14 @@ import com.example.mymeme.ui.navigation.MyMemeNavigationAction
 import com.example.mymeme.ui.navigation.MyMemeNavigator
 import com.meme.search.navigation.SearchNavigationAction
 import com.meme.search.navigation.SearchNavigator
+import com.mimu_bird.detail.MemeDetailNavigationAction
+import com.mimu_bird.detail.MemeDetailNavigator
 import com.mimu_bird.main.navigation.MainNavigationAction
 import com.mimu_bird.main.navigation.MainNavigator
 import com.seomseom.category.navigation.CategoryNavigationAction
 import com.seomseom.category.navigation.CategoryNavigator
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 /**
  * 앱 전체 네비게이션 라우트 정의
@@ -20,13 +24,15 @@ sealed class Screen(val route: String) {
         fun createRoute(categoryId: Int) = "category/$categoryId"
     }
 
-    object MyMeme : Screen("mymeme/{imgUrl}") {
-        fun createRoute(imgUrl: String) = "mymeme/$imgUrl"
+    object MyMeme : Screen("mymeme/{id}") {
+        fun createRoute(id: String) = "mymeme/$id"
     }
-    object Detail: Screen("detail/{memeId}") {
+
+    object Detail : Screen("detail/{memeId}") {
         fun createRoute(memeId: Int) = "detail/$memeId"
     }
-    data object Quiz: Screen("quiz")
+
+    data object Quiz : Screen("quiz")
 }
 
 /**
@@ -35,7 +41,7 @@ sealed class Screen(val route: String) {
  */
 class AppNavigator(
     private val navController: NavHostController
-) : MainNavigator, SearchNavigator, CategoryNavigator, MyMemeNavigator {
+) : MainNavigator, SearchNavigator, CategoryNavigator, MyMemeNavigator, MemeDetailNavigator {
 
     // MainNavigator 구현
     override fun navigate(action: MainNavigationAction) {
@@ -66,6 +72,7 @@ class AppNavigator(
             is SearchNavigationAction.NavigateToDetail -> {
                 navController.navigate(Screen.Detail.createRoute(action.memeId))
             }
+
             SearchNavigationAction.NavigateToMain -> {
                 navController.navigate(Screen.Main.route) {
                     launchSingleTop = true
@@ -80,6 +87,7 @@ class AppNavigator(
             is CategoryNavigationAction.NavigateToDetail -> {
                 navController.navigate(Screen.Detail.createRoute(action.memeId))
             }
+
             CategoryNavigationAction.NavigateSearch -> {
                 navController.navigate(Screen.Search.route)
             }
@@ -93,5 +101,13 @@ class AppNavigator(
 
     // MyMemeNavigator 구현
     override fun navigate(action: MyMemeNavigationAction) {
+    }
+
+    override fun navigate(action: MemeDetailNavigationAction) {
+        when (action) {
+            is MemeDetailNavigationAction.NavigateToMyMeme -> {
+                navController.navigate(Screen.MyMeme.createRoute(action.id))
+            }
+        }
     }
 }

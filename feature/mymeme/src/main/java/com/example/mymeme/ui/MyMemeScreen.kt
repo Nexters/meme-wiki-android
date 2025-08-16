@@ -48,7 +48,7 @@ import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyMemeScreen(
-    imgUrl: String
+    id: String
 ) {
     var drawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
     var textElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
@@ -150,7 +150,7 @@ fun MyMemeScreen(
         ) {
             // 그리기 캔버스
             DrawingCanvas(
-                imageUrl = imgUrl,
+                imageUrl = "", //TODO id로 밈 개별 정보 요청으로 받은 imgUrl
                 drawingPaths = drawingPaths,
                 textElements = textElements,
                 currentTool = currentTool,

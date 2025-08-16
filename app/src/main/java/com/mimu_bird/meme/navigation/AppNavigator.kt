@@ -1,6 +1,8 @@
 package com.mimu_bird.meme.navigation
 
 import androidx.navigation.NavHostController
+import com.example.mymeme.ui.navigation.MyMemeNavigationAction
+import com.example.mymeme.ui.navigation.MyMemeNavigator
 import com.meme.search.navigation.SearchNavigationAction
 import com.meme.search.navigation.SearchNavigator
 import com.mimu_bird.main.navigation.MainNavigationAction
@@ -17,6 +19,10 @@ sealed class Screen(val route: String) {
     object Category : Screen("category/{categoryId}") {
         fun createRoute(categoryId: Int) = "category/$categoryId"
     }
+
+    object MyMeme : Screen("mymeme/{imgUrl}") {
+        fun createRoute(imgUrl: String) = "mymeme/$imgUrl"
+    }
 }
 
 /**
@@ -25,7 +31,7 @@ sealed class Screen(val route: String) {
  */
 class AppNavigator(
     private val navController: NavHostController
-) : MainNavigator, SearchNavigator, CategoryNavigator {
+) : MainNavigator, SearchNavigator, CategoryNavigator, MyMemeNavigator {
 
     // MainNavigator 구현
     override fun navigate(action: MainNavigationAction) {
@@ -63,5 +69,9 @@ class AppNavigator(
     // 공통 네비게이션 (뒤로가기)
     fun navigateBack() {
         navController.popBackStack()
+    }
+
+    // MyMemeNavigator 구현
+    override fun navigate(action: MyMemeNavigationAction) {
     }
 } 

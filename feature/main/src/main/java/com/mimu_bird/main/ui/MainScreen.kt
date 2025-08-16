@@ -1,6 +1,11 @@
 package com.mimu_bird.main.ui
 
-
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +24,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,12 +54,63 @@ import com.mimu_bird.main.business.MainViewModel
 import com.mimu_bird.main.component.BestMemeView
 import com.mimu_bird.main.component.MemeTimer
 import com.mimu_bird.main.component.ScrollableCardCarousel
+import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.main.navigation.MainNavigationAction
 import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
-import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.ui.model.BriefMemeUiModel
-import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
+import com.mimu_bird.common.util.TimeUtil
+
+/**
+ * 자동으로 스크롤되는 LazyRow 컴포넌트
+ */
+@Composable
+private fun AutoScrollingLazyRow(
+    items: List<BriefMemeUiModel>,
+    colors: List<PastelGradientPalette>,
+    modifier: Modifier = Modifier,
+    reverseLayout: Boolean = false
+) {
+    val listState = rememberLazyListState()
+    val infiniteTransition = rememberInfiniteTransition(label = "scroll")
+    
+    // 자동 스크롤 애니메이션
+    val scrollOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = if (reverseLayout) -1000f else 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(15000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "scroll"
+    )
+    
+    LaunchedEffect(scrollOffset) {
+        if (items.isNotEmpty()) {
+            val targetIndex = if (reverseLayout) {
+                (items.size - 1 - (scrollOffset / 200).toInt()).coerceIn(0, items.size - 1)
+            } else {
+                (scrollOffset / 200).toInt() % items.size
+            }
+            listState.animateScrollToItem(targetIndex)
+        }
+    }
+    
+    LazyRow(
+        state = listState,
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        reverseLayout = reverseLayout
+    ) {
+        items(items.size) { index ->
+            ShareMemItem(
+                item = items[index],
+                color = colors.getOrElse(index) { colors.first() }
+            )
+        }
+    }
+}
 
 @Composable
 fun MainScreen(
@@ -61,6 +119,26 @@ fun MainScreen(
 ) {
     val categories by viewModel.categories.collectAsState()
     val topRatedMemes by viewModel.topRatedMemes.collectAsState()
+    val sharedMemes by viewModel.sharedMemes.collectAsState()
+    val nextFetchTime by viewModel.nextFetchTime.collectAsState()
+
+    // 상위 5개와 하위 5개로 분리
+    val top5Memes = sharedMemes.take(5).map { sharedMeme ->
+        BriefMemeUiModel(
+            id = sharedMeme.id.toString(),
+            imageUrl = sharedMeme.imageUrl,
+            title = sharedMeme.title,
+            rank = 0
+        )
+    }
+    val bottom5Memes = sharedMemes.drop(5).map { sharedMeme ->
+        BriefMemeUiModel(
+            id = sharedMeme.id.toString(),
+            imageUrl = sharedMeme.imageUrl,
+            title = sharedMeme.title,
+            rank = 0
+        )
+    }
 
     val topCategoryColor = listOf(
         PastelGradientPalette.LIGHT_BLUE,
@@ -217,40 +295,41 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(bottom = 50.dp, start = 14.dp)
             )
-            MemeTimer(24, 0, 0, modifier = Modifier.padding(start = 14.dp, bottom = 20.dp))
-            LazyRow(
+            // 다음 업데이트 시간까지 남은 시간 계산
+            val (hours, minutes, seconds) = if (nextFetchTime.isNotEmpty()) {
+                TimeUtil.calculateTimeUntilNextUpdate(nextFetchTime)
+            } else {
+                Triple(24, 0, 0)
+            }
+            
+            MemeTimer(
+                initialHours = hours,
+                initialMinutes = minutes,
+                initialSeconds = seconds,
+                modifier = Modifier.padding(start = 14.dp, bottom = 20.dp)
+            )
+            
+            // 상위 5개 밈 - 자동 스크롤
+            AutoScrollingLazyRow(
+                items = top5Memes,
+                colors = topSharedMemeColor1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(172.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-            ) {
-                items(count = 5) { index ->
-                    ShareMemItem(
-                        item = TEST_BRIEF_MEME_UI,
-                        color = topSharedMemeColor1.get(index)
-                    )
-                }
-            }
+                    .height(172.dp)
+            )
+            
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            // 아래쪽 LazyRow - 오른쪽으로 스크롤 (reverseLayout = true)
-            LazyRow(
+            // 하위 5개 밈 - 자동 스크롤 (오른쪽으로)
+            AutoScrollingLazyRow(
+                items = bottom5Memes,
+                colors = topSharedMemeColor2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(172.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                reverseLayout = true, // 오른쪽으로 스크롤
-            ) {
-                items(count = 5) { index ->
-                    ShareMemItem(
-                        item = TEST_BRIEF_MEME_UI,
-                        color = topSharedMemeColor2.get(index)
-                    )
-                }
-            }
+                reverseLayout = true
+            )
             Spacer(Modifier.height(100.dp))
         }
     }

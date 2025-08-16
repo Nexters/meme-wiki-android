@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.mimu_bird.network.api.SearchService
 import com.mimu_bird.network.api.CategoryService
 import com.mimu_bird.network.api.TopRatedMemeService
+import com.mimu_bird.network.api.SharedMemeService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,6 +40,13 @@ object NetworkModule {
     fun provideTopRatedMemeService(
         retrofit: Retrofit
     ): TopRatedMemeService = retrofit.create(TopRatedMemeService::class.java)
+
+    // Shared 밈 서비스
+    @Provides
+    @Singleton
+    fun provideSharedMemeService(
+        retrofit: Retrofit
+    ): SharedMemeService = retrofit.create(SharedMemeService::class.java)
 }
 
 @Module

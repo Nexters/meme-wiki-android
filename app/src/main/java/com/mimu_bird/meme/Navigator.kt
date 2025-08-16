@@ -13,7 +13,7 @@ import com.mimu_bird.detail.ui.MemeDetailScreen
 import com.mimu_bird.main.ui.MainScreen
 import com.mimu_bird.meme.navigation.AppNavigator
 import com.mimu_bird.meme.navigation.Screen
-import com.mimu_bird.ui.screen.WebViewScreen
+import com.mimu_bird.ui.screen.MemeQuizScreen
 import com.seomseom.category.ui.CategoryScreen
 
 /**
@@ -71,16 +71,9 @@ fun MemeWikiNavGraph(
         }
 
         composable(
-            route = Screen.WebView.route,
-            arguments = listOf(
-                navArgument("url") { type = NavType.StringType }
-            )
+            route = Screen.Quiz.route
         ) { backStackEntry ->
-            val url = backStackEntry.arguments?.getString("url") ?: ""
-            WebViewScreen(
-                url = url,
-                navController = navController
-            )
+            MemeQuizScreen(navController = navController)
         }
 
         composable(

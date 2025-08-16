@@ -26,9 +26,7 @@ sealed class Screen(val route: String) {
     object Detail: Screen("detail/{memeId}") {
         fun createRoute(memeId: Int) = "detail/$memeId"
     }
-    data object WebView: Screen("web/{url}") {
-        fun createRoute(url: String) = "wev/$url"
-    }
+    data object Quiz: Screen("quiz")
 }
 
 /**
@@ -57,7 +55,7 @@ class AppNavigator(
             }
 
             is MainNavigationAction.NavigateToWebView -> {
-                navController.navigate(Screen.WebView.createRoute(action.url))
+                navController.navigate(Screen.Quiz.route)
             }
         }
     }

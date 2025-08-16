@@ -27,10 +27,9 @@ import com.mimu_bird.designsystem.theme.Gray1
 import com.mimu_bird.designsystem.theme.Gray10
 
 @Composable
-fun WebViewScreen(
+fun MemeQuizScreen(
     modifier: Modifier = Modifier,
-    url: String,
-    navController: NavController,
+    navController: NavController
 ) {
     Scaffold (
         modifier = modifier
@@ -80,7 +79,7 @@ fun WebViewScreen(
                 }
             },
             update = {
-                it.loadUrl(url)
+                it.loadUrl("https://meme-wiki.net/")
             }
         )
     }

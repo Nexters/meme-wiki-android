@@ -158,18 +158,6 @@ fun MimSearchItem(
                     overflow = TextOverflow.Clip
                 )
             }
-            Text(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .background(
-                        color = gradient.chip,
-                        shape = RoundedCornerShape(100)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 3.dp),
-                text = "${meme.year}",
-                style = Body_Long2_Point.toTextStyle(),
-                color = Gray9
-            )
         }
         if (isKeyword) {
             MimSearchInfo(

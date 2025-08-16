@@ -23,6 +23,10 @@ sealed class Screen(val route: String) {
     object MyMeme : Screen("mymeme/{imgUrl}") {
         fun createRoute(imgUrl: String) = "mymeme/$imgUrl"
     }
+    object Detail: Screen("detail/{memeId}") {
+        fun createRoute(memeId: Int) = "detail/$memeId"
+    }
+    data object Quiz: Screen("quiz")
 }
 
 /**
@@ -45,6 +49,14 @@ class AppNavigator(
                 println("DEBUG: NavigateToCategory called: ${'$'}{action.categoryId}")
                 navController.navigate(Screen.Category.createRoute(action.categoryId))
             }
+
+            is MainNavigationAction.NavigateToDetail -> {
+                navController.navigate(Screen.Detail.createRoute(action.memeId))
+            }
+
+            is MainNavigationAction.NavigateToWebView -> {
+                navController.navigate(Screen.Quiz.route)
+            }
         }
     }
 
@@ -52,7 +64,12 @@ class AppNavigator(
     override fun navigate(action: SearchNavigationAction) {
         when (action) {
             is SearchNavigationAction.NavigateToDetail -> {
-                // TODO: 상세 화면으로 이동
+                navController.navigate(Screen.Detail.createRoute(action.memeId))
+            }
+            SearchNavigationAction.NavigateToMain -> {
+                navController.navigate(Screen.Main.route) {
+                    launchSingleTop = true
+                }
             }
         }
     }
@@ -61,7 +78,10 @@ class AppNavigator(
     override fun navigate(action: CategoryNavigationAction) {
         when (action) {
             is CategoryNavigationAction.NavigateToDetail -> {
-                // TODO: 상세 화면으로 이동
+                navController.navigate(Screen.Detail.createRoute(action.memeId))
+            }
+            CategoryNavigationAction.NavigateSearch -> {
+                navController.navigate(Screen.Search.route)
             }
         }
     }
@@ -74,4 +94,4 @@ class AppNavigator(
     // MyMemeNavigator 구현
     override fun navigate(action: MyMemeNavigationAction) {
     }
-} 
+}

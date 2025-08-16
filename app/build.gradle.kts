@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":feature:category"))
     implementation(project(":feature:main"))
     implementation(project(":feature:mymeme"))
+    implementation(project(":feature:detail"))
     implementation(project(":core:ui"))
     implementation(project(":core:common"))
 

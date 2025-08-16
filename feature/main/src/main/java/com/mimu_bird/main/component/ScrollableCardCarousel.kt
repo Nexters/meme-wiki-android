@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -36,7 +38,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun ScrollableCardCarousel(
-    cards: List<Painter>
+    cards: List<Painter>,
+    onClickPage: (Int) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
 
@@ -100,6 +103,8 @@ fun ScrollableCardCarousel(
         ) {
             itemsIndexed(cards) { index, card ->
                 CarouselCardItem(
+                    modifier = Modifier
+                        .clickable { onClickPage(index) },
                     painter = card
                 )
             }
@@ -128,13 +133,14 @@ fun ScrollableCardCarousel(
 
 @Composable
 fun CarouselCardItem(
+    modifier: Modifier = Modifier,
     painter: Painter,
 ) {
     androidx.compose.foundation.Image(
         painter = painter,
         contentDescription = "main banner",
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(1f)
+        modifier = modifier.fillMaxSize(1f)
     )
 }
 
@@ -151,7 +157,8 @@ fun ScrollableCardCarouselPreview() {
                 painterResource(R.drawable.banner_1),
                 painterResource(R.drawable.banner_2),
                 painterResource(R.drawable.banner_3)
-            )
+            ),
+            onClickPage = {}
         )
     }
 } 

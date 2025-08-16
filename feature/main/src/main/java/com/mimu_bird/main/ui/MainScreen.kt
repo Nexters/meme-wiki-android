@@ -193,7 +193,16 @@ fun MainScreen(
                     painterResource(R.drawable.banner_1),
                     painterResource(R.drawable.banner_2),
                     painterResource(R.drawable.banner_3)
-                )
+                ),
+                onClickPage = {
+                    if (it == 0) {
+                        navigator?.navigate(
+                            MainNavigationAction.NavigateToWebView(
+                                "https://meme-wiki.net/"
+                            )
+                        )
+                    }
+                }
             )
             Spacer(Modifier.height(60.dp))
         }
@@ -271,7 +280,10 @@ fun MainScreen(
                             title = meme.title,
                             rank = index + 1
                         )
-                    }.take(6)
+                    }.take(6),
+                    onClickMeme = {
+                        navigator.navigate(MainNavigationAction.NavigateToDetail(it.toInt()))
+                    }
                 )
                 Spacer(Modifier.height(53.dp))
             }

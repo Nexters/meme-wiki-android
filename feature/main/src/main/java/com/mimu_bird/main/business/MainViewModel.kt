@@ -87,7 +87,7 @@ class MainViewModel @Inject constructor(
                 // API 호출 실패 시 dummy data 사용
                 val dummyData = createDummySharedMemes()
                 _sharedMemes.value = dummyData
-                _nextFetchTime.value = "2025-08-17T04:00:00"
+                _nextFetchTime.value = "2025-08-25T04:00:00"
             }
         }
     }

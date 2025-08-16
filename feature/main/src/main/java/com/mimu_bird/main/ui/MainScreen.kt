@@ -1,13 +1,10 @@
 package com.mimu_bird.main.ui
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +23,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mimu_bird.common.util.TimeUtil
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Display1
@@ -54,15 +50,15 @@ import com.mimu_bird.main.business.MainViewModel
 import com.mimu_bird.main.component.BestMemeView
 import com.mimu_bird.main.component.MemeTimer
 import com.mimu_bird.main.component.ScrollableCardCarousel
-import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.main.navigation.MainNavigationAction
 import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
+import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.ui.model.BriefMemeUiModel
-import com.mimu_bird.common.util.TimeUtil
+import kotlinx.coroutines.delay
 
 /**
- * 자동으로 스크롤되는 LazyRow 컴포넌트
+ * 자동으로 연속 스크롤되는 LazyRow 컴포넌트
  */
 @Composable
 private fun AutoScrollingLazyRow(
@@ -72,30 +68,31 @@ private fun AutoScrollingLazyRow(
     reverseLayout: Boolean = false
 ) {
     val listState = rememberLazyListState()
-    val infiniteTransition = rememberInfiniteTransition(label = "scroll")
-    
-    // 자동 스크롤 애니메이션
-    val scrollOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = if (reverseLayout) -1000f else 1000f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(15000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "scroll"
-    )
-    
-    LaunchedEffect(scrollOffset) {
+    LaunchedEffect(items.size) {
         if (items.isNotEmpty()) {
-            val targetIndex = if (reverseLayout) {
-                (items.size - 1 - (scrollOffset / 200).toInt()).coerceIn(0, items.size - 1)
-            } else {
-                (scrollOffset / 200).toInt() % items.size
+            Log.d(
+                "AutoScrollingLazyRow",
+                "애니메이션 시작: items.size=${items.size}, reverseLayout=$reverseLayout"
+            )
+            repeat(Int.MAX_VALUE) {
+                for (i in 0 until items.size) {
+                    listState.animateScrollBy(
+                        value = 200f,
+                        animationSpec = androidx.compose.animation.core.tween(
+                            durationMillis = 800,
+                            easing = androidx.compose.animation.core.LinearEasing
+                        )
+                    )
+
+                    delay(100)
+                }
+
+                delay(800)
             }
-            listState.animateScrollToItem(targetIndex)
         }
     }
-    
+
+
     LazyRow(
         state = listState,
         modifier = modifier,
@@ -180,7 +177,7 @@ fun MainScreen(
                     tint = Color.White
                 )
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    painterResource(R.drawable.ic_search_20_white),
                     contentDescription = "검색화면 이동",
                     tint = Color.White,
                     modifier = Modifier.clickable {
@@ -295,33 +292,31 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(bottom = 50.dp, start = 14.dp)
             )
-            // 다음 업데이트 시간까지 남은 시간 계산
             val (hours, minutes, seconds) = if (nextFetchTime.isNotEmpty()) {
                 TimeUtil.calculateTimeUntilNextUpdate(nextFetchTime)
             } else {
                 Triple(24, 0, 0)
             }
-            
+
             MemeTimer(
                 initialHours = hours,
                 initialMinutes = minutes,
                 initialSeconds = seconds,
                 modifier = Modifier.padding(start = 14.dp, bottom = 20.dp)
             )
-            
-            // 상위 5개 밈 - 자동 스크롤
+
             AutoScrollingLazyRow(
                 items = top5Memes,
                 colors = topSharedMemeColor1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(172.dp)
+                    .height(172.dp),
+                reverseLayout = false
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            // 하위 5개 밈 - 자동 스크롤 (오른쪽으로)
             AutoScrollingLazyRow(
                 items = bottom5Memes,
                 colors = topSharedMemeColor2,

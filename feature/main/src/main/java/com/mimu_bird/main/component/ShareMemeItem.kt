@@ -34,10 +34,13 @@ import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
 fun ShareMemItem(
+    modifier: Modifier = Modifier,
     color: PastelGradientPalette,
     item: BriefMemeUiModel,
 ) {
-    Column {
+    Column (
+        modifier = modifier
+    ){
         Box(
             modifier = Modifier
                 .border(

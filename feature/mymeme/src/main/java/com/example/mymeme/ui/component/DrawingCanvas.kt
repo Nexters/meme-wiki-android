@@ -278,6 +278,7 @@ fun DrawingCanvas(
             )
 
             DraggableTextInput(
+                isTextMode = isTextMode,
                 currentText = additionalCurrentText,
                 onTextChange = { additionalCurrentText = it },
                 currentTextColor = additionalTextColor,
@@ -313,7 +314,10 @@ fun DrawingCanvas(
                     Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 삭제 요청됨")
                     // 해당 DraggableTextInput과 TextEditDialog 제거
                     additionalTextInputs--
-                    Log.d("DrawingCanvas", "UI[$index] 삭제됨, additionalTextInputs: $additionalTextInputs")
+                    Log.d(
+                        "DrawingCanvas",
+                        "UI[$index] 삭제됨, additionalTextInputs: $additionalTextInputs"
+                    )
                 },
                 onPositionChanged = { position ->
                     currentPosition = position  // 현재 위치 업데이트
@@ -337,7 +341,7 @@ fun DrawingCanvas(
             )
 
             // 각 DraggableTextInput에 매칭되는 TextEditDialog 생성
-            if (isTextEditDialogVisible) {
+            if (isTextEditDialogVisible && isTextMode) {
                 TextEditDialog(
                     currentColor = additionalTextColor,
                     onColorChange = { additionalTextColor = it },
@@ -348,7 +352,10 @@ fun DrawingCanvas(
                         // 해당 DraggableTextInput과 TextEditDialog 제거
                         additionalTextInputs--
                         isTextEditDialogVisible = false
-                        Log.d("DrawingCanvas", "UI[$index] 삭제됨, additionalTextInputs: $additionalTextInputs")
+                        Log.d(
+                            "DrawingCanvas",
+                            "UI[$index] 삭제됨, additionalTextInputs: $additionalTextInputs"
+                        )
                     },
                     onClose = {
                         isTextEditDialogVisible = false

@@ -49,6 +49,7 @@ import com.mimu_bird.designsystem.typography.toTextStyle
 
 @Composable
 fun DraggableTextInput(
+    isTextMode: Boolean,
     currentText: String,
     onTextChange: (String) -> Unit,
     currentTextColor: DrawingColor,
@@ -127,67 +128,69 @@ fun DraggableTextInput(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // 텍스트 추가와 편집하기 버튼을 하나의 Row에 합침
-            Row(
-                modifier = Modifier
-                    .width(215.dp)
-                    .height(50.dp)
-                    .background(
-                        color = White84,
-                        shape = RoundedCornerShape(24.dp)
-                    ),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            if (isTextMode) {
                 Row(
                     modifier = Modifier
-                        .clickable(enabled = isButtonsEnabled) {
-                            // 텍스트가 입력되어 있을 때만 추가
-                            if (currentText.isNotEmpty()) {
-                                onTextAdded(currentText)
-                                isButtonsEnabled = false
-                                // 새로운 텍스트 입력 UI 생성
-                                onAddNewInput()
-                            }
-                        }
-                        .height(30.dp),
-                    horizontalArrangement = Arrangement.Center,  // 중앙 정렬
+                        .width(215.dp)
+                        .height(50.dp)
+                        .background(
+                            color = White84,
+                            shape = RoundedCornerShape(24.dp)
+                        ),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "텍스트 추가",
-                        style = Subhead2.toTextStyle().copy(textAlign = TextAlign.Center),
-                        color = Gray9
+                    Row(
+                        modifier = Modifier
+                            .clickable(enabled = isButtonsEnabled) {
+                                // 텍스트가 입력되어 있을 때만 추가
+                                if (currentText.isNotEmpty()) {
+                                    onTextAdded(currentText)
+                                    isButtonsEnabled = false
+                                    // 새로운 텍스트 입력 UI 생성
+                                    onAddNewInput()
+                                }
+                            }
+                            .height(30.dp),
+                        horizontalArrangement = Arrangement.Center,  // 중앙 정렬
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "텍스트 추가",
+                            style = Subhead2.toTextStyle().copy(textAlign = TextAlign.Center),
+                            color = Gray9
+                        )
+                    }
+                    Spacer(Modifier.width(20.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(18.dp)
+                            .background(color = Gray7)
+                    )
+                    Spacer(Modifier.width(20.dp))
+                    Icon(
+                        painter = painterResource(R.drawable.ic_trashcan),
+                        contentDescription = "삭제 아이콘",
+                        modifier = Modifier
+                            .clickable(enabled = isButtonsEnabled) {
+                                onDelete()
+                            }
+                            .size(30.dp),
+                        tint = Red40
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Icon(
+                        painter = painterResource(R.drawable.ic_kebap),
+                        contentDescription = "편집 도구 아이콘",
+                        modifier = Modifier
+                            .clickable(enabled = isButtonsEnabled) {
+                                onEditClick(textInputPosition)
+                            }
+                            .size(30.dp),
+                        tint = Gray9
                     )
                 }
-                Spacer(Modifier.width(20.dp))
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(18.dp)
-                        .background(color = Gray7)
-                )
-                Spacer(Modifier.width(20.dp))
-                Icon(
-                    painter = painterResource(R.drawable.ic_trashcan),
-                    contentDescription = "삭제 아이콘",
-                    modifier = Modifier
-                        .clickable(enabled = isButtonsEnabled) {
-                            onDelete()
-                        }
-                        .size(30.dp),
-                    tint = Red40
-                )
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    painter = painterResource(R.drawable.ic_kebap),
-                    contentDescription = "편집 도구 아이콘",
-                    modifier = Modifier
-                        .clickable(enabled = isButtonsEnabled) {
-                            onEditClick(textInputPosition)
-                        }
-                        .size(30.dp),
-                    tint = Gray9
-                )
             }
 
             // 텍스트 입력 필드
@@ -208,7 +211,7 @@ fun DraggableTextInput(
                     )
                     .border(
                         width = 1.dp,
-                        color = Blue60
+                        color = if (isTextMode) Blue60 else Color.Transparent
                     )
                     .clickable {
                         // BasicTextField 클릭 시 버튼들 다시 활성화

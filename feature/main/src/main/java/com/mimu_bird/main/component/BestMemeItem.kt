@@ -1,6 +1,7 @@
 package com.mimu_bird.main.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,10 @@ import com.mimu_bird.ui.model.BriefMemeUiModel
 import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
-fun BestMemeView(items: List<BriefMemeUiModel>) {
+fun BestMemeView(
+    items: List<BriefMemeUiModel>,
+    onClickMeme: (String) -> Unit
+) {
     val colors = listOf(
         PastelGradientPalette.PINK,
         PastelGradientPalette.MAGENTA,
@@ -57,14 +61,16 @@ fun BestMemeView(items: List<BriefMemeUiModel>) {
                     Box(Modifier.weight(0.5f)) {
                         BestMemeItem(
                             color = colors[rowIndex * 2].rightBottom,
-                            item = items[rowIndex * 2]
+                            item = items[rowIndex * 2],
+                            onClickMeme = onClickMeme
                         )
                     }
                     Spacer(Modifier.width(11.dp))
                     Box(Modifier.weight(0.5f)) {
                         BestMemeItem(
                             color = colors[rowIndex * 2 + 1].rightBottom,
-                            item = items[rowIndex * 2 + 1]
+                            item = items[rowIndex * 2 + 1],
+                            onClickMeme = onClickMeme
                         )
                     }
                 }
@@ -74,11 +80,18 @@ fun BestMemeView(items: List<BriefMemeUiModel>) {
 }
 
 @Composable
-private fun BestMemeItem(color: Color, item: BriefMemeUiModel) {
+private fun BestMemeItem(
+    color: Color,
+    item: BriefMemeUiModel,
+    onClickMeme: (String) -> Unit
+) {
     Column(
         modifier = Modifier
             .aspectRatio(0.82f)
             .clip(RoundedCornerShape(12.dp))
+            .clickable {
+                item.id.let(onClickMeme)
+            }
     ) {
         Box(modifier = Modifier.weight(1f)) {
             AsyncImage(
@@ -157,14 +170,16 @@ fun BestMemeItemPreview() {
             Box(Modifier.weight(0.5f)) {
                 BestMemeItem(
                     color = PastelGradientPalette.PINK.rightBottom,
-                    item = TEST_BRIEF_MEME_UI
+                    item = TEST_BRIEF_MEME_UI,
+                    onClickMeme = {}
                 )
             }
             Spacer(Modifier.width(11.dp))
             Box(Modifier.weight(0.5f)) {
                 BestMemeItem(
                     color = PastelGradientPalette.MAGENTA.rightBottom,
-                    item = TEST_BRIEF_MEME_UI
+                    item = TEST_BRIEF_MEME_UI,
+                    onClickMeme = {}
                 )
             }
         }
@@ -176,14 +191,16 @@ fun BestMemeItemPreview() {
             Box(Modifier.weight(0.5f)) {
                 BestMemeItem(
                     color = PastelGradientPalette.YELLOW.rightBottom,
-                    item = TEST_BRIEF_MEME_UI
+                    item = TEST_BRIEF_MEME_UI,
+                    onClickMeme = {}
                 )
             }
             Spacer(Modifier.width(11.dp))
             Box(Modifier.weight(0.5f)) {
                 BestMemeItem(
                     color = PastelGradientPalette.LIGHT_BLUE.rightBottom,
-                    item = TEST_BRIEF_MEME_UI
+                    item = TEST_BRIEF_MEME_UI,
+                    onClickMeme = {}
                 )
             }
         }
@@ -195,14 +212,16 @@ fun BestMemeItemPreview() {
             Box(Modifier.weight(0.5f)) {
                 BestMemeItem(
                     color = PastelGradientPalette.PURPLE.rightBottom,
-                    item = TEST_BRIEF_MEME_UI
+                    item = TEST_BRIEF_MEME_UI,
+                    onClickMeme = {}
                 )
             }
             Spacer(Modifier.width(11.dp))
             Box(Modifier.weight(0.5f)) {
                 BestMemeItem(
                     color = PastelGradientPalette.GREEN.rightBottom,
-                    item = TEST_BRIEF_MEME_UI
+                    item = TEST_BRIEF_MEME_UI,
+                    onClickMeme = {}
                 )
             }
         }

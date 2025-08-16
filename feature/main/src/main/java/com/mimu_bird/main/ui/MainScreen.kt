@@ -87,6 +87,8 @@ private fun AutoScrollingLazyRow(
                     delay(100)
                 }
 
+                // 스크롤이 끝에 도달하면 처음 위치로 돌아가기
+                listState.animateScrollToItem(0)
                 delay(800)
             }
         }

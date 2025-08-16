@@ -48,13 +48,13 @@ fun ScrollableCardCarousel(
             repeat(Int.MAX_VALUE) {
                 // 각 카드를 순차적으로 스크롤
                 for (i in 0 until cards.size) {
-                    val scrollAmount = 300f
+                    val scrollAmount = 400f
 
                     Log.d("ScrollableCardCarousel", "스크롤: ${i}번째 카드, scrollAmount=$scrollAmount")
                     lazyListState.animateScrollBy(
                         value = scrollAmount,
                         animationSpec = tween(
-                            durationMillis = 1500,
+                            durationMillis = 1000,
                             easing = LinearEasing
                         )
                     )
@@ -62,6 +62,8 @@ fun ScrollableCardCarousel(
                     delay(400)
                 }
 
+                // 스크롤이 끝에 도달하면 처음 위치로 돌아가기
+                lazyListState.animateScrollToItem(0)
                 delay(1000)
             }
         }

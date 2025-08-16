@@ -99,7 +99,8 @@ fun ScrollableCardCarousel(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(218.dp)
+                .height(218.dp),
+            userScrollEnabled = false
         ) {
             itemsIndexed(cards) { index, card ->
                 CarouselCardItem(

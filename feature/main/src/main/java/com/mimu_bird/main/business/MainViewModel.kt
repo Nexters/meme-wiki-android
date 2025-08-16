@@ -3,6 +3,7 @@ package com.mimu_bird.main.business
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mimu_bird.common.util.TimeUtil
 import com.mimu_bird.domain.model.category.BriefMemeModel
 import com.mimu_bird.domain.model.meme.TopRatedMemeModel
 import com.mimu_bird.domain.usercase.category.GetCategoriesUseCase
@@ -33,6 +34,10 @@ class MainViewModel @Inject constructor(
 
     private val _nextFetchTime = MutableStateFlow<String>("")
     val nextFetchTime: StateFlow<String> = _nextFetchTime.asStateFlow()
+
+    // 시간 계산 결과를 캐시하여 불필요한 재계산 방지
+    private val _timeUntilNextUpdate = MutableStateFlow(Triple(24, 0, 0))
+    val timeUntilNextUpdate: StateFlow<Triple<Int, Int, Int>> = _timeUntilNextUpdate.asStateFlow()
 
     init {
         fetchCategories()
@@ -76,13 +81,29 @@ class MainViewModel @Inject constructor(
                 )
                 _nextFetchTime.value = sharedMemeModel.nextFetchTime
                 _sharedMemes.value = sharedMemeModel.memes
+                
+                // nextFetchTime이 변경될 때만 시간 계산
+                updateTimeUntilNextUpdate(sharedMemeModel.nextFetchTime)
             }.onFailure { exception ->
                 Log.e("MainViewModel", "fetchSharedMemes: API 호출 실패, dummy data 사용", exception)
                 // API 호출 실패 시 dummy data 사용
                 _sharedMemes.value = emptyList()
                 _nextFetchTime.value = "2025-08-25T04:00:00"
+                updateTimeUntilNextUpdate("2025-08-25T04:00:00")
             }
         }
+    }
+
+    /**
+     * 다음 업데이트까지 남은 시간을 계산하고 캐시에 저장
+     */
+    private fun updateTimeUntilNextUpdate(nextFetchTime: String) {
+        val timeTriple = if (nextFetchTime.isNotEmpty()) {
+            TimeUtil.calculateTimeUntilNextUpdate(nextFetchTime)
+        } else {
+            Triple(24, 0, 0)
+        }
+        _timeUntilNextUpdate.value = timeTriple
     }
 
 }

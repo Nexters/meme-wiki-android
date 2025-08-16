@@ -37,7 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mimu_bird.common.util.TimeUtil
+
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Display1
@@ -100,7 +100,8 @@ private fun AutoScrollingLazyRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
-        reverseLayout = reverseLayout
+        reverseLayout = reverseLayout,
+        userScrollEnabled = false
     ) {
         items(items.size) { index ->
             ShareMemItem(
@@ -119,7 +120,7 @@ fun MainScreen(
     val categories by viewModel.categories.collectAsState()
     val topRatedMemes by viewModel.topRatedMemes.collectAsState()
     val sharedMemes by viewModel.sharedMemes.collectAsState()
-    val nextFetchTime by viewModel.nextFetchTime.collectAsState()
+    val timeUntilNextUpdate by viewModel.timeUntilNextUpdate.collectAsState()
 
     // 상위 5개와 하위 5개로 분리
     val top5Memes = sharedMemes.take(5).map { sharedMeme ->
@@ -307,11 +308,9 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(bottom = 50.dp, start = 14.dp)
             )
-            val (hours, minutes, seconds) = if (nextFetchTime.isNotEmpty()) {
-                TimeUtil.calculateTimeUntilNextUpdate(nextFetchTime)
-            } else {
-                Triple(24, 0, 0)
-            }
+            
+            // ViewModel에서 계산된 시간 사용
+            val (hours, minutes, seconds) = timeUntilNextUpdate
 
             MemeTimer(
                 initialHours = hours,

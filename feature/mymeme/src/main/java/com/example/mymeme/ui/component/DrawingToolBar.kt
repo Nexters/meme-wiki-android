@@ -86,8 +86,7 @@ fun DrawingToolBar(
                         .padding(top = 14.dp, bottom = 30.dp),
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    Column{
-// 헤더
+                    Column {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End,

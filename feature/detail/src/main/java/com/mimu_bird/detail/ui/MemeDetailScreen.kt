@@ -1,6 +1,8 @@
 package com.mimu_bird.detail.ui
 
+import android.content.Intent
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.background
@@ -83,6 +85,21 @@ fun MemeDetailScreen(
                         it.useWideViewPort = true
                         it.loadWithOverviewMode = true
                     }
+                    addJavascriptInterface(
+                        WebJavaScriptBridge{
+                            runCatching {
+                                val sendIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, url)
+                                    type = "text/plain"
+                                }
+
+                                val shareIntent = Intent.createChooser(sendIntent, null)
+                                context.startActivity(shareIntent)
+                            }
+                        },
+                        "wiki"
+                    )
                 }
             },
             update = {
@@ -96,5 +113,15 @@ fun MemeDetailScreen(
 class CustomWebViewClient: WebViewClient(){
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
         return true
+    }
+}
+
+class WebJavaScriptBridge(
+    private val onHandleScriptCode: () -> Unit
+) {
+    @JavascriptInterface
+    fun postMessage(code: String) {
+        println("yeoonju : $code")
+//        onHandleScriptCode()
     }
 }

@@ -194,7 +194,10 @@ fun MainScreen(
                             title = meme.title,
                             rank = index + 1
                         )
-                    }.take(6)
+                    }.take(6),
+                    onClickMeme = {
+                        navigator.navigate(MainNavigationAction.NavigateToDetail(it.toInt()))
+                    }
                 )
                 Spacer(Modifier.height(53.dp))
             }
@@ -246,6 +249,7 @@ fun MainScreen(
             ) {
                 items(count = 5) { index ->
                     ShareMemItem(
+                        modifier = Modifier,
                         item = TEST_BRIEF_MEME_UI,
                         color = topSharedMemeColor2.get(index)
                     )

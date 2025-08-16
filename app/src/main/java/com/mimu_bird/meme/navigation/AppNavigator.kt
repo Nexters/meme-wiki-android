@@ -42,6 +42,10 @@ class AppNavigator(
                 println("DEBUG: NavigateToCategory called: ${'$'}{action.categoryId}")
                 navController.navigate(Screen.Category.createRoute(action.categoryId))
             }
+
+            is MainNavigationAction.NavigateToDetail -> {
+                navController.navigate(Screen.Detail.createRound(action.memeId))
+            }
         }
     }
 

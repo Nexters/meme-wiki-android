@@ -8,6 +8,9 @@ import com.mimu_bird.common.navigation.NavigationAction
 sealed class MainNavigationAction : NavigationAction() {
     object NavigateToSearch : MainNavigationAction()
     data class NavigateToCategory(val categoryId: Int) : MainNavigationAction()
+    data class NavigateToDetail(
+        val memeId: Int
+    ): MainNavigationAction()
 }
 
 /**

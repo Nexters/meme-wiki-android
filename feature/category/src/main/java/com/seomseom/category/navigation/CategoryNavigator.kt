@@ -9,6 +9,7 @@ sealed class CategoryNavigationAction : NavigationAction() {
     data class NavigateToDetail(
         val memeId: Int
     ) : CategoryNavigationAction()
+    data object NavigateSearch: CategoryNavigationAction()
 }
 
 /**

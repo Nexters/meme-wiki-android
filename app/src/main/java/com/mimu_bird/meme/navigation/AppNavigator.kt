@@ -55,6 +55,11 @@ class AppNavigator(
             is SearchNavigationAction.NavigateToDetail -> {
                 navController.navigate(Screen.Detail.createRound(action.memeId))
             }
+            SearchNavigationAction.NavigateToMain -> {
+                navController.navigate(Screen.Main.route) {
+                    launchSingleTop = true
+                }
+            }
         }
     }
 
@@ -63,6 +68,9 @@ class AppNavigator(
         when (action) {
             is CategoryNavigationAction.NavigateToDetail -> {
                 navController.navigate(Screen.Detail.createRound(action.memeId))
+            }
+            CategoryNavigationAction.NavigateSearch -> {
+                navController.navigate(Screen.Search.route)
             }
         }
     }

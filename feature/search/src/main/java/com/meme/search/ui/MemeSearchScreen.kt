@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.meme.search.R
+import com.mimu_bird.designsystem.R as DR
 import com.meme.search.business.MemeSearchViewModel
 import com.meme.search.navigation.SearchNavigationAction
 import com.meme.search.navigation.SearchNavigator
@@ -67,24 +68,37 @@ fun MemeSearchScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
             .background(color = Gray10)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ) {
         // 뒤로가기 버튼
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                painter = painterResource(DR.drawable.ic_arrow_left_24),
                 contentDescription = "뒤로가기",
                 tint = Gray1,
                 modifier = Modifier
                     .size(24.dp)
                     .clickable {
                         navController.popBackStack()
+                    }
+            )
+            Icon(
+                painter = painterResource(DR.drawable.ic_home_24),
+                contentDescription = "홈으로 가기",
+                tint = Gray1,
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        navigator?.navigate(
+                            SearchNavigationAction.NavigateToMain
+                        )
                     }
             )
         }

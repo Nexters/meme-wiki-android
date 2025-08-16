@@ -25,11 +25,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Gray1
 import com.mimu_bird.designsystem.theme.Gray10
 import com.mimu_bird.designsystem.theme.Headline1
@@ -65,25 +67,38 @@ fun CategoryScreen(
     Column (
         modifier = modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
             .background(Gray10)
+            .windowInsetsPadding(WindowInsets.systemBars)
     ){
         // 뒤로가기 버튼
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                painter = painterResource(R.drawable.ic_arrow_left_24),
                 contentDescription = "뒤로가기",
                 tint = Gray1,
                 modifier = Modifier
+                    .size(24.dp)
                     .clickable {
                         navController.popBackStack()
                     }
+            )
+            Icon(
+                painter = painterResource(R.drawable.ic_search_20_white),
+                contentDescription = "검색 화면으로 가기",
+                tint = Gray1,
+                modifier = Modifier
                     .size(24.dp)
+                    .clickable {
+                        navigator?.navigate(
+                            CategoryNavigationAction.NavigateSearch
+                        )
+                    }
             )
         }
         if (categories.value.isNotEmpty()) {

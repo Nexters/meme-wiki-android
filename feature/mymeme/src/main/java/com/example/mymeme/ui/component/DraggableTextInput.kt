@@ -1,6 +1,5 @@
 package com.example.mymeme.ui.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,13 +8,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,7 +38,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymeme.ui.model.DrawingColor
+import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Blue60
+import com.mimu_bird.designsystem.theme.Gray7
+import com.mimu_bird.designsystem.theme.Gray9
+import com.mimu_bird.designsystem.theme.Red40
+import com.mimu_bird.designsystem.theme.Subhead2
+import com.mimu_bird.designsystem.theme.White84
+import com.mimu_bird.designsystem.typography.toTextStyle
 
 @Composable
 fun DraggableTextInput(
@@ -44,8 +54,10 @@ fun DraggableTextInput(
     currentTextColor: DrawingColor,
     currentTextOpacity: Float,
     onTextAdded: (String) -> Unit,
-    onEditClick: () -> Unit,
+    onEditClick: (Offset) -> Unit,  // Offset 파라미터 추가
+    onDelete: () -> Unit = {},  // 삭제 콜백 추가
     onAddNewInput: () -> Unit = {},
+    onPositionChanged: (Offset) -> Unit = {},  // 위치 변화 콜백 추가
     parentWidth: Dp,  // 부모 컴포넌트의 너비 (dp)
     parentHeight: Dp, // 부모 컴포넌트의 높이 (dp)
     initialOffset: Offset = Offset(0f, 0f), // 초기 위치 오프셋
@@ -104,28 +116,30 @@ fun DraggableTextInput(
                         )
 
                         textInputPosition = Offset(limitedX, limitedY)
+
+                        // 위치 변화를 부모 컴포넌트에 전달
+                        onPositionChanged(textInputPosition)
                     }
                 )
             }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // 텍스트 추가와 편집하기 버튼을 하나의 Row에 합침
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .width(215.dp)
+                    .height(50.dp)
+                    .background(
+                        color = White84,
+                        shape = RoundedCornerShape(24.dp)
+                    ),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // 텍스트 추가 버튼
                 Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .background(
-                            color = if (isButtonsEnabled) Color.White else Color.Red,
-                            shape = RoundedCornerShape(16.dp)
-                        )
                         .clickable(enabled = isButtonsEnabled) {
                             // 텍스트가 입력되어 있을 때만 추가
                             if (currentText.isNotEmpty()) {
@@ -134,44 +148,46 @@ fun DraggableTextInput(
                                 // 새로운 텍스트 입력 UI 생성
                                 onAddNewInput()
                             }
-                        },
-                    horizontalArrangement = Arrangement.Center,
+                        }
+                        .height(30.dp),
+                    horizontalArrangement = Arrangement.Center,  // 중앙 정렬
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = "텍스트 추가",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = if (isButtonsEnabled) Color.Black else Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
+                        style = Subhead2.toTextStyle().copy(textAlign = TextAlign.Center),
+                        color = Gray9
                     )
                 }
-
-                // 편집하기 버튼
-                Row(
+                Spacer(Modifier.width(20.dp))
+                Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .background(
-                            color = if (isButtonsEnabled) Color.White else Color.Red,
-                            shape = RoundedCornerShape(16.dp)
-                        )
+                        .width(1.dp)
+                        .height(18.dp)
+                        .background(color = Gray7)
+                )
+                Spacer(Modifier.width(20.dp))
+                Icon(
+                    painter = painterResource(R.drawable.ic_trashcan),
+                    contentDescription = "삭제 아이콘",
+                    modifier = Modifier
                         .clickable(enabled = isButtonsEnabled) {
-                            onEditClick()
-                        },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "편집하기",
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            color = if (isButtonsEnabled) Color.Black else Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
-                    )
-                }
+                            onDelete()
+                        }
+                        .size(30.dp),
+                    tint = Red40
+                )
+                Spacer(Modifier.width(6.dp))
+                Icon(
+                    painter = painterResource(R.drawable.ic_kebap),
+                    contentDescription = "편집 도구 아이콘",
+                    modifier = Modifier
+                        .clickable(enabled = isButtonsEnabled) {
+                            onEditClick(textInputPosition)
+                        }
+                        .size(30.dp),
+                    tint = Gray9
+                )
             }
 
             // 텍스트 입력 필드
@@ -185,7 +201,7 @@ fun DraggableTextInput(
                     textAlign = TextAlign.Center
                 ),
                 modifier = Modifier
-                    .size(200.dp, 50.dp)
+                    .wrapContentSize()
                     .padding(horizontal = 12.dp, vertical = 8.dp)
                     .background(
                         color = Color.Transparent,

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mymeme.ui.MyMemeScreen
 import com.meme.search.ui.MemeSearchScreen
 import com.mimu_bird.detail.ui.MemeDetailScreen
 import com.mimu_bird.main.ui.MainScreen
@@ -24,7 +25,7 @@ fun MemeWikiNavGraph(
     startDestination: String = Screen.Main.route
 ) {
     val appNavigator = AppNavigator(navController)
-    
+
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -80,6 +81,16 @@ fun MemeWikiNavGraph(
                 url = url,
                 navController = navController
             )
+        }
+
+        composable(
+            route = Screen.MyMeme.route,
+            arguments = listOf(
+                navArgument("imgUrl") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val imgUrl = backStackEntry.arguments?.getString("imgUrl") ?: ""
+            MyMemeScreen(imgUrl = imgUrl)
         }
     }
 }

@@ -32,10 +32,9 @@ coil = "2.1.0"
 # Hilt
 hilt = "2.51"
 hilt-navigation-compose = "1.2.0"
-# Room
-room = "2.6.1"
 # Etc
 desugar = "1.1.5"
+foundation = "1.8.3"
 
 [libraries]
 # use in build-logic
@@ -84,10 +83,7 @@ retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "re
 # image
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-# Room
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -114,8 +110,4 @@ retrofit = [
     "retrofitGsonConverter", "okHttp",
     "okHttpLoggingInterceptor",
     "retrofit-kotlin-serialization"
-]
-room = [
-    "room-runtime",
-    "room-ktx"
 ]

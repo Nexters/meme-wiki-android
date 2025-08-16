@@ -31,6 +31,13 @@ import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.CategoryUiModel
 
+private val categoriesBackground = listOf(
+    PastelGradientPalette.LIGHT_BLUE,
+    PastelGradientPalette.PURPLE,
+    PastelGradientPalette.MAGENTA,
+    PastelGradientPalette.YELLOW
+)
+
 @Preview
 @Composable
 private fun CategoryTabPreview() {
@@ -87,7 +94,7 @@ internal fun CategoryTab(
         ) {
             tabs.forEachIndexed { index, category ->
                 val backgroundColor = rememberSaveable(index) {
-                    PastelGradientPalette.entries[index % tabs.size]
+                    categoriesBackground[index % tabs.size]
                 }
                 Tab(
                     modifier = Modifier

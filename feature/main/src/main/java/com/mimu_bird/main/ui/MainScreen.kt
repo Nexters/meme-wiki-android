@@ -190,6 +190,7 @@ fun MainScreen(
             Spacer(Modifier.height(30.dp))
             ScrollableCardCarousel(
                 cards = listOf(
+                    painterResource(R.drawable.banner_0),
                     painterResource(R.drawable.banner_1),
                     painterResource(R.drawable.banner_2),
                     painterResource(R.drawable.banner_3)

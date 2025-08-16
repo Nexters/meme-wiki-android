@@ -38,6 +38,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.meme.search.R
 import com.meme.search.business.MemeSearchViewModel
+import com.meme.search.navigation.SearchNavigationAction
 import com.meme.search.navigation.SearchNavigator
 import com.mimu_bird.designsystem.theme.Body1
 import com.mimu_bird.designsystem.theme.Gray1
@@ -117,6 +118,11 @@ fun MemeSearchScreen(
                     memes.get(it)?.let { meme ->
                         MimSearchItem(
                             modifier = Modifier
+                                .clickable {
+                                    navigator?.navigate(
+                                        SearchNavigationAction.NavigateToDetail(meme.id)
+                                    )
+                                }
                                 .then(
                                     if (keyword.isEmpty()) Modifier
                                     else Modifier.padding(bottom = 24.dp)

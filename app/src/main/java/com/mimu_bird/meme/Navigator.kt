@@ -36,7 +36,8 @@ fun MemeWikiNavGraph(
 
         composable(Screen.Search.route) { backStackEntry ->
             MemeSearchScreen(
-                navController = navController
+                navController = navController,
+                navigator = appNavigator
             )
         }
 
@@ -49,6 +50,7 @@ fun MemeWikiNavGraph(
             val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
             CategoryScreen(
                 categoryId = categoryId,
+                navController = navController,
                 navigator = appNavigator
             )
         }

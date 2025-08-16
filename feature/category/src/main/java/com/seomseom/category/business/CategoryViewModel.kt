@@ -46,6 +46,7 @@ class CategoryViewModel @Inject constructor(
     fun fetchCategories(
         initSelectedCategoryId: Int
     ) {
+        if (categories.value.isNotEmpty()) return
         viewModelScope.launch {
             try {
                 val categories = getCategoriesUseCase().map { category ->

@@ -34,6 +34,8 @@ fun BottomToolBar(
     onTextModeChanged: (Boolean) -> Unit,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
+    canUndo: Boolean = false,
+    canRedo: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -118,16 +120,19 @@ fun BottomToolBar(
                     .size(30.dp)
                     .clickable(
                         interactionSource = interactionSource,
-                        indication = null
+                        indication = null,
+                        enabled = canUndo
                     ) {
-                        onUndo()
+                        if (canUndo) {
+                            onUndo()
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_previous),
                     contentDescription = "실행 취소",
-                    tint = Color.White
+                    tint = if (canUndo) Color.White else Color.Gray
                 )
             }
             Spacer(Modifier.width(12.dp))
@@ -136,16 +141,19 @@ fun BottomToolBar(
                     .size(30.dp)
                     .clickable(
                         interactionSource = interactionSource,
-                        indication = null
+                        indication = null,
+                        enabled = canRedo
                     ) {
-                        onRedo()
+                        if (canRedo) {
+                            onRedo()
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_next),
                     contentDescription = "다시 실행",
-                    tint = Color.White
+                    tint = if (canRedo) Color.White else Color.Gray
                 )
             }
         }

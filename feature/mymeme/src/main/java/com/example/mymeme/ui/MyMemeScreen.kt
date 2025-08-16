@@ -54,6 +54,11 @@ fun MyMemeScreen(
 ) {
     var drawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
     var textElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
+    
+    // Undo/Redo 히스토리 스택 추가
+    var deletedDrawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
+    var deletedTextElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
+    
     var currentTool by remember {
         mutableStateOf(
             DrawingTool(
@@ -81,6 +86,42 @@ fun MyMemeScreen(
     LaunchedEffect(currentTool) {
         Log.d("MyMemeScreen", "currentTool:${currentTool}")
     }
+
+    // Undo 함수: 마지막에 추가된 요소를 삭제하고 히스토리에 저장
+    val onUndo = {
+        if (drawingPaths.isNotEmpty()) {
+            val lastPath = drawingPaths.last()
+            deletedDrawingPaths = deletedDrawingPaths + lastPath
+            drawingPaths = drawingPaths.dropLast(1)
+        } else if (textElements.isNotEmpty()) {
+            val lastText = textElements.last()
+            deletedTextElements = deletedTextElements + lastText
+            textElements = textElements.dropLast(1)
+        }
+    }
+
+    // Redo 함수: 삭제된 요소를 복원
+    val onRedo = {
+        if (deletedTextElements.isNotEmpty()) {
+            val lastDeletedText = deletedTextElements.last()
+            textElements = textElements + lastDeletedText
+            deletedTextElements = deletedTextElements.dropLast(1)
+        } else if (deletedDrawingPaths.isNotEmpty()) {
+            val lastDeletedPath = deletedDrawingPaths.last()
+            drawingPaths = drawingPaths + lastDeletedPath
+            deletedDrawingPaths = deletedDrawingPaths.dropLast(1)
+        }
+    }
+
+    // 새로운 요소가 추가될 때 히스토리 초기화 (새로운 작업이 시작되면 이전 히스토리는 무효화)
+    val clearHistory = {
+        deletedDrawingPaths = emptyList()
+        deletedTextElements = emptyList()
+    }
+
+    // Undo/Redo 가능 여부 확인
+    val canUndo = drawingPaths.isNotEmpty() || textElements.isNotEmpty()
+    val canRedo = deletedDrawingPaths.isNotEmpty() || deletedTextElements.isNotEmpty()
 
     Scaffold(
         topBar = {
@@ -170,9 +211,11 @@ fun MyMemeScreen(
                 currentTool = currentTool,
                 isTextMode = isTextMode,
                 onPathAdded = { path ->
+                    clearHistory() // 새로운 경로가 추가되면 히스토리 초기화
                     drawingPaths = drawingPaths + path
                 },
                 onTextAdded = { textElement ->
+                    clearHistory() // 새로운 텍스트가 추가되면 히스토리 초기화
                     textElements = textElements + textElement
                     // 텍스트 모드는 사용자가 직접 변경해야 함
                 },
@@ -182,7 +225,11 @@ fun MyMemeScreen(
                     }
                 },
                 onTextDeleted = { textId ->
-                    textElements = textElements.filter { it.id != textId }
+                    val deletedText = textElements.find { it.id == textId }
+                    if (deletedText != null) {
+                        deletedTextElements = deletedTextElements + deletedText
+                        textElements = textElements.filter { it.id != textId }
+                    }
                 },
                 modifier = Modifier.fillMaxSize()
             )
@@ -224,14 +271,10 @@ fun MyMemeScreen(
                                 isDrawingToolBarVisible = false
                             }
                         },
-                        onUndo = {
-                            if (drawingPaths.isNotEmpty()) {
-                                drawingPaths = drawingPaths.dropLast(1)
-                            }
-                        },
-                        onRedo = {
-                            // TODO: 다시 실행 로직 구현
-                        }
+                        onUndo = onUndo,
+                        onRedo = onRedo,
+                        canUndo = canUndo,
+                        canRedo = canRedo
                     )
                 }
             }

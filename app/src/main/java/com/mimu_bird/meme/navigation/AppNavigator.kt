@@ -101,6 +101,11 @@ class AppNavigator(
 
     // MyMemeNavigator 구현
     override fun navigate(action: MyMemeNavigationAction) {
+        when (action) {
+            is MyMemeNavigationAction.NavigateBack -> {
+                navController.popBackStack()
+            }
+        }
     }
 
     override fun navigate(action: MemeDetailNavigationAction) {

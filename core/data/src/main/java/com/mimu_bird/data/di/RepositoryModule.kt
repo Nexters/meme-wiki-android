@@ -4,10 +4,12 @@ import com.mimu_bird.data.repository.search.DefaultSearchRepository
 import com.mimu_bird.data.repository.category.DefaultCategoryRepository
 import com.mimu_bird.data.repository.meme.TopRatedMemeRepositoryImpl
 import com.mimu_bird.data.repository.meme.SharedMemeRepositoryImpl
+import com.mimu_bird.data.repository.meme.MemeDetailRepositoryImpl
 import com.mimu_bird.domain.repository.search.SearchRepository
 import com.mimu_bird.domain.repository.category.CategoryRepository
 import com.mimu_bird.domain.repository.meme.TopRatedMemeRepository
 import com.mimu_bird.domain.repository.meme.SharedMemeRepository
+import com.mimu_bird.domain.repository.meme.MemeDetailRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -40,4 +42,10 @@ interface RepositoryModule {
     fun bindSharedMemeRepository(
         sharedMemeRepository: SharedMemeRepositoryImpl
     ): SharedMemeRepository
+
+    @Binds
+    @Singleton
+    fun bindMemeDetailRepository(
+        memeDetailRepository: MemeDetailRepositoryImpl
+    ): MemeDetailRepository
 }

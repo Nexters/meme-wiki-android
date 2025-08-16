@@ -82,7 +82,7 @@ fun DrawingCanvas(
         AsyncImage(
             model = imageUrl,
             contentDescription = "편집할 밈 이미지",
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier.fillMaxSize()
         )
 

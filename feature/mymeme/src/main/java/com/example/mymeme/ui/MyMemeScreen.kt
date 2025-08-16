@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,9 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mymeme.ui.component.BottomToolBar
 import com.example.mymeme.ui.component.DrawingCanvas
 import com.example.mymeme.ui.component.DrawingToolBar
@@ -40,15 +39,18 @@ import com.example.mymeme.ui.model.DrawingPath
 import com.example.mymeme.ui.model.DrawingTool
 import com.example.mymeme.ui.model.TextElement
 import com.example.mymeme.ui.model.Width
+import com.example.mymeme.ui.navigation.MyMemeNavigationAction
+import com.example.mymeme.ui.navigation.MyMemeNavigator
 import com.mimu_bird.designsystem.theme.Black
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.typography.toTextStyle
-import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyMemeScreen(
-    id: String
+    id: String,
+    viewModel: MyMemeViewModel = hiltViewModel(),
+    navigator: MyMemeNavigator
 ) {
     var drawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
     var textElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
@@ -67,6 +69,15 @@ fun MyMemeScreen(
     var isEditMode by remember { mutableStateOf(true) }  // 편집 모드 상태 (true: 편집, false: 저장)
     val interactionSource = remember { MutableInteractionSource() }
 
+    // ViewModel 상태 수집
+    val memeDetail by viewModel.memeDetail.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+
+    // id 파라미터로 밈 상세 정보 요청
+    LaunchedEffect(id) {
+        viewModel.fetchMemeDetail(id)
+    }
+
     LaunchedEffect(currentTool) {
         Log.d("MyMemeScreen", "currentTool:${currentTool}")
     }
@@ -81,7 +92,7 @@ fun MyMemeScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        // TODO: back navigation
+                        navigator.navigate(MyMemeNavigationAction.NavigateBack)
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -114,9 +125,13 @@ fun MyMemeScreen(
                             )
                         }
                     } else {
-                        // 저장 모드일 때: ic_toolbox 아이콘 표시
-                        IconButton(
-                            onClick = {
+                        // 저장 모드일 때: "편집" 텍스트 표시
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.clickable(
+                                indication = null,
+                                interactionSource = interactionSource
+                            ) {
                                 isEditMode = !isEditMode
                                 if (isEditMode) {
                                     isBottomToolBarVisible = true  // 편집 모드로 전환 시 플로팅 버튼 표시
@@ -125,11 +140,10 @@ fun MyMemeScreen(
                                 }
                             }
                         ) {
-                            Icon(
-                                painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_toolbox),
-                                contentDescription = "도구 상자",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
+                            Text(
+                                text = "편집",
+                                style = Body2.toTextStyle(),
+                                color = Color.White,
                             )
                         }
                     }
@@ -150,7 +164,7 @@ fun MyMemeScreen(
         ) {
             // 그리기 캔버스
             DrawingCanvas(
-                imageUrl = "", //TODO id로 밈 개별 정보 요청으로 받은 imgUrl
+                imageUrl = memeDetail?.imgUrl ?: "", // API 응답에서 받은 imgUrl 사용
                 drawingPaths = drawingPaths,
                 textElements = textElements,
                 currentTool = currentTool,
@@ -178,19 +192,21 @@ fun MyMemeScreen(
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 // 그리기 도구 바 (우측 하단)
-                DrawingToolBar(
-                    currentTool = currentTool,
-                    onToolChanged = { tool ->
-                        currentTool = tool
-                    },
-                    onClose = {
-                        isDrawingToolBarVisible = false
-                    },
-                    isExpanded = isDrawingToolBarVisible
-                )
+                if (isEditMode && isDrawingToolBarVisible) {
+                    DrawingToolBar(
+                        currentTool = currentTool,
+                        onToolChanged = { tool ->
+                            currentTool = tool
+                        },
+                        onClose = {
+                            isDrawingToolBarVisible = false
+                        },
+                        isExpanded = isDrawingToolBarVisible
+                    )
+                }
 
-                // 하단 도구 모음 (원래 구조 복원)
-                if (isEditMode && isBottomToolBarVisible) {
+                // 하단 도구 바
+                if (isBottomToolBarVisible) {
                     BottomToolBar(
                         isDrawingToolBarVisible = isDrawingToolBarVisible,
                         isTextMode = isTextMode,
@@ -202,7 +218,6 @@ fun MyMemeScreen(
                             }
                         },
                         onTextModeChanged = { newTextMode ->
-                            // 오직 플로팅 버튼의 텍스트 아이콘을 클릭했을 때만 텍스트 모드 변경
                             isTextMode = newTextMode
                             // 텍스트 모드가 켜지면 그리기 도구 바 끄기
                             if (newTextMode) {
@@ -210,19 +225,24 @@ fun MyMemeScreen(
                             }
                         },
                         onUndo = {
-                            // TODO: 실행 취소 구현
+                            if (drawingPaths.isNotEmpty()) {
+                                drawingPaths = drawingPaths.dropLast(1)
+                            }
                         },
                         onRedo = {
-                            // TODO: 다시 실행 구현
-                        }
-                    )
-                } else if (!isEditMode) {
-                    SaveButton(
-                        onSave = {
-                            // TODO: 실제 저장 로직 구현
+                            // TODO: 다시 실행 로직 구현
                         }
                     )
                 }
+            }
+
+            // 저장 버튼 (편집 모드가 아닐 때만 표시)
+            if (!isEditMode) {
+                SaveButton(
+                    onSave = {
+                        // TODO: 저장 로직 구현
+                    }
+                )
             }
         }
     }
@@ -231,5 +251,14 @@ fun MyMemeScreen(
 @Preview
 @Composable
 fun PreviewMyMemeScreen() {
-    MyMemeScreen(TEST_BRIEF_MEME_UI.imageUrl)
+    val mockNavigator = object : MyMemeNavigator {
+        override fun navigate(action: MyMemeNavigationAction) {
+            // Preview에서는 아무것도 하지 않음
+        }
+    }
+    
+    MyMemeScreen(
+        id = "1",
+        navigator = mockNavigator
+    )
 }

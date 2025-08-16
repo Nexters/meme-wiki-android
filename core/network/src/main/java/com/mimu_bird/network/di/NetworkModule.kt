@@ -5,6 +5,7 @@ import com.mimu_bird.network.api.CategoryService
 import com.mimu_bird.network.api.SearchService
 import com.mimu_bird.network.api.TopRatedMemeService
 import com.mimu_bird.network.api.SharedMemeService
+import com.mimu_bird.network.api.MemeDetailService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,6 +48,13 @@ object NetworkModule {
     fun provideSharedMemeService(
         retrofit: Retrofit
     ): SharedMemeService = retrofit.create(SharedMemeService::class.java)
+
+    // 밈 상세 정보 서비스
+    @Provides
+    @Singleton
+    fun provideMemeDetailService(
+        retrofit: Retrofit
+    ): MemeDetailService = retrofit.create(MemeDetailService::class.java)
 }
 
 @Module

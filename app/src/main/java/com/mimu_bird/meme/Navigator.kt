@@ -86,7 +86,10 @@ fun MemeWikiNavGraph(
             )
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
-            MyMemeScreen(id = id)
+            MyMemeScreen(
+                id = id,
+                navigator = appNavigator
+            )
         }
     }
 }

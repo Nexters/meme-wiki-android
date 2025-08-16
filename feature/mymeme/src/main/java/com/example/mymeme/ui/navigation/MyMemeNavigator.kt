@@ -6,6 +6,7 @@ import com.mimu_bird.common.navigation.NavigationAction
  * MyMeme 모듈 네비게이션 액션 정의
  */
 sealed class MyMemeNavigationAction : NavigationAction() {
+    object NavigateBack : MyMemeNavigationAction()
 }
 
 /**

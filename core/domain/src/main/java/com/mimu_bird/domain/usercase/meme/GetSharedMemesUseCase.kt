@@ -12,7 +12,7 @@ import javax.inject.Inject
 class GetSharedMemesUseCase @Inject constructor(
     private val sharedMemeRepository: SharedMemeRepository
 ) {
-    suspend operator fun invoke(): List<SharedMemeModel> {
+    suspend operator fun invoke(): SharedMemeModel {
         return sharedMemeRepository.getSharedMemes()
     }
 } 

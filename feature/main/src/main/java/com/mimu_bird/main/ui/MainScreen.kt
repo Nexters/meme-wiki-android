@@ -126,7 +126,7 @@ fun MainScreen(
         BriefMemeUiModel(
             id = sharedMeme.id.toString(),
             imageUrl = sharedMeme.imageUrl,
-            title = sharedMeme.title,
+            title = sharedMeme.name,
             rank = 0
         )
     }
@@ -134,7 +134,7 @@ fun MainScreen(
         BriefMemeUiModel(
             id = sharedMeme.id.toString(),
             imageUrl = sharedMeme.imageUrl,
-            title = sharedMeme.title,
+            title = sharedMeme.name,
             rank = 0
         )
     }

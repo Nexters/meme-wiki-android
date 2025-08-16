@@ -9,5 +9,5 @@ interface SharedMemeRepository {
     /**
      * 공유된 밈 순위 조회
      */
-    suspend fun getSharedMemes(): List<SharedMemeModel>
+    suspend fun getSharedMemes(): SharedMemeModel
 } 

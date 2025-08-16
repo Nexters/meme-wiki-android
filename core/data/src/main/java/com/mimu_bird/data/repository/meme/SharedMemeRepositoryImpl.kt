@@ -1,9 +1,9 @@
 package com.mimu_bird.data.repository.meme
 
+import com.mimu_bird.domain.model.category.BriefMemeModel
 import com.mimu_bird.domain.model.meme.SharedMemeModel
 import com.mimu_bird.domain.repository.meme.SharedMemeRepository
 import com.mimu_bird.network.api.SharedMemeService
-import com.mimu_bird.network.util.ApiCallUtil
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,21 +15,30 @@ class SharedMemeRepositoryImpl @Inject constructor(
     private val sharedMemeService: SharedMemeService
 ) : SharedMemeRepository {
 
-    override suspend fun getSharedMemes(): List<SharedMemeModel> {
+    override suspend fun getSharedMemes(): SharedMemeModel {
         return try {
-            val response = ApiCallUtil {
-                sharedMemeService.getSharedMemes()
-            }
-            response.memes.map { memeResponse ->
+            val response = sharedMemeService.getSharedMemes()
+            response.success?.let { sharedMemeResponse ->
+                val memes = sharedMemeResponse.memes.map { values ->
+                    BriefMemeModel(
+                        id = values.id,
+                        name = values.title,
+                        imageUrl = values.imgUrl
+                    )
+                }
                 SharedMemeModel(
-                    id = memeResponse.id,
-                    title = memeResponse.title,
-                    imageUrl = memeResponse.imgUrl,
-                    nextFetchTime = response.nextFetchTime
+                    memes = memes,
+                    nextFetchTime = sharedMemeResponse.nextFetchTime
                 )
-            }
+            } ?: SharedMemeModel(
+                memes = emptyList(),
+                nextFetchTime = "2025-08-17T04:00:00"
+            )
         } catch (e: Exception) {
-            emptyList()
+            SharedMemeModel(
+                memes = emptyList(),
+                nextFetchTime = "2025-08-17T04:00:00"
+            )
         }
     }
 } 

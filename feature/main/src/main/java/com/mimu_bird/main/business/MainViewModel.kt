@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,10 +40,14 @@ class MainViewModel @Inject constructor(
     private val _timeUntilNextUpdate = MutableStateFlow(Triple(24, 0, 0))
     val timeUntilNextUpdate: StateFlow<Triple<Int, Int, Int>> = _timeUntilNextUpdate.asStateFlow()
 
+    // 타이머 상태 관리
+    private var isTimerRunning = false
+
     init {
         fetchCategories()
         fetchTopRatedMemes()
         fetchSharedMemes()
+        startTimer()
     }
 
     private fun fetchCategories() {
@@ -106,4 +111,38 @@ class MainViewModel @Inject constructor(
         _timeUntilNextUpdate.value = timeTriple
     }
 
+    /**
+     * 타이머 시작 - 화면에서 벗어나도 계속 동작
+     */
+    private fun startTimer() {
+        if (isTimerRunning) return
+        
+        isTimerRunning = true
+        viewModelScope.launch {
+            while (isTimerRunning) {
+                delay(1000) // 1초 대기
+                
+                val currentTime = _timeUntilNextUpdate.value
+                val totalSeconds = currentTime.first * 3600 + currentTime.second * 60 + currentTime.third
+                
+                if (totalSeconds > 0) {
+                    // 1초씩 감소
+                    val newTotalSeconds = totalSeconds - 1
+                    val newHours = newTotalSeconds / 3600
+                    val newMinutes = (newTotalSeconds % 3600) / 60
+                    val newSeconds = newTotalSeconds % 60
+                    
+                    _timeUntilNextUpdate.value = Triple(newHours, newMinutes, newSeconds)
+                } else {
+                    // 0이 되면 24시간으로 리셋 (서버에서 새로운 시간을 받을 때까지)
+                    _timeUntilNextUpdate.value = Triple(24, 0, 0)
+                }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        isTimerRunning = false
+    }
 }

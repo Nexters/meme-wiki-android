@@ -116,7 +116,16 @@ fun MainScreen(
                     painterResource(R.drawable.banner_1),
                     painterResource(R.drawable.banner_2),
                     painterResource(R.drawable.banner_3)
-                )
+                ),
+                onClickPage = {
+                    if (it == 0) {
+                        navigator?.navigate(
+                            MainNavigationAction.NavigateToWebView(
+                                "https://meme-wiki.net/"
+                            )
+                        )
+                    }
+                }
             )
             Spacer(Modifier.height(60.dp))
         }

@@ -1,6 +1,7 @@
 package com.mimu_bird.main.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,7 +22,8 @@ import com.mimu_bird.designsystem.R
 
 @Composable
 fun ScrollableCardCarousel(
-    cards: List<Painter>
+    cards: List<Painter>,
+    onClickPage: (Int) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     val currentPage = remember {
@@ -52,6 +54,8 @@ fun ScrollableCardCarousel(
         ) {
             itemsIndexed(cards) { index, card ->
                 CarouselCardItem(
+                    modifier = Modifier
+                        .clickable { onClickPage(index) },
                     painter = card
                 )
             }
@@ -80,13 +84,14 @@ fun ScrollableCardCarousel(
 
 @Composable
 fun CarouselCardItem(
+    modifier: Modifier = Modifier,
     painter: Painter,
 ) {
     androidx.compose.foundation.Image(
         painter = painter,
         contentDescription = "main banner",
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize(1f)
+        modifier = modifier.fillMaxSize(1f)
     )
 }
 
@@ -103,7 +108,8 @@ fun ScrollableCardCarouselPreview() {
                 painterResource(R.drawable.banner_1),
                 painterResource(R.drawable.banner_2),
                 painterResource(R.drawable.banner_3)
-            )
+            ),
+            onClickPage = {}
         )
     }
 } 

@@ -1,10 +1,7 @@
-package com.mimu_bird.detail.ui
+package com.mimu_bird.ui.screen
 
-import android.content.Intent
 import android.view.ViewGroup
-import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,12 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,16 +27,11 @@ import com.mimu_bird.designsystem.theme.Gray1
 import com.mimu_bird.designsystem.theme.Gray10
 
 @Composable
-fun MemeDetailScreen(
+fun WebViewScreen(
     modifier: Modifier = Modifier,
-    memeId: Int,
+    url: String,
     navController: NavController,
 ) {
-    val url = remember(memeId) {
-        println("https://meme-wiki.net/meme/$memeId")
-        "https://meme-wiki.net/meme/$memeId"
-    }
-
     Scaffold (
         modifier = modifier
             .fillMaxSize()
@@ -82,50 +71,17 @@ fun MemeDetailScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    webViewClient = CustomWebViewClient()
                     settings.let {
                         it.javaScriptEnabled = true
                         it.domStorageEnabled = true
                         it.useWideViewPort = true
                         it.loadWithOverviewMode = true
                     }
-                    addJavascriptInterface(
-                        WebJavaScriptBridge{
-                            runCatching {
-                                val sendIntent = Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_TEXT, url)
-                                    type = "text/plain"
-                                }
-
-                                val shareIntent = Intent.createChooser(sendIntent, null)
-                                context.startActivity(shareIntent)
-                            }
-                        },
-                        "wiki"
-                    )
                 }
             },
             update = {
                 it.loadUrl(url)
             }
         )
-    }
-}
-
-
-class CustomWebViewClient: WebViewClient(){
-    override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-        return true
-    }
-}
-
-class WebJavaScriptBridge(
-    private val onHandleScriptCode: () -> Unit
-) {
-    @JavascriptInterface
-    fun postMessage(code: String) {
-        println("yeoonju : $code")
-//        onHandleScriptCode()
     }
 }

@@ -18,7 +18,10 @@ sealed class Screen(val route: String) {
         fun createRoute(categoryId: Int) = "category/$categoryId"
     }
     object Detail: Screen("detail/{memeId}") {
-        fun createRound(memeId: Int) = "detail/$memeId"
+        fun createRoute(memeId: Int) = "detail/$memeId"
+    }
+    data object WebView: Screen("web/{url}") {
+        fun createRoute(url: String) = "wev/$url"
     }
 }
 
@@ -44,7 +47,11 @@ class AppNavigator(
             }
 
             is MainNavigationAction.NavigateToDetail -> {
-                navController.navigate(Screen.Detail.createRound(action.memeId))
+                navController.navigate(Screen.Detail.createRoute(action.memeId))
+            }
+
+            is MainNavigationAction.NavigateToWebView -> {
+                navController.navigate(Screen.WebView.createRoute(action.url))
             }
         }
     }
@@ -53,7 +60,7 @@ class AppNavigator(
     override fun navigate(action: SearchNavigationAction) {
         when (action) {
             is SearchNavigationAction.NavigateToDetail -> {
-                navController.navigate(Screen.Detail.createRound(action.memeId))
+                navController.navigate(Screen.Detail.createRoute(action.memeId))
             }
             SearchNavigationAction.NavigateToMain -> {
                 navController.navigate(Screen.Main.route) {
@@ -67,7 +74,7 @@ class AppNavigator(
     override fun navigate(action: CategoryNavigationAction) {
         when (action) {
             is CategoryNavigationAction.NavigateToDetail -> {
-                navController.navigate(Screen.Detail.createRound(action.memeId))
+                navController.navigate(Screen.Detail.createRoute(action.memeId))
             }
             CategoryNavigationAction.NavigateSearch -> {
                 navController.navigate(Screen.Search.route)

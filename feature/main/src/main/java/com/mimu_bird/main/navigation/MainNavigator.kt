@@ -11,6 +11,9 @@ sealed class MainNavigationAction : NavigationAction() {
     data class NavigateToDetail(
         val memeId: Int
     ): MainNavigationAction()
+    data class NavigateToWebView(
+        val url: String
+    ): MainNavigationAction()
 }
 
 /**

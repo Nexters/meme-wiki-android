@@ -38,20 +38,25 @@ class CategoryViewModel @Inject constructor(
     val memes: Flow<PagingData<MimUiModel>>
 
     init {
-        fetchCategories()
         memes = selectedCategoryIndex
             .flatMapLatest { fetchMemes(it) }
             .cachedIn(viewModelScope)
     }
 
-    private fun fetchCategories() {
+    fun fetchCategories(
+        initSelectedCategoryId: Int
+    ) {
         viewModelScope.launch {
             try {
                 val categories = getCategoriesUseCase().map { category ->
                     category.toUiModel()
                 }
                 _categories.value = categories
-                _selectedCategoryIndex.value = 0
+
+                val categoryIndex = categories.indexOfFirst {
+                    it.id == initSelectedCategoryId
+                }
+                _selectedCategoryIndex.value = if (categoryIndex == -1) 0 else categoryIndex
             } catch (exception: Exception) {
 
             }

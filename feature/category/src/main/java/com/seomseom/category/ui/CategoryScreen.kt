@@ -1,6 +1,7 @@
 package com.seomseom.category.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +29,7 @@ import com.mimu_bird.ui.model.CategoryUiModel
 import com.mimu_bird.ui.model.MimUiModel
 import com.seomseom.category.business.CategoryViewModel
 import com.seomseom.category.component.CategoryTab
+import com.seomseom.category.navigation.CategoryNavigationAction
 import com.seomseom.category.navigation.CategoryNavigator
 
 @Preview
@@ -55,6 +58,10 @@ fun CategoryScreen(
     val categories = viewModel.categories.collectAsState()
     val selectedCategoryIndex = viewModel.selectedCategoryIndex.collectAsState()
     val memes = viewModel.memes.collectAsLazyPagingItems()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchCategories(categoryId)
+    }
 
     Column (
         modifier = modifier
@@ -92,6 +99,10 @@ fun CategoryScreen(
                 items(count = memes.itemCount, key = { it }) {
                     memes[it]?.let {
                         MimSearchItem(
+                            modifier = Modifier
+                                .clickable {
+                                    navigator?.navigate(CategoryNavigationAction.NavigateToDetail(it.id))
+                                },
                             meme = it,
                             isKeyword = false
                         )

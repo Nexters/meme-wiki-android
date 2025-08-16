@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":feature:search"))
     implementation(project(":feature:category"))
     implementation(project(":feature:main"))
+    implementation(project(":feature:detail"))
     implementation(project(":core:ui"))
     implementation(project(":core:common"))
 

@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.meme.search.ui.MemeSearchScreen
+import com.mimu_bird.detail.ui.MemeDetailScreen
 import com.mimu_bird.main.ui.MainScreen
 import com.mimu_bird.meme.navigation.AppNavigator
 import com.mimu_bird.meme.navigation.Screen
@@ -49,6 +50,19 @@ fun MemeWikiNavGraph(
             CategoryScreen(
                 categoryId = categoryId,
                 navigator = appNavigator
+            )
+        }
+
+        composable(
+            route = Screen.Detail.route,
+            arguments = listOf(
+                navArgument("memeId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val memeId = backStackEntry.arguments?.getInt("memeId") ?: 0
+            MemeDetailScreen(
+                memeId = memeId,
+                navController = navController
             )
         }
     }

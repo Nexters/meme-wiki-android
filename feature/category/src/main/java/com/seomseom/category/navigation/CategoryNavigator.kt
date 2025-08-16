@@ -6,7 +6,9 @@ import com.mimu_bird.common.navigation.NavigationAction
  * Category 모듈 네비게이션 액션 정의
  */
 sealed class CategoryNavigationAction : NavigationAction() {
-    object NavigateToDetail : CategoryNavigationAction()
+    data class NavigateToDetail(
+        val memeId: Int
+    ) : CategoryNavigationAction()
 }
 
 /**

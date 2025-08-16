@@ -17,6 +17,9 @@ sealed class Screen(val route: String) {
     object Category : Screen("category/{categoryId}") {
         fun createRoute(categoryId: Int) = "category/$categoryId"
     }
+    object Detail: Screen("detail/{memeId}") {
+        fun createRound(memeId: Int) = "detail/$memeId"
+    }
 }
 
 /**
@@ -46,7 +49,7 @@ class AppNavigator(
     override fun navigate(action: SearchNavigationAction) {
         when (action) {
             is SearchNavigationAction.NavigateToDetail -> {
-                // TODO: 상세 화면으로 이동
+                navController.navigate(Screen.Detail.createRound(action.memeId))
             }
         }
     }
@@ -55,7 +58,7 @@ class AppNavigator(
     override fun navigate(action: CategoryNavigationAction) {
         when (action) {
             is CategoryNavigationAction.NavigateToDetail -> {
-                // TODO: 상세 화면으로 이동
+                navController.navigate(Screen.Detail.createRound(action.memeId))
             }
         }
     }

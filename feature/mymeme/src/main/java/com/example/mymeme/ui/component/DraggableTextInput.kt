@@ -67,7 +67,7 @@ fun DraggableTextInput(
     modifier: Modifier = Modifier
 ) {
     var textInputPosition by remember { mutableStateOf(initialOffset) }
-    var isButtonsEnabled by remember { mutableStateOf(true) }
+    // isButtonsEnabled 상태 제거 - 버튼들을 항상 활성화 상태로 유지
     var textFieldWidth by remember { mutableStateOf(200.dp) }
     var textFieldHeight by remember { mutableStateOf(100.dp) }
     
@@ -158,11 +158,10 @@ fun DraggableTextInput(
                 ) {
                     Row(
                         modifier = Modifier
-                            .clickable(enabled = isButtonsEnabled) {
+                            .clickable {
                                 // 텍스트가 입력되어 있을 때만 추가
                                 if (currentText.isNotEmpty()) {
                                     onTextAdded(currentText)
-                                    isButtonsEnabled = false
                                     // 새로운 텍스트 입력 UI 생성
                                     onAddNewInput()
                                 }
@@ -189,7 +188,7 @@ fun DraggableTextInput(
                         painter = painterResource(R.drawable.ic_trashcan),
                         contentDescription = "삭제 아이콘",
                         modifier = Modifier
-                            .clickable(enabled = isButtonsEnabled) {
+                            .clickable {
                                 onDelete()
                             }
                             .size(30.dp),
@@ -200,7 +199,7 @@ fun DraggableTextInput(
                         painter = painterResource(R.drawable.ic_kebap),
                         contentDescription = "편집 도구 아이콘",
                         modifier = Modifier
-                            .clickable(enabled = isButtonsEnabled) {
+                            .clickable {
                                 onEditClick(textInputPosition)
                             }
                             .size(30.dp),
@@ -221,6 +220,7 @@ fun DraggableTextInput(
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
                     ),
+                    readOnly = !isTextMode, // 텍스트 모드가 false일 때 읽기 전용으로 설정
                     modifier = Modifier
                         .width(textFieldWidth)
                         .height(textFieldHeight)
@@ -232,10 +232,6 @@ fun DraggableTextInput(
                             width = 1.dp,
                             color = if (isTextMode) Blue60 else Color.Transparent
                         )
-                        .clickable {
-                            // BasicTextField 클릭 시 버튼들 다시 활성화
-                            isButtonsEnabled = true
-                        }
                 )
 
                 // 왼쪽 크기 조절 원

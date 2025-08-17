@@ -131,7 +131,7 @@ fun MainScreen(
             rank = 0
         )
     }
-    val bottom5Memes = sharedMemes.drop(5).map { sharedMeme ->
+    val bottom5Memes = sharedMemes.drop(sharedMemes.size - 5).map { sharedMeme ->
         BriefMemeUiModel(
             id = sharedMeme.id.toString(),
             imageUrl = sharedMeme.imageUrl,
@@ -159,6 +159,12 @@ fun MainScreen(
         PastelGradientPalette.PURPLE,
         PastelGradientPalette.GREEN,
         PastelGradientPalette.PINK,
+    )
+    val categoryResourceIds = listOf<Int>(
+        R.drawable.ic_keyboard,
+        R.drawable.ic_umbrella,
+        R.drawable.business_products_magic_rabbit,
+        R.drawable.ic_relationship
     )
 
     LazyColumn(
@@ -229,7 +235,7 @@ fun MainScreen(
                     val categoryId = category?.id ?: 0
                     Box(modifier = Modifier.weight(0.17f)) {
                         CategoryView(
-                            drawableResId = R.drawable.business_products_magic_rabbit,
+                            drawableResId = categoryResourceIds[index],
                             title = categoryTitle,
                             modifier = Modifier
                                 .fillMaxWidth(1f)
@@ -308,7 +314,7 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(bottom = 50.dp, start = 14.dp)
             )
-            
+
             // ViewModel에서 계산된 시간 사용
             val (hours, minutes, seconds) = timeUntilNextUpdate
 

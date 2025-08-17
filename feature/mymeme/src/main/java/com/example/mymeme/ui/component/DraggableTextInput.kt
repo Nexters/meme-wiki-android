@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -67,6 +68,21 @@ fun DraggableTextInput(
 ) {
     var textInputPosition by remember { mutableStateOf(initialOffset) }
     var isButtonsEnabled by remember { mutableStateOf(true) }
+    var textFieldWidth by remember { mutableStateOf(200.dp) }
+    var textFieldHeight by remember { mutableStateOf(100.dp) }
+    
+    // 텍스트 길이에 따른 동적 크기 조정
+    LaunchedEffect(currentText) {
+        val minWidth = (currentText.length * 12).dp.coerceAtLeast(120.dp)
+        val minHeight = 60.dp
+        
+        if (textFieldWidth < minWidth) {
+            textFieldWidth = minWidth
+        }
+        if (textFieldHeight < minHeight) {
+            textFieldHeight = minHeight
+        }
+    }
 
     // positionIndex를 사용하여 위치 계산
     val positionOffset = when (positionIndex % 5) {
@@ -193,31 +209,79 @@ fun DraggableTextInput(
                 }
             }
 
-            // 텍스트 입력 필드
-            BasicTextField(
-                value = currentText,
-                onValueChange = onTextChange,
-                textStyle = TextStyle(
-                    fontSize = 18.sp,
-                    color = currentTextColor.color.copy(alpha = currentTextOpacity),
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.Center
-                ),
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .background(
-                        color = Color.Transparent,
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = if (isTextMode) Blue60 else Color.Transparent
-                    )
-                    .clickable {
-                        // BasicTextField 클릭 시 버튼들 다시 활성화
-                        isButtonsEnabled = true
-                    }
-            )
+            // 텍스트 입력 필드와 크기 조절 원들
+            Box {
+                // 텍스트 입력 필드
+                BasicTextField(
+                    value = currentText,
+                    onValueChange = onTextChange,
+                    textStyle = TextStyle(
+                        fontSize = 18.sp,
+                        color = currentTextColor.color.copy(alpha = currentTextOpacity),
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    ),
+                    modifier = Modifier
+                        .width(textFieldWidth)
+                        .height(textFieldHeight)
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .background(
+                            color = Color.Transparent,
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (isTextMode) Blue60 else Color.Transparent
+                        )
+                        .clickable {
+                            // BasicTextField 클릭 시 버튼들 다시 활성화
+                            isButtonsEnabled = true
+                        }
+                )
+
+                // 왼쪽 크기 조절 원
+                Box(
+                    modifier = Modifier
+                        .offset(x = (-6).dp, y = (textFieldHeight / 2 - 6.dp))
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(Color.Blue)
+                        .pointerInput("leftResize") {
+                            detectDragGestures { _, dragAmount ->
+                                val newWidth = textFieldWidth - dragAmount.x.dp
+                                val newHeight = textFieldHeight + dragAmount.y.dp
+                                
+                                // 텍스트 크기를 고려한 최소 크기 제한
+                                val minWidth = (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
+                                val minHeight = 60.dp // 텍스트 높이 + 여백
+                                
+                                textFieldWidth = newWidth.coerceAtLeast(minWidth)
+                                textFieldHeight = newHeight.coerceAtLeast(minHeight)
+                            }
+                        }
+                )
+
+                // 오른쪽 크기 조절 원
+                Box(
+                    modifier = Modifier
+                        .offset(x = (textFieldWidth - 6.dp), y = (textFieldHeight / 2 - 6.dp))
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(Color.Blue)
+                        .pointerInput("rightResize") {
+                            detectDragGestures { _, dragAmount ->
+                                val newWidth = textFieldWidth + dragAmount.x.dp
+                                val newHeight = textFieldHeight + dragAmount.y.dp
+                                
+                                // 텍스트 크기를 고려한 최소 크기 제한
+                                val minWidth = (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
+                                val minHeight = 60.dp // 텍스트 높이 + 여백
+                                
+                                textFieldWidth = newWidth.coerceAtLeast(minWidth)
+                                textFieldHeight = newHeight.coerceAtLeast(minHeight)
+                            }
+                        }
+                )
+            }
         }
     }
 } 

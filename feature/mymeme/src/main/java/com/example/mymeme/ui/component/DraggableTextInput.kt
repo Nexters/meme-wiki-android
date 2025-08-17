@@ -1,5 +1,6 @@
 package com.example.mymeme.ui.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,14 +69,14 @@ fun DraggableTextInput(
 ) {
     var textInputPosition by remember { mutableStateOf(initialOffset) }
     // isButtonsEnabled 상태 제거 - 버튼들을 항상 활성화 상태로 유지
-    var textFieldWidth by remember { mutableStateOf(200.dp) }
-    var textFieldHeight by remember { mutableStateOf(100.dp) }
-    
+    var textFieldWidth by remember { mutableStateOf(104.dp) }
+    var textFieldHeight by remember { mutableStateOf(38.dp) }
+
     // 텍스트 길이에 따른 동적 크기 조정
     LaunchedEffect(currentText) {
         val minWidth = (currentText.length * 12).dp.coerceAtLeast(120.dp)
         val minHeight = 60.dp
-        
+
         if (textFieldWidth < minWidth) {
             textFieldWidth = minWidth
         }
@@ -235,9 +236,11 @@ fun DraggableTextInput(
                 )
 
                 // 왼쪽 크기 조절 원
-                Box(
+                Image(
+                    painter = painterResource(R.drawable.pin),
+                    contentDescription = "텍스트 필드 크기 조절 원 왼쪽",
                     modifier = Modifier
-                        .offset(x = (-6).dp, y = (textFieldHeight / 2 - 6.dp))
+                        .offset(x = (10).dp, y = (textFieldHeight / 2 - 6.dp))
                         .size(12.dp)
                         .clip(CircleShape)
                         .background(Color.Blue)
@@ -245,11 +248,12 @@ fun DraggableTextInput(
                             detectDragGestures { _, dragAmount ->
                                 val newWidth = textFieldWidth - dragAmount.x.dp
                                 val newHeight = textFieldHeight + dragAmount.y.dp
-                                
+
                                 // 텍스트 크기를 고려한 최소 크기 제한
-                                val minWidth = (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
+                                val minWidth =
+                                    (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
                                 val minHeight = 60.dp // 텍스트 높이 + 여백
-                                
+
                                 textFieldWidth = newWidth.coerceAtLeast(minWidth)
                                 textFieldHeight = newHeight.coerceAtLeast(minHeight)
                             }
@@ -257,9 +261,11 @@ fun DraggableTextInput(
                 )
 
                 // 오른쪽 크기 조절 원
-                Box(
+                Image(
+                    painter = painterResource(R.drawable.pin),
+                    contentDescription = "텍스트 필드 크기 조절 원 오른쪽",
                     modifier = Modifier
-                        .offset(x = (textFieldWidth - 6.dp), y = (textFieldHeight / 2 - 6.dp))
+                        .offset(x = (textFieldWidth - 23.dp), y = (textFieldHeight / 2 - 6.dp))
                         .size(12.dp)
                         .clip(CircleShape)
                         .background(Color.Blue)
@@ -267,11 +273,12 @@ fun DraggableTextInput(
                             detectDragGestures { _, dragAmount ->
                                 val newWidth = textFieldWidth + dragAmount.x.dp
                                 val newHeight = textFieldHeight + dragAmount.y.dp
-                                
+
                                 // 텍스트 크기를 고려한 최소 크기 제한
-                                val minWidth = (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
+                                val minWidth =
+                                    (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
                                 val minHeight = 60.dp // 텍스트 높이 + 여백
-                                
+
                                 textFieldWidth = newWidth.coerceAtLeast(minWidth)
                                 textFieldHeight = newHeight.coerceAtLeast(minHeight)
                             }

@@ -16,19 +16,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun MemeTimer(initialHours: Int, initialMinutes: Int, initialSeconds: Int, modifier: Modifier) {
-    var totalSeconds by remember { mutableStateOf(initialHours * 3600 + initialMinutes * 60 + initialSeconds) }
-
-    LaunchedEffect(Unit) {
-        while (totalSeconds > 0) {
-            delay(1000) // 1초 대기
-            totalSeconds--
-        }
-    }
-
-    // 시간을 HH:MM:mm 형식으로 변환
-    val hours = totalSeconds / 3600
-    val minutes = (totalSeconds % 3600) / 60
-    val seconds = totalSeconds % 60
+    // ViewModel에서 관리하는 시간을 그대로 표시
+    val hours = initialHours
+    val minutes = initialMinutes
+    val seconds = initialSeconds
 
     // 2자리 숫자로 포맷팅
     val formattedHours = String.format("%02d", hours)

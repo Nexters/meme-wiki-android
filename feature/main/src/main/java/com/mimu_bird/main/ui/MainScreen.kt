@@ -1,8 +1,10 @@
 package com.mimu_bird.main.ui
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,12 +21,12 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -35,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Display1
@@ -52,7 +55,62 @@ import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
 import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.ui.model.BriefMemeUiModel
-import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
+import kotlinx.coroutines.delay
+
+/**
+ * 자동으로 연속 스크롤되는 LazyRow 컴포넌트
+ */
+@Composable
+private fun AutoScrollingLazyRow(
+    items: List<BriefMemeUiModel>,
+    colors: List<PastelGradientPalette>,
+    modifier: Modifier = Modifier,
+    reverseLayout: Boolean = false
+) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(items.size) {
+        if (items.isNotEmpty()) {
+            Log.d(
+                "AutoScrollingLazyRow",
+                "애니메이션 시작: items.size=${items.size}, reverseLayout=$reverseLayout"
+            )
+            repeat(Int.MAX_VALUE) {
+                for (i in 0 until items.size) {
+                    listState.animateScrollBy(
+                        value = 200f,
+                        animationSpec = androidx.compose.animation.core.tween(
+                            durationMillis = 800,
+                            easing = androidx.compose.animation.core.LinearEasing
+                        )
+                    )
+
+                    delay(100)
+                }
+
+                // 스크롤이 끝에 도달하면 처음 위치로 돌아가기
+                listState.animateScrollToItem(0)
+                delay(800)
+            }
+        }
+    }
+
+
+    LazyRow(
+        state = listState,
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        reverseLayout = reverseLayout,
+        userScrollEnabled = false
+    ) {
+        items(items.size) { index ->
+            ShareMemItem(
+                item = items[index],
+                color = colors.getOrElse(index) { colors.first() }
+            )
+        }
+    }
+}
 
 @Composable
 fun MainScreen(
@@ -61,6 +119,26 @@ fun MainScreen(
 ) {
     val categories by viewModel.categories.collectAsState()
     val topRatedMemes by viewModel.topRatedMemes.collectAsState()
+    val sharedMemes by viewModel.sharedMemes.collectAsState()
+    val timeUntilNextUpdate by viewModel.timeUntilNextUpdate.collectAsState()
+
+    // 상위 5개와 하위 5개로 분리
+    val top5Memes = sharedMemes.take(5).map { sharedMeme ->
+        BriefMemeUiModel(
+            id = sharedMeme.id.toString(),
+            imageUrl = sharedMeme.imageUrl,
+            title = sharedMeme.name,
+            rank = 0
+        )
+    }
+    val bottom5Memes = sharedMemes.drop(5).map { sharedMeme ->
+        BriefMemeUiModel(
+            id = sharedMeme.id.toString(),
+            imageUrl = sharedMeme.imageUrl,
+            title = sharedMeme.name,
+            rank = 0
+        )
+    }
 
     val topCategoryColor = listOf(
         PastelGradientPalette.LIGHT_BLUE,
@@ -102,7 +180,7 @@ fun MainScreen(
                     tint = Color.White
                 )
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    painterResource(R.drawable.ic_search_20_white),
                     contentDescription = "검색화면 이동",
                     tint = Color.White,
                     modifier = Modifier.clickable {
@@ -113,10 +191,20 @@ fun MainScreen(
             Spacer(Modifier.height(30.dp))
             ScrollableCardCarousel(
                 cards = listOf(
+                    painterResource(R.drawable.banner_0),
                     painterResource(R.drawable.banner_1),
                     painterResource(R.drawable.banner_2),
                     painterResource(R.drawable.banner_3)
-                )
+                ),
+                onClickPage = {
+                    if (it == 0) {
+                        navigator?.navigate(
+                            MainNavigationAction.NavigateToWebView(
+                                "https://meme-wiki.net/"
+                            )
+                        )
+                    }
+                }
             )
             Spacer(Modifier.height(60.dp))
         }
@@ -194,7 +282,10 @@ fun MainScreen(
                             title = meme.title,
                             rank = index + 1
                         )
-                    }.take(6)
+                    }.take(6),
+                    onClickMeme = {
+                        navigator.navigate(MainNavigationAction.NavigateToDetail(it.toInt()))
+                    }
                 )
                 Spacer(Modifier.height(53.dp))
             }
@@ -217,40 +308,37 @@ fun MainScreen(
                     .fillMaxWidth()
                     .padding(bottom = 50.dp, start = 14.dp)
             )
-            MemeTimer(24, 0, 0, modifier = Modifier.padding(start = 14.dp, bottom = 20.dp))
-            LazyRow(
+            
+            // ViewModel에서 계산된 시간 사용
+            val (hours, minutes, seconds) = timeUntilNextUpdate
+
+            MemeTimer(
+                initialHours = hours,
+                initialMinutes = minutes,
+                initialSeconds = seconds,
+                modifier = Modifier.padding(start = 14.dp, bottom = 20.dp)
+            )
+
+            AutoScrollingLazyRow(
+                items = top5Memes,
+                colors = topSharedMemeColor1,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(172.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-            ) {
-                items(count = 5) { index ->
-                    ShareMemItem(
-                        item = TEST_BRIEF_MEME_UI,
-                        color = topSharedMemeColor1.get(index)
-                    )
-                }
-            }
+                reverseLayout = false
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
         }
         item {
-            // 아래쪽 LazyRow - 오른쪽으로 스크롤 (reverseLayout = true)
-            LazyRow(
+            AutoScrollingLazyRow(
+                items = bottom5Memes,
+                colors = topSharedMemeColor2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(172.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                reverseLayout = true, // 오른쪽으로 스크롤
-            ) {
-                items(count = 5) { index ->
-                    ShareMemItem(
-                        item = TEST_BRIEF_MEME_UI,
-                        color = topSharedMemeColor2.get(index)
-                    )
-                }
-            }
+                reverseLayout = true
+            )
             Spacer(Modifier.height(100.dp))
         }
     }

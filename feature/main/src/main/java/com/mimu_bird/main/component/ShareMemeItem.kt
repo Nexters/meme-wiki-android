@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,10 +34,13 @@ import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
 fun ShareMemItem(
+    modifier: Modifier = Modifier,
     color: PastelGradientPalette,
     item: BriefMemeUiModel,
 ) {
-    Column {
+    Column (
+        modifier = modifier
+    ){
         Box(
             modifier = Modifier
                 .border(
@@ -62,11 +65,12 @@ fun ShareMemItem(
                 text = "${item.title}",
                 style = Subhead2.toTextStyle(),
                 color = Color.Black,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Start,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .width(200.dp)
                     .height(36.dp)
                     .wrapContentHeight(align = Alignment.CenterVertically)
+                    .padding(start = 5.dp)
             )
             Column(
                 modifier = Modifier
@@ -77,7 +81,8 @@ fun ShareMemItem(
                 // 메인 이미지 컨테이너
                 Box(
                     modifier = Modifier
-                        .aspectRatio(1.44f)
+                        .width(200.dp)
+                        .height(172.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color.White)
                         .border(
@@ -87,7 +92,9 @@ fun ShareMemItem(
                         )
                 ) {
                     AsyncImage(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .width(188.dp)
+                            .height(130.dp),
                         model = item.imageUrl,
                         contentDescription = "meme image",
                         contentScale = ContentScale.Crop

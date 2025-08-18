@@ -64,14 +64,19 @@ fun OpacitySlider(
         ) {
             // 체크보드 배경
             val imageBitmap = sliderBackground.toImageBitmap(
-                size = size,
                 density = density,
-                layoutDirection = layoutDirection
+                layoutDirection = layoutDirection,
+                targetSizeDp = 294.dp,
+                targetHeightDp = 22.dp
             )
+
+            // DP를 픽셀로 변환
+            val widthPx = with(density) { 294.dp.roundToPx() }
+            val heightPx = with(density) { 22.dp.roundToPx() }
 
             drawImage(
                 image = imageBitmap,
-                dstSize = IntSize(size.width.toInt(), size.height.toInt())
+                dstSize = IntSize(widthPx, heightPx)  // 픽셀 단위
             )
 
             // 선택된 컬러의 그라데이션
@@ -122,11 +127,11 @@ fun OpacitySlider(
                         val currentPosition = ((value - 0.1f) / 0.9f * availableWidth)
                         val newPosition =
                             (currentPosition + offsetXDp + deltaDp).coerceIn(0.dp, availableWidth)
-                        
+
                         // offsetX 업데이트 (픽셀 단위로 유지하되 계산은 dp로)
                         val newOffsetDp = newPosition - currentPosition
                         offsetX = with(density) { newOffsetDp.toPx() }
-                        
+
                         // 새로운 value 계산 및 전달
                         val newValue =
                             (newPosition / availableWidth * 0.9f + 0.1f).coerceIn(0.1f, 1.0f)

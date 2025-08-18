@@ -135,9 +135,9 @@ class MainViewModel @Inject constructor(
 
                     _timeUntilNextUpdate.value = Triple(newHours, newMinutes, newSeconds)
                 } else {
-                    // 0이 되면 24시간으로 리셋 (서버에서 새로운 시간을 받을 때까지)
-                    //TODO 0이되면 재요청
-                    _timeUntilNextUpdate.value = Triple(24, 0, 0)
+                    //재요청
+                    _timeUntilNextUpdate.value = Triple(0, 0, 0)
+                    fetchSharedMemes()
                 }
             }
         }

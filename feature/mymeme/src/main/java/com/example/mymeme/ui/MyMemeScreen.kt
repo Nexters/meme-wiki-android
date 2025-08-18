@@ -1,16 +1,25 @@
 package com.example.mymeme.ui
 
+import android.Manifest
+import android.content.ContentValues
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,13 +36,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mymeme.ui.component.BottomToolBar
 import com.example.mymeme.ui.component.DrawingCanvas
 import com.example.mymeme.ui.component.DrawingToolBar
 import com.example.mymeme.ui.component.SaveButton
+import com.example.mymeme.ui.component.SaveResultDialog
 import com.example.mymeme.ui.model.DrawingColor
 import com.example.mymeme.ui.model.DrawingPath
 import com.example.mymeme.ui.model.DrawingTool
@@ -41,9 +56,12 @@ import com.example.mymeme.ui.model.TextElement
 import com.example.mymeme.ui.model.Width
 import com.example.mymeme.ui.navigation.MyMemeNavigationAction
 import com.example.mymeme.ui.navigation.MyMemeNavigator
+import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Black
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.typography.toTextStyle
+import java.io.File
+import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,11 +72,11 @@ fun MyMemeScreen(
 ) {
     var drawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
     var textElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
-    
+
     // Undo/Redo 히스토리 스택 추가
     var deletedDrawingPaths by remember { mutableStateOf<List<DrawingPath>>(emptyList()) }
     var deletedTextElements by remember { mutableStateOf<List<TextElement>>(emptyList()) }
-    
+
     var currentTool by remember {
         mutableStateOf(
             DrawingTool(
@@ -72,6 +90,11 @@ fun MyMemeScreen(
     var isTextMode by remember { mutableStateOf(false) }
     var isBottomToolBarVisible by remember { mutableStateOf(true) }
     var isEditMode by remember { mutableStateOf(true) }  // 편집 모드 상태 (true: 편집, false: 저장)
+
+    // 저장 결과 다이얼로그 상태
+    var showSaveSuccessDialog by remember { mutableStateOf(false) }
+    var showSaveErrorDialog by remember { mutableStateOf(false) }
+
     val interactionSource = remember { MutableInteractionSource() }
 
     // ViewModel 상태 수집
@@ -86,6 +109,9 @@ fun MyMemeScreen(
     LaunchedEffect(currentTool) {
         Log.d("MyMemeScreen", "currentTool:${currentTool}")
     }
+
+    val context = LocalContext.current
+    val rootView = LocalView.current
 
     // Undo 함수: 마지막에 추가된 요소를 삭제하고 히스토리에 저장
     val onUndo = {
@@ -123,6 +149,125 @@ fun MyMemeScreen(
     val canUndo = drawingPaths.isNotEmpty() || textElements.isNotEmpty()
     val canRedo = deletedDrawingPaths.isNotEmpty() || deletedTextElements.isNotEmpty()
 
+
+    // Bitmap을 앨범에 저장하는 함수
+    fun saveBitmapToGallery(bitmap: Bitmap) {
+        try {
+            val filename = "meme_${System.currentTimeMillis()}.jpg"
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10 이상에서는 MediaStore API 사용
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                }
+
+                val uri = context.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                uri?.let { imageUri ->
+                    context.contentResolver.openOutputStream(imageUri)?.use { outputStream ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                    }
+                    Log.d("MyMemeScreen", "이미지가 앨범에 저장되었습니다: $imageUri")
+                    showSaveSuccessDialog = true
+                }
+            } else {
+                // Android 9 이하에서는 File API 사용
+                val picturesDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                val imageFile = File(picturesDir, filename)
+
+                FileOutputStream(imageFile).use { outputStream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                }
+
+                // MediaStore에 등록
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.MediaColumns.DATA, imageFile.absolutePath)
+                }
+
+                context.contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentValues
+                )
+                Log.d("MyMemeScreen", "이미지가 앨범에 저장되었습니다: ${imageFile.absolutePath}")
+                showSaveSuccessDialog = true
+            }
+
+            // 메모리 해제
+            bitmap.recycle()
+
+        } catch (e: Exception) {
+            Log.e("MyMemeScreen", "이미지 저장 실패", e)
+            showSaveErrorDialog = true
+        }
+    }
+
+    // DrawingCanvas 영역을 캡처하고 앨범에 저장하는 함수
+    fun captureDrawingCanvas() {
+        try {
+            // DrawingCanvas의 크기와 위치를 고려하여 캡처
+            // 전체 화면에서 DrawingCanvas 영역만 캡처
+            val bitmap = Bitmap.createBitmap(
+                rootView.width,
+                rootView.height,
+                Bitmap.Config.ARGB_8888
+            )
+
+            val canvas = android.graphics.Canvas(bitmap)
+            rootView.draw(canvas)
+
+            // 앨범에 저장
+            saveBitmapToGallery(bitmap)
+
+        } catch (e: Exception) {
+            Log.e("MyMemeScreen", "DrawingCanvas 캡처 실패", e)
+            showSaveErrorDialog = true
+        }
+    }
+
+    // 권한 요청을 위한 launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // 권한이 승인되면 저장 실행
+            captureDrawingCanvas()
+        } else {
+            // 권한이 거부되면 사용자에게 알림
+            showSaveErrorDialog = true
+        }
+    }
+
+    // 권한 확인 후 저장하는 함수
+    fun checkPermissionAndSave() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10 이상에서는 권한이 필요 없음
+            captureDrawingCanvas()
+        } else {
+            // Android 9 이하에서는 저장 권한 확인
+            when {
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    captureDrawingCanvas()
+                }
+
+                else -> {
+                    permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            }
+        }
+    }
+
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -132,14 +277,27 @@ fun MyMemeScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navigator.navigate(MyMemeNavigationAction.NavigateBack)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "뒤로 가기",
-                            tint = Color.White
-                        )
+                    Spacer(Modifier.width(14.dp))
+                    if (isEditMode) {
+                        IconButton(onClick = {
+                            navigator.navigate(MyMemeNavigationAction.NavigateBack)
+                        }) {
+                            Text(
+                                text = "취소",
+                                style = Body2.toTextStyle(),
+                                color = Color.White,
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = {
+                            navigator.navigate(MyMemeNavigationAction.NavigateBack)
+                        }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_back),
+                                contentDescription = "뒤로 가기",
+                                tint = Color.White
+                            )
+                        }
                     }
                 },
                 actions = {
@@ -147,17 +305,19 @@ fun MyMemeScreen(
                         // 편집 모드일 때: "완료" 텍스트 표시
                         Box(
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.clickable(
-                                indication = null,
-                                interactionSource = interactionSource
-                            ) {
-                                isEditMode = !isEditMode
-                                if (isEditMode) {
-                                    isBottomToolBarVisible = true  // 편집 모드로 전환 시 플로팅 버튼 표시
-                                } else {
-                                    isBottomToolBarVisible = false  // 저장 모드로 전환 시 플로팅 버튼 숨김
+                            modifier = Modifier
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource
+                                ) {
+                                    isEditMode = !isEditMode
+                                    if (isEditMode) {
+                                        isBottomToolBarVisible = true  // 편집 모드로 전환 시 플로팅 버튼 표시
+                                    } else {
+                                        isBottomToolBarVisible = false  // 저장 모드로 전환 시 플로팅 버튼 숨김
+                                    }
                                 }
-                            }
+                                .padding(end = 14.dp)
                         ) {
                             Text(
                                 text = "완료",
@@ -169,22 +329,24 @@ fun MyMemeScreen(
                         // 저장 모드일 때: "편집" 텍스트 표시
                         Box(
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.clickable(
-                                indication = null,
-                                interactionSource = interactionSource
-                            ) {
-                                isEditMode = !isEditMode
-                                if (isEditMode) {
-                                    isBottomToolBarVisible = true  // 편집 모드로 전환 시 플로팅 버튼 표시
-                                } else {
-                                    isBottomToolBarVisible = false  // 저장 모드로 전환 시 플로팅 버튼 숨김
+                            modifier = Modifier
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = interactionSource
+                                ) {
+                                    isEditMode = !isEditMode
+                                    if (isEditMode) {
+                                        isBottomToolBarVisible = true  // 편집 모드로 전환 시 플로팅 버튼 표시
+                                    } else {
+                                        isBottomToolBarVisible = false  // 저장 모드로 전환 시 플로팅 버튼 숨김
+                                    }
                                 }
-                            }
+                                .padding(end = 14.dp)
                         ) {
-                            Text(
-                                text = "편집",
-                                style = Body2.toTextStyle(),
-                                color = Color.White,
+                            Icon(
+                                painter = painterResource(R.drawable.ic_toolbox),
+                                contentDescription = "편집 모드 전환",
+                                tint = Color.White
                             )
                         }
                     }
@@ -283,8 +445,35 @@ fun MyMemeScreen(
             if (!isEditMode) {
                 SaveButton(
                     onSave = {
-                        // TODO: 저장 로직 구현
+                        // 권한 확인 후 DrawingCanvas 캡처 및 저장
+                        checkPermissionAndSave()
                     }
+                )
+            }
+        }
+
+        // 저장 성공 다이얼로그
+        if (showSaveSuccessDialog) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                SaveResultDialog(
+                    isSuccess = true,
+                    onDismiss = { showSaveSuccessDialog = false }
+                )
+            }
+        }
+
+        // 저장 실패 다이얼로그
+        if (showSaveErrorDialog) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                SaveResultDialog(
+                    isSuccess = false,
+                    onDismiss = { showSaveErrorDialog = false }
                 )
             }
         }
@@ -299,7 +488,7 @@ fun PreviewMyMemeScreen() {
             // Preview에서는 아무것도 하지 않음
         }
     }
-    
+
     MyMemeScreen(
         id = "1",
         navigator = mockNavigator

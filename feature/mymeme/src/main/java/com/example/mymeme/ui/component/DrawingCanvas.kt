@@ -141,7 +141,7 @@ fun DrawingCanvas(
                                         // 그리기 세션 시작 시점의 도구 설정으로 DrawingPath 생성
                                         val newPath = DrawingPath(
                                             points = currentPoints,
-                                            strokeWidth = drawingSessionTool.strokeWidth.realWidth.toFloat(),
+                                            strokeWidth = drawingSessionTool.strokeWidth.canvasWidth.toFloat(),
                                             opacity = drawingSessionTool.opacity,
                                             color = drawingSessionTool.color
                                         )
@@ -187,7 +187,7 @@ fun DrawingCanvas(
                     path = path,
                     color = drawingSessionTool.color.color.copy(alpha = drawingSessionTool.opacity),
                     style = Stroke(
-                        width = drawingSessionTool.strokeWidth.realWidth.toFloat(),
+                        width = drawingSessionTool.strokeWidth.canvasWidth.toFloat(),
                         cap = StrokeCap.Round,
                         join = StrokeJoin.Round
                     )

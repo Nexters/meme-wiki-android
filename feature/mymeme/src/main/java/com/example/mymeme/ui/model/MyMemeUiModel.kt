@@ -1,8 +1,8 @@
 package com.example.mymeme.ui.model
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import com.mimu_bird.designsystem.R
-import androidx.compose.ui.geometry.Offset
 
 data class MyMemeUiModel(
     val imageUrl: String,
@@ -15,12 +15,13 @@ data class DrawingTool(
     val color: DrawingColor
 )
 
-enum class Width(val guiWidth:Int, val realWidth:Int){
-    LEVEL1(3,1),
-    LEVEL2(6,2),
-    LEVEL3(9,3),
-    LEVEL4(12,4),
-    LEVEL5(15,5)
+//guiWidth: DrawingToolbar ui상 나와야하는 width, realWidth: 단계 값 1~5, canvasWidth: 캔버스의 path 실제 굵기
+enum class Width(val guiWidth: Int, val realWidth: Int, val canvasWidth: Int) {
+    LEVEL1(3, 1, 6),
+    LEVEL2(6, 2, 13),
+    LEVEL3(9, 3, 24),
+    LEVEL4(12, 4, 32),
+    LEVEL5(15, 5, 44)
 }
 
 enum class DrawingColor(

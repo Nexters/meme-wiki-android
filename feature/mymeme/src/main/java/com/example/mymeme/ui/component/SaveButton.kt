@@ -34,8 +34,8 @@ fun SaveButton(
             .padding(bottom = 70.dp)
             .width(130.dp)
             .height(60.dp)
-            .background(color = Gray11, shape = RoundedCornerShape(24.dp))
-            .border(width = 1.dp, shape = RoundedCornerShape(24.dp), color = Gray11)
+            .background(color = Gray11, shape = RoundedCornerShape(16.dp))
+            .border(width = 1.dp, shape = RoundedCornerShape(16.dp), color = Gray11)
             .clickable { onSave() },
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically

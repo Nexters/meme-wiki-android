@@ -131,7 +131,7 @@ fun MainScreen(
             rank = 0
         )
     }
-    val bottom5Memes = sharedMemes.drop(sharedMemes.size - 5).map { sharedMeme ->
+    val bottom5Memes = sharedMemes.drop((sharedMemes.size - 5).coerceAtLeast(0)).map { sharedMeme ->
         BriefMemeUiModel(
             id = sharedMeme.id.toString(),
             imageUrl = sharedMeme.imageUrl,

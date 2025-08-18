@@ -22,7 +22,7 @@ import com.seomseom.category.ui.CategoryScreen
 @Composable
 fun MemeWikiNavGraph(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.MyMeme.route
+    startDestination: String = Screen.Main.route
 ) {
     val appNavigator = AppNavigator(navController)
 

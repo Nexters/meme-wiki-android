@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.mimu_bird.designsystem.theme.Gray8
 import com.mimu_bird.designsystem.theme.PastelGradientPalette
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
@@ -41,65 +42,83 @@ fun ShareMemItem(
     Column (
         modifier = modifier
     ){
-        Box(
-            modifier = Modifier
-                .border(
-                    width = 2.dp,
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .clip(RoundedCornerShape(8.dp))
-                .background(
-                    brush = Brush.linearGradient(
-                        listOf(
-                            color.leftTop,
-                            color.rightBottom
-                        )
-                    ),
-                    alpha = 1f
-                )
-                .padding(top = 6.dp, start = 6.dp, end = 6.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Text(
-                text = "${item.title}",
-                style = Subhead2.toTextStyle(),
-                color = Color.Black,
-                textAlign = TextAlign.Start,
+        if (item.imageUrl.isNotEmpty()) {
+            Box(
                 modifier = Modifier
-                    .width(200.dp)
-                    .height(36.dp)
-                    .wrapContentHeight(align = Alignment.CenterVertically)
-                    .padding(start = 5.dp)
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 36.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .border(
+                        width = 2.dp,
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                color.leftTop,
+                                color.rightBottom
+                            )
+                        ),
+                        alpha = 1f
+                    )
+                    .padding(top = 6.dp, start = 6.dp, end = 6.dp),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                // 메인 이미지 컨테이너
-                Box(
+                Text(
+                    text = "${item.title}",
+                    style = Subhead2.toTextStyle(),
+                    color = Color.Black,
+                    textAlign = TextAlign.Start,
                     modifier = Modifier
                         .width(200.dp)
-                        .height(172.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
-                        .border(
-                            width = 1.dp,
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(12.dp)
-                        )
+                        .height(36.dp)
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                        .padding(start = 5.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 36.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AsyncImage(
+                    // 메인 이미지 컨테이너
+                    Box(
                         modifier = Modifier
-                            .width(188.dp)
-                            .height(130.dp),
-                        model = item.imageUrl,
-                        contentDescription = "meme image",
-                        contentScale = ContentScale.Crop
-                    )
+                            .width(200.dp)
+                            .height(172.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White)
+                            .border(
+                                width = 1.dp,
+                                color = Color.Transparent,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .width(188.dp)
+                                .height(130.dp),
+                            model = item.imageUrl,
+                            contentDescription = "meme image",
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
+            }
+        } else {
+            // 이미지가 없을 때 플레이스홀더 표시
+            Box(
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(172.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .background(Gray8),
+                contentAlignment = Alignment.Center
+            ) {
             }
         }
     }

@@ -55,6 +55,7 @@ import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
 import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.ui.model.BriefMemeUiModel
+import com.mimu_bird.ui.model.DUMMY_SHARED_MEMES
 import kotlinx.coroutines.delay
 
 /**
@@ -69,7 +70,7 @@ private fun AutoScrollingLazyRow(
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(items.size) {
-        if (items.isNotEmpty()) {
+        if (items.isNotEmpty() && !items.first().id.startsWith("dummy")) {
             Log.d(
                 "AutoScrollingLazyRow",
                 "애니메이션 시작: items.size=${items.size}, reverseLayout=$reverseLayout"
@@ -122,22 +123,31 @@ fun MainScreen(
     val sharedMemes by viewModel.sharedMemes.collectAsState()
     val timeUntilNextUpdate by viewModel.timeUntilNextUpdate.collectAsState()
 
-    // 상위 5개와 하위 5개로 분리
-    val top5Memes = sharedMemes.take(5).map { sharedMeme ->
-        BriefMemeUiModel(
-            id = sharedMeme.id.toString(),
-            imageUrl = sharedMeme.imageUrl,
-            title = sharedMeme.name,
-            rank = 0
-        )
+    // 상위 5개와 하위 5개로 분리 (서버 데이터가 없으면 더미 데이터 사용)
+    val top5Memes = if (sharedMemes.isNotEmpty()) {
+        sharedMemes.take(5).map { sharedMeme ->
+            BriefMemeUiModel(
+                id = sharedMeme.id.toString(),
+                imageUrl = sharedMeme.imageUrl,
+                title = sharedMeme.name,
+                rank = 0
+            )
+        }
+    } else {
+        DUMMY_SHARED_MEMES.take(5)
     }
-    val bottom5Memes = sharedMemes.drop((sharedMemes.size - 5).coerceAtLeast(0)).map { sharedMeme ->
-        BriefMemeUiModel(
-            id = sharedMeme.id.toString(),
-            imageUrl = sharedMeme.imageUrl,
-            title = sharedMeme.name,
-            rank = 0
-        )
+    
+    val bottom5Memes = if (sharedMemes.isNotEmpty()) {
+        sharedMemes.drop((sharedMemes.size - 5).coerceAtLeast(0)).map { sharedMeme ->
+            BriefMemeUiModel(
+                id = sharedMeme.id.toString(),
+                imageUrl = sharedMeme.imageUrl,
+                title = sharedMeme.name,
+                rank = 0
+            )
+        }
+    } else {
+        DUMMY_SHARED_MEMES.take(5)
     }
 
     val topCategoryColor = listOf(
@@ -281,16 +291,31 @@ fun MainScreen(
                     modifier = Modifier.padding(bottom = 36.dp)
                 )
                 BestMemeView(
-                    items = topRatedMemes.mapIndexed { index, meme ->
-                        BriefMemeUiModel(
-                            id = meme.id.toString(),
-                            imageUrl = meme.imageUrl,
-                            title = meme.title,
-                            rank = index + 1
+                    items = if (topRatedMemes.isNotEmpty()) {
+                        topRatedMemes.mapIndexed { index, meme ->
+                            BriefMemeUiModel(
+                                id = meme.id.toString(),
+                                imageUrl = meme.imageUrl,
+                                title = meme.title,
+                                rank = index + 1
+                            )
+                        }.take(6)
+                    } else {
+                        // 서버 데이터가 없을 때 더미 데이터 사용
+                        listOf(
+                            BriefMemeUiModel("dummy1", "", "인기 밈 1", 1),
+                            BriefMemeUiModel("dummy2", "", "인기 밈 2", 2),
+                            BriefMemeUiModel("dummy3", "", "인기 밈 3", 3),
+                            BriefMemeUiModel("dummy4", "", "인기 밈 4", 4),
+                            BriefMemeUiModel("dummy5", "", "인기 밈 5", 5),
+                            BriefMemeUiModel("dummy6", "", "인기 밈 6", 6)
                         )
-                    }.take(6),
+                    },
                     onClickMeme = {
-                        navigator.navigate(MainNavigationAction.NavigateToDetail(it.toInt()))
+                        // 더미 데이터일 때는 클릭 무시
+                        if (!it.startsWith("dummy")) {
+                            navigator.navigate(MainNavigationAction.NavigateToDetail(it.toInt()))
+                        }
                     }
                 )
                 Spacer(Modifier.height(53.dp))

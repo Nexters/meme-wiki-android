@@ -7,8 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import java.net.URLDecoder
-import java.nio.charset.StandardCharsets
 import com.example.mymeme.ui.MyMemeScreen
 import com.meme.search.ui.MemeSearchScreen
 import com.mimu_bird.detail.ui.MemeDetailScreen
@@ -24,7 +22,7 @@ import com.seomseom.category.ui.CategoryScreen
 @Composable
 fun MemeWikiNavGraph(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Screen.Main.route
+    startDestination: String = Screen.MyMeme.route
 ) {
     val appNavigator = AppNavigator(navController)
 

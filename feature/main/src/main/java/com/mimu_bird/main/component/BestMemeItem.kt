@@ -132,7 +132,7 @@ private fun BestMemeItem(
             text = item.title,
             style = Subhead2.toTextStyle(),
             color = Color.Black,
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.Center,
             modifier = Modifier
                 .background(color = color)
                 .height(36.dp)

@@ -19,6 +19,7 @@ val Gray4 = Color(0xFFB6B9BD)
 val Gray3 = Color(0xFFD4D6D9)
 val Gray2 = Color(0xFFE4E6EB)
 val Gray1 = Color(0xFFFBFBFB)
+val Gray0 = Color(0xFFF2F2F6)
 
 // Gradient
 val Gra_Purple = Color(0xFF7B00FF)

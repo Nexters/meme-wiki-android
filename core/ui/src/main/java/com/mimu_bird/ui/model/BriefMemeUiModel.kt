@@ -13,3 +13,37 @@ val TEST_BRIEF_MEME_UI = BriefMemeUiModel(
     title = "미안하다 이거 보여주려고 어그로끌었다",
     rank = 1
 )
+
+// 공유된 밈 섹션용 더미 데이터
+val DUMMY_SHARED_MEMES = listOf(
+    BriefMemeUiModel(
+        id = "dummy1",
+        imageUrl = "",
+        title = "",
+        rank = 1
+    ),
+    BriefMemeUiModel(
+        id = "dummy2",
+        imageUrl = "",
+        title = "",
+        rank = 2
+    ),
+    BriefMemeUiModel(
+        id = "dummy3",
+        imageUrl = "",
+        title = "",
+        rank = 3
+    ),
+    BriefMemeUiModel(
+        id = "dummy4",
+        imageUrl = "",
+        title = "",
+        rank = 4
+    ),
+    BriefMemeUiModel(
+        id = "dummy5",
+        imageUrl = "",
+        title = "",
+        rank = 5
+    )
+)

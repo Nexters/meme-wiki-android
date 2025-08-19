@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.mimu_bird.designsystem.theme.Gray8
 import com.mimu_bird.designsystem.theme.PastelGradientPalette
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
@@ -85,63 +86,74 @@ private fun BestMemeItem(
     item: BriefMemeUiModel,
     onClickMeme: (String) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .aspectRatio(0.82f)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable {
-                item.id.let(onClickMeme)
-            }
-    ) {
-        Box(modifier = Modifier.weight(1f)) {
-            AsyncImage(
-                modifier = Modifier.fillMaxSize(),
-                model = item.imageUrl,
-                contentDescription = "best meme item",
-                contentScale = ContentScale.Crop
-            )
-            Box(Modifier.padding(top = 8.dp, start = 8.dp)) {
-                Text(
-                    text = "${item.rank}위",
-                    style = Subhead2.toTextStyle(),
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .background(color = color, shape = RoundedCornerShape(6.dp))
-                        .height(24.dp)
-                        .width(38.dp)
-                        .wrapContentHeight(align = Alignment.CenterVertically),
+    if (item.imageUrl.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .aspectRatio(0.82f)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable {
+                    item.id.let(onClickMeme)
+                }
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                AsyncImage(
+                    modifier = Modifier.fillMaxSize(),
+                    model = item.imageUrl,
+                    contentDescription = "best meme item",
+                    contentScale = ContentScale.Crop
                 )
-            }
-            Spacer(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colorStops = arrayOf(
-                                0.0f to color.copy(alpha = 0f),
-                                0.4f to color.copy(alpha = 0f),
-                                0.7f to color.copy(alpha = 0.2f),
-                                1.0f to color.copy(alpha = 0.5f)
+                Box(Modifier.padding(top = 8.dp, start = 8.dp)) {
+                    Text(
+                        text = "${item.rank}위",
+                        style = Subhead2.toTextStyle(),
+                        color = Color.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .background(color = color, shape = RoundedCornerShape(6.dp))
+                            .height(24.dp)
+                            .width(38.dp)
+                            .wrapContentHeight(align = Alignment.CenterVertically),
+                    )
+                }
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colorStops = arrayOf(
+                                    0.0f to color.copy(alpha = 0f),
+                                    0.4f to color.copy(alpha = 0f),
+                                    0.7f to color.copy(alpha = 0.2f),
+                                    1.0f to color.copy(alpha = 0.5f)
+                                )
                             )
                         )
-                    )
+                )
+            }
+            Text(
+                text = item.title,
+                style = Subhead2.toTextStyle(),
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .background(color = color)
+                    .height(36.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight(align = Alignment.CenterVertically)
+                    .padding(start = 16.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-        Text(
-            text = item.title,
-            style = Subhead2.toTextStyle(),
-            color = Color.Black,
-            textAlign = TextAlign.Start,
+    } else {
+        // 이미지가 없을 때 플레이스홀더 표시
+        Box(
             modifier = Modifier
-                .background(color = color)
-                .height(36.dp)
-                .fillMaxWidth()
-                .wrapContentHeight(align = Alignment.CenterVertically)
-                .padding(start = 16.dp),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+                .aspectRatio(0.82f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Gray8),
+            contentAlignment = Alignment.Center
+        ) {}
     }
 }
 

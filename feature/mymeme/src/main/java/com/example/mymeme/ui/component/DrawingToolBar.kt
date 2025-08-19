@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -244,13 +245,17 @@ fun DrawingToolBar(
 }
 
 fun Painter.toImageBitmap(
-    size: Size,
     density: Density,
     layoutDirection: LayoutDirection,
+    targetSizeDp: Dp,
+    targetHeightDp: Dp
 ): ImageBitmap {
-    val bitmap = ImageBitmap(272, size.height.toInt())
+    val widthPx = with(density) { targetSizeDp.roundToPx() }
+    val heightPx = with(density) { targetHeightDp.roundToPx() }
+
+    val bitmap = ImageBitmap(widthPx, heightPx)
     val canvas = Canvas(bitmap)
-    CanvasDrawScope().draw(density, layoutDirection, canvas, size) {
+    CanvasDrawScope().draw(density, layoutDirection, canvas, Size(widthPx.toFloat(), heightPx.toFloat())) {
         draw(size)
     }
     return bitmap

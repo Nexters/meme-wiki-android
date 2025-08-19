@@ -1,6 +1,7 @@
 package com.mimu_bird.detail.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -89,7 +90,44 @@ fun MemeDetailScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
 
-                    webViewClient = WebViewClient()
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            url: String?
+                        ): Boolean {
+                            Log.d("MemeDetailScreen", "카카오링크 처리: $url")
+
+                            try {
+                                // URL 파싱
+                                val uri = Uri.parse(url)
+                                val text = uri.getQueryParameter("text") ?: ""
+                                val url = uri.getQueryParameter("url") ?: ""
+
+                                // 카카오톡 공유 Intent 생성
+                                val shareIntent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, "$text\n\n$url")
+                                    type = "text/plain"
+                                    setPackage("com.kakao.talk") // 카카오톡으로만 제한
+                                }
+
+                                // 카카오톡이 설치되어 있으면 실행
+                                if (shareIntent.resolveActivity(context.packageManager) != null) {
+                                    context.startActivity(shareIntent)
+                                    Log.d("MemeDetailScreen", "카카오톡 공유 성공")
+                                    return true
+                                } else {
+                                    // 카카오톡이 설치되지 않은 경우
+                                    Log.d("MemeDetailScreen", "카카오톡 없음")
+                                    return true
+                                }
+                            } catch (e: Exception) {
+                                Log.e("MemeDetailScreen", "카카오링크 처리 실패", e)
+                                return false
+                            }
+                            return false
+                        }
+                    }
                     webChromeClient = WebChromeClient()
 
                     settings.let { // 세부 세팅 등록

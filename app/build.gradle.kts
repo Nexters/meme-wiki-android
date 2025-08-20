@@ -21,4 +21,5 @@ dependencies {
     implementation(libs.androidx.compose.paging)
     implementation(libs.androidx.compose.navigation)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.kakaoAll)
 }

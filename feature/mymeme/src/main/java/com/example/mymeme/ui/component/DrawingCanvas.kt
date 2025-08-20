@@ -58,9 +58,16 @@ fun DrawingCanvas(
     var currentText by remember { mutableStateOf("") }
     var currentTextColor by remember { mutableStateOf(currentTool.color) }
     var currentTextOpacity by remember { mutableStateOf(1.0f) }
+    var currentTextSize by remember { mutableStateOf(18) }
     var isTextEditDialogVisible by remember { mutableStateOf(false) }
     var selectedTextId by remember { mutableStateOf<String?>(null) }
     var canvasSize by remember { mutableStateOf(IntSize(0, 0)) }
+
+    // 모든 TextEditDialog의 표시 상태를 통합 관리
+    var allDialogsVisible by remember { mutableStateOf(false) }
+
+    // TextSizeDialog의 표시 상태를 통합 관리
+    var showTextSizeDialog by remember { mutableStateOf(false) }
 
     // currentTool 변경을 로그로만 확인 (currentPath 업데이트 제거)
     LaunchedEffect(currentTool) {
@@ -83,13 +90,30 @@ fun DrawingCanvas(
             model = imageUrl,
             contentDescription = "편집할 밈 이미지",
             contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    enabled = isTextMode
+                ) {
+                    //배경 클릭 시 모든 다이얼로그 숨기기
+                    isTextEditDialogVisible = false
+                    allDialogsVisible = false
+                    showTextSizeDialog = false
+                }
         )
 
         // 그리기 캔버스
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
+                .clickable(
+                    enabled = isTextMode
+                ) {
+                    //배경 클릭 시 모든 다이얼로그 숨기기
+                    isTextEditDialogVisible = false
+                    allDialogsVisible = false
+                    showTextSizeDialog = false
+                }
                 .pointerInput(currentTool) {
                     detectDragGestures(
                         onDragStart = { offset ->
@@ -211,7 +235,12 @@ fun DrawingCanvas(
                                     textElement.position.x + dragAmount.x,
                                     textElement.position.y + dragAmount.y
                                 )
-                                onTextUpdated(textElement.copy(position = newPosition))
+                                onTextUpdated(
+                                    textElement.copy(
+                                        position = newPosition,
+                                        fontSize = currentTextSize.toFloat()
+                                    )
+                                )
                             }
                         )
                     }
@@ -219,7 +248,12 @@ fun DrawingCanvas(
                 BasicTextField(
                     value = textElement.text,
                     onValueChange = { newText ->
-                        onTextUpdated(textElement.copy(text = newText))
+                        onTextUpdated(
+                            textElement.copy(
+                                text = newText,
+                                fontSize = currentTextSize.toFloat()
+                            )
+                        )
                     },
                     textStyle = TextStyle(
                         fontSize = textElement.fontSize.sp,
@@ -233,6 +267,7 @@ fun DrawingCanvas(
                             currentText = textElement.text
                             currentTextColor = textElement.color
                             currentTextOpacity = textElement.opacity
+                            currentTextSize = textElement.fontSize.toInt()
                             isTextEditDialogVisible = true
                         }
                 )
@@ -242,6 +277,7 @@ fun DrawingCanvas(
         // DraggableTextInput을 언제든지 표시
         var additionalTextInputs by remember { mutableStateOf(0) }
 
+        // 모든 TextEditDialog의 표시 상태를 통합 관리
         // 텍스트 모드가 활성화되면 자동으로 첫 번째 UI 생성 (기존 UI는 유지)
         LaunchedEffect(isTextMode) {
             if (isTextMode && additionalTextInputs == 0) {
@@ -266,7 +302,9 @@ fun DrawingCanvas(
             var additionalCurrentText by remember { mutableStateOf("") }
             var additionalTextColor by remember { mutableStateOf(currentTextColor) }
             var additionalTextOpacity by remember { mutableStateOf(currentTextOpacity) }
-            var isTextEditDialogVisible by remember { mutableStateOf(false) }  // 각 UI마다 개별적인 편집 다이얼로그 상태
+            var additionalTextSize by remember { mutableStateOf(currentTextSize) }  // 각 UI마다 독립적인 텍스트 크기
+            var additionalDialogVisible by remember { mutableStateOf(false) }  // 각 UI마다 독립적인 다이얼로그 표시 상태
+            var additionalTextSizeDialogVisible by remember { mutableStateOf(false) }  // 각 UI마다 독립적인 TextSizeDialog 표시 상태
             var currentPosition by remember { mutableStateOf(Offset.Zero) }  // 각 UI의 현재 위치
 
             // positionIndex는 0부터 시작하되, 각 UI마다 다른 위치에 배치
@@ -283,6 +321,7 @@ fun DrawingCanvas(
                 onTextChange = { additionalCurrentText = it },
                 currentTextColor = additionalTextColor,
                 currentTextOpacity = additionalTextOpacity,
+                currentTextSize = additionalTextSize,
                 onTextAdded = { text ->
                     Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 텍스트 추가 호출됨: '$text'")
                     val centerOffset = Offset(
@@ -293,7 +332,8 @@ fun DrawingCanvas(
                         text = text,
                         position = centerOffset,
                         color = additionalTextColor,
-                        opacity = additionalTextOpacity
+                        opacity = additionalTextOpacity,
+                        fontSize = additionalTextSize.toFloat()
                     )
                     Log.d(
                         "DrawingCanvas",
@@ -308,7 +348,7 @@ fun DrawingCanvas(
                 },
                 onEditClick = { position ->
                     Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 편집하기 클릭됨, 위치: $position")
-                    isTextEditDialogVisible = !isTextEditDialogVisible  // 토글 방식으로 변경
+                    additionalDialogVisible = !additionalDialogVisible  // 개별 상태로 토글
                 },
                 onDelete = {
                     Log.d("DrawingCanvas", "DraggableTextInput[$index]에서 삭제 요청됨")
@@ -341,24 +381,32 @@ fun DrawingCanvas(
             )
 
             // 각 DraggableTextInput에 매칭되는 TextEditDialog 생성
-            if (isTextEditDialogVisible && isTextMode) {
+            if (additionalDialogVisible && isTextMode) {
                 TextEditDialog(
                     currentColor = additionalTextColor,
                     onColorChange = { additionalTextColor = it },
                     currentOpacity = additionalTextOpacity,
                     onOpacityChange = { additionalTextOpacity = it },
+                    currentTextSize = additionalTextSize,
+                    onTextSizeChange = { additionalTextSize = it },
+                    showTextSizeDialog = additionalTextSizeDialogVisible,
+                    onTextSizeDialogVisibilityChange = { visible ->
+                        additionalTextSizeDialogVisible = visible
+                    },
                     onDelete = {
                         Log.d("DrawingCanvas", "TextEditDialog[$index]에서 삭제 요청됨")
                         // 해당 DraggableTextInput과 TextEditDialog 제거
                         additionalTextInputs--
-                        isTextEditDialogVisible = false
+                        additionalDialogVisible = false
+                        additionalTextSizeDialogVisible = false
                         Log.d(
                             "DrawingCanvas",
                             "UI[$index] 삭제됨, additionalTextInputs: $additionalTextInputs"
                         )
                     },
                     onClose = {
-                        isTextEditDialogVisible = false
+                        additionalDialogVisible = false
+                        additionalTextSizeDialogVisible = false
                     },
                     modifier = Modifier.offset(
                         x = (currentPosition.x - 40).dp,

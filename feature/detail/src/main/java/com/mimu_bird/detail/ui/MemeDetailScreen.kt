@@ -1,5 +1,6 @@
 package com.mimu_bird.detail.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -26,10 +27,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
+import com.kakao.sdk.share.ShareClient
+import com.kakao.sdk.template.model.Content
+import com.kakao.sdk.template.model.FeedTemplate
+import com.kakao.sdk.template.model.Link
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Gray1
 import com.mimu_bird.designsystem.theme.Gray10
@@ -40,12 +46,12 @@ import org.json.JSONObject
 @Composable
 fun MemeDetailScreen(
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
     memeId: Int,
     navController: NavController,
     navigator: MemeDetailNavigator
 ) {
     val url = remember(memeId) {
-        println("https://meme-wiki.net/meme/$memeId")
         "https://meme-wiki.net/meme/$memeId"
     }
 
@@ -89,7 +95,21 @@ fun MemeDetailScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
 
-                    webViewClient = WebViewClient()
+                    webViewClient = object : WebViewClient() {
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            url: String?
+                        ): Boolean {
+                            Log.d("MemeDetailScreen", "카카오링크 처리: $url")
+
+                            try {
+                            } catch (e: Exception) {
+                                Log.e("MemeDetailScreen", "카카오링크 처리 실패", e)
+                                return false
+                            }
+                            return false
+                        }
+                    }
                     webChromeClient = WebChromeClient()
 
                     settings.let { // 세부 세팅 등록
@@ -114,6 +134,28 @@ fun MemeDetailScreen(
                                     context.startActivity(shareIntent)
                                 }
                             },
+                            onHandleKakao = { title, image ->
+                                val feedTemplate = FeedTemplate(
+                                    content = Content(
+                                        title = title,
+                                        imageUrl = image,
+                                        link = Link(
+                                            webUrl = "https://meme-wiki.net/meme/${memeId}",
+                                            mobileWebUrl = "https://meme-wiki.net/meme/${memeId}"
+                                        )
+                                    )
+                                )
+                                ShareClient.instance.shareDefault(
+                                    context = context,
+                                    feedTemplate
+                                ) { result, error ->
+                                    if (error != null) {
+                                        // TODO Error Handling
+                                    } else if (result != null){
+                                        context.startActivity(result.intent)
+                                    }
+                                }
+                            },
                             webView = this,
                             navigator = navigator,
                             id = memeId
@@ -132,6 +174,7 @@ fun MemeDetailScreen(
 
 class WebJavaScriptBridge(
     private val onHandleScriptCode: () -> Unit,
+    private val onHandleKakao: (String, String) -> Unit,
     private val webView: WebView,
     private val navigator: MemeDetailNavigator,
     private val id: Int
@@ -185,6 +228,14 @@ class WebJavaScriptBridge(
                     // SHARE_MEME 타입 이벤트 처리
                     Log.d("WebJavaScriptBridge", "SHARE_MEME 이벤트 수신")
                     onHandleScriptCode() // 기존 공유 로직 실행
+                }
+
+                "SHARE_KAKAO" -> {
+                    val data = JSONObject(jsonObject.getString("data"))
+                    onHandleKakao(
+                        data.getString("title"),
+                        data.getString("image")
+                    )
                 }
 
                 else -> {

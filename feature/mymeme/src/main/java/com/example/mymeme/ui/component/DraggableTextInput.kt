@@ -56,6 +56,7 @@ fun DraggableTextInput(
     onTextChange: (String) -> Unit,
     currentTextColor: DrawingColor,
     currentTextOpacity: Float,
+    currentTextSize: Int,
     onTextAdded: (String) -> Unit,
     onEditClick: (Offset) -> Unit,  // Offset 파라미터 추가
     onDelete: () -> Unit = {},  // 삭제 콜백 추가
@@ -216,7 +217,7 @@ fun DraggableTextInput(
                     value = currentText,
                     onValueChange = onTextChange,
                     textStyle = TextStyle(
-                        fontSize = 18.sp,
+                        fontSize = currentTextSize.sp,
                         color = currentTextColor.color.copy(alpha = currentTextOpacity),
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center
@@ -235,55 +236,57 @@ fun DraggableTextInput(
                         )
                 )
 
-                // 왼쪽 크기 조절 원
-                Image(
-                    painter = painterResource(R.drawable.pin),
-                    contentDescription = "텍스트 필드 크기 조절 원 왼쪽",
-                    modifier = Modifier
-                        .offset(x = (10).dp, y = (textFieldHeight / 2 - 6.dp))
-                        .size(12.dp)
-                        .clip(CircleShape)
-                        .background(Color.Blue)
-                        .pointerInput("leftResize") {
-                            detectDragGestures { _, dragAmount ->
-                                val newWidth = textFieldWidth - dragAmount.x.dp
-                                val newHeight = textFieldHeight + dragAmount.y.dp
+                if (isTextMode) {
+                    // 왼쪽 크기 조절 원
+                    Image(
+                        painter = painterResource(R.drawable.pin),
+                        contentDescription = "텍스트 필드 크기 조절 원 왼쪽",
+                        modifier = Modifier
+                            .offset(x = (10).dp, y = (textFieldHeight / 2 - 6.dp))
+                            .size(12.dp)
+                            .clip(CircleShape)
+                            .background(Color.Blue)
+                            .pointerInput("leftResize") {
+                                detectDragGestures { _, dragAmount ->
+                                    val newWidth = textFieldWidth - dragAmount.x.dp
+                                    val newHeight = textFieldHeight + dragAmount.y.dp
 
-                                // 텍스트 크기를 고려한 최소 크기 제한
-                                val minWidth =
-                                    (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
-                                val minHeight = 60.dp // 텍스트 높이 + 여백
+                                    // 텍스트 크기를 고려한 최소 크기 제한
+                                    val minWidth =
+                                        (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
+                                    val minHeight = 60.dp // 텍스트 높이 + 여백
 
-                                textFieldWidth = newWidth.coerceAtLeast(minWidth)
-                                textFieldHeight = newHeight.coerceAtLeast(minHeight)
+                                    textFieldWidth = newWidth.coerceAtLeast(minWidth)
+                                    textFieldHeight = newHeight.coerceAtLeast(minHeight)
+                                }
                             }
-                        }
-                )
+                    )
 
-                // 오른쪽 크기 조절 원
-                Image(
-                    painter = painterResource(R.drawable.pin),
-                    contentDescription = "텍스트 필드 크기 조절 원 오른쪽",
-                    modifier = Modifier
-                        .offset(x = (textFieldWidth - 23.dp), y = (textFieldHeight / 2 - 6.dp))
-                        .size(12.dp)
-                        .clip(CircleShape)
-                        .background(Color.Blue)
-                        .pointerInput("rightResize") {
-                            detectDragGestures { _, dragAmount ->
-                                val newWidth = textFieldWidth + dragAmount.x.dp
-                                val newHeight = textFieldHeight + dragAmount.y.dp
+                    // 오른쪽 크기 조절 원
+                    Image(
+                        painter = painterResource(R.drawable.pin),
+                        contentDescription = "텍스트 필드 크기 조절 원 오른쪽",
+                        modifier = Modifier
+                            .offset(x = (textFieldWidth - 23.dp), y = (textFieldHeight / 2 - 6.dp))
+                            .size(12.dp)
+                            .clip(CircleShape)
+                            .background(Color.Blue)
+                            .pointerInput("rightResize") {
+                                detectDragGestures { _, dragAmount ->
+                                    val newWidth = textFieldWidth + dragAmount.x.dp
+                                    val newHeight = textFieldHeight + dragAmount.y.dp
 
-                                // 텍스트 크기를 고려한 최소 크기 제한
-                                val minWidth =
-                                    (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
-                                val minHeight = 60.dp // 텍스트 높이 + 여백
+                                    // 텍스트 크기를 고려한 최소 크기 제한
+                                    val minWidth =
+                                        (currentText.length * 12).dp.coerceAtLeast(120.dp) // 텍스트 길이에 따른 최소 너비
+                                    val minHeight = 60.dp // 텍스트 높이 + 여백
 
-                                textFieldWidth = newWidth.coerceAtLeast(minWidth)
-                                textFieldHeight = newHeight.coerceAtLeast(minHeight)
+                                    textFieldWidth = newWidth.coerceAtLeast(minWidth)
+                                    textFieldHeight = newHeight.coerceAtLeast(minHeight)
+                                }
                             }
-                        }
-                )
+                    )
+                }
             }
         }
     }

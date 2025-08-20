@@ -35,6 +35,8 @@ hilt-navigation-compose = "1.2.0"
 # Etc
 desugar = "1.1.5"
 foundation = "1.8.3"
+## Kakao
+kakaoSdkVersion = "2.12.0"
 
 [libraries]
 # use in build-logic
@@ -84,6 +86,9 @@ retrofit-kotlin-serialization = { group = "com.jakewharton.retrofit", name = "re
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+# kakao
+kakaoAll = { group = "com.kakao.sdk", name = "v2-all", version="2.11.0"}
+kakaoShare = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakaoSdkVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

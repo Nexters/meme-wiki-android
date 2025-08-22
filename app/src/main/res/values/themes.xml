@@ -2,4 +2,12 @@
 <resources>
 
     <style name="Theme.Meme" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- 시스템 스플래시 화면 테마 -->
+    <style name="Theme.Meme.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_meme_wiki_splash_round</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.Meme</item>
+    </style>
 </resources>

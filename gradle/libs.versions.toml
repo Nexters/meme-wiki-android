@@ -35,6 +35,8 @@ hilt-navigation-compose = "1.2.0"
 # Etc
 desugar = "1.1.5"
 foundation = "1.8.3"
+# Splash
+splash = "1.0.1"
 ## Kakao
 kakaoSdkVersion = "2.12.0"
 
@@ -75,6 +77,8 @@ android-tool-desugar = { group = "com.android.tools", name = "desugar_jdk_libs",
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+# Splash
+androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
 # Network
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }

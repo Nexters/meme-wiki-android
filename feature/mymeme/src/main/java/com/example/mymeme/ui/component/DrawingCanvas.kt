@@ -1,6 +1,10 @@
 package com.example.mymeme.ui.component
 
+import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.PixelCopy
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -26,6 +30,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +53,9 @@ fun DrawingCanvas(
     onTextAdded: (TextElement) -> Unit,
     onTextUpdated: (TextElement) -> Unit,
     onTextDeleted: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCaptureRequest: ((Bitmap?) -> Unit)? = null, // 캡처 요청 콜백 (nullable Bitmap)
+    captureRequested: Boolean = false // 캡처 요청 상태
 ) {
     var currentPath by remember { mutableStateOf<Path?>(null) }
     var currentPoints by remember { mutableStateOf<List<Offset>>(emptyList()) }
@@ -69,13 +76,58 @@ fun DrawingCanvas(
     // TextSizeDialog의 표시 상태를 통합 관리
     var showTextSizeDialog by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
     // currentTool 변경을 로그로만 확인 (currentPath 업데이트 제거)
     LaunchedEffect(currentTool) {
-        Log.d("DrawingCanvas", "currentTool changed to: ${currentTool}")
-        // 새로운 그리기 세션이 시작되지 않은 상태에서만 drawingSessionTool 업데이트
         if (currentPath == null) {
             drawingSessionTool = currentTool
-            Log.d("DrawingCanvas", "Updated drawingSessionTool to: ${drawingSessionTool}")
+        }
+    }
+
+    // 화면 캡처 함수
+    fun captureCanvas() {
+        try {
+            // 현재 Activity의 Window 가져오기
+            val activity = context as? android.app.Activity
+            val window = activity?.window
+            
+            if (window != null) {
+                // DrawingCanvas의 실제 크기 사용
+                val width = canvasSize.width
+                val height = canvasSize.height
+                
+                // Bitmap 생성
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                
+                // PixelCopy 요청 - DrawingCanvas 영역만 캡처
+                PixelCopy.request(
+                    window,
+                    bitmap,
+                    { copyResult ->
+                        if (copyResult == PixelCopy.SUCCESS) {
+                            // 콜백으로 결과 전달
+                            onCaptureRequest?.invoke(bitmap)
+                        } else {
+                            // 실패 시에도 콜백 호출 (null 전달)
+                            onCaptureRequest?.invoke(null)
+                        }
+                    },
+                    Handler(Looper.getMainLooper())
+                )
+            } else {
+                onCaptureRequest?.invoke(null)
+            }
+            
+        } catch (e: Exception) {
+            onCaptureRequest?.invoke(null)
+        }
+    }
+
+    // 캡처 요청이 있을 때 자동으로 실행
+    LaunchedEffect(captureRequested) {
+        if (captureRequested) {
+            captureCanvas()
         }
     }
 
@@ -134,10 +186,6 @@ fun DrawingCanvas(
                                     moveTo(offset.x, offset.y)
                                 }
                                 currentPoints = listOf(offset)
-                                Log.d(
-                                    "DrawingCanvas",
-                                    "Started drawing with tool: ${drawingSessionTool}"
-                                )
                             }
                         },
                         onDrag = { _, dragAmount ->
@@ -415,5 +463,10 @@ fun DrawingCanvas(
                 )
             }
         }
+    }
+
+    // 외부에서 캡처 요청할 수 있는 함수 노출
+    fun requestCapture() {
+        captureCanvas()
     }
 }

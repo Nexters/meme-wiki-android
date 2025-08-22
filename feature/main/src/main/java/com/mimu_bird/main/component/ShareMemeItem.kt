@@ -39,18 +39,18 @@ fun ShareMemItem(
     color: PastelGradientPalette,
     item: BriefMemeUiModel,
 ) {
-    Column (
+    Column(
         modifier = modifier
-    ){
+    ) {
         if (item.imageUrl.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .border(
                         width = 2.dp,
                         color = Color.Transparent,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(10.dp)
                     )
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(10.dp))
                     .background(
                         brush = Brush.linearGradient(
                             listOf(
@@ -85,18 +85,23 @@ fun ShareMemItem(
                         modifier = Modifier
                             .width(200.dp)
                             .height(172.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(10.dp))
                             .background(Color.White)
                             .border(
                                 width = 1.dp,
                                 color = Color.Transparent,
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(10.dp)
                             )
                     ) {
                         AsyncImage(
                             modifier = Modifier
-                                .width(188.dp)
-                                .height(130.dp),
+                                .width(200.dp)
+                                .height(172.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color.Transparent,
+                                    shape = RoundedCornerShape(10.dp)
+                                ),
                             model = item.imageUrl,
                             contentDescription = "meme image",
                             contentScale = ContentScale.Crop

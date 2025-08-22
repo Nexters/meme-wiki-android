@@ -8,6 +8,6 @@ import dagger.hilt.android.HiltAndroidApp
 class MemeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        KakaoSdk.init(this, "2809949a56a1ee4334ca8abf60e4a392")
+        KakaoSdk.init(this, "")
     }
 }

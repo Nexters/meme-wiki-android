@@ -11,9 +11,9 @@ import com.example.mymeme.ui.MyMemeScreen
 import com.meme.search.ui.MemeSearchScreen
 import com.mimu_bird.detail.ui.MemeDetailScreen
 import com.mimu_bird.main.ui.MainScreen
+import com.mimu_bird.main.ui.MemeQuizScreen
 import com.mimu_bird.meme.navigation.AppNavigator
 import com.mimu_bird.meme.navigation.Screen
-import com.mimu_bird.ui.screen.MemeQuizScreen
 import com.seomseom.category.ui.CategoryScreen
 
 /**
@@ -74,7 +74,7 @@ fun MemeWikiNavGraph(
         composable(
             route = Screen.Quiz.route
         ) { backStackEntry ->
-            MemeQuizScreen(navController = navController)
+            MemeQuizScreen(navController = navController, navigator = appNavigator)
         }
 
         composable(

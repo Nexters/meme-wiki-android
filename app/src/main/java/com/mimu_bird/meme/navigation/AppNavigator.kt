@@ -11,8 +11,6 @@ import com.mimu_bird.main.navigation.MainNavigationAction
 import com.mimu_bird.main.navigation.MainNavigator
 import com.seomseom.category.navigation.CategoryNavigationAction
 import com.seomseom.category.navigation.CategoryNavigator
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 /**
  * 앱 전체 네비게이션 라우트 정의
@@ -46,6 +44,11 @@ class AppNavigator(
     // MainNavigator 구현
     override fun navigate(action: MainNavigationAction) {
         when (action) {
+            is MainNavigationAction.NavigateToMain -> {
+                println("DEBUG: NavigateToMain called")
+                navController.navigate(Screen.Main.route)
+            }
+
             is MainNavigationAction.NavigateToSearch -> {
                 println("DEBUG: NavigateToSearch called")
                 navController.navigate(Screen.Search.route)

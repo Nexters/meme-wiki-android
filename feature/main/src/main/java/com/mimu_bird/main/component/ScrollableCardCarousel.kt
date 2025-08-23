@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -51,7 +50,7 @@ fun ScrollableCardCarousel(
             repeat(Int.MAX_VALUE) {
                 // 각 카드를 순차적으로 스크롤
                 for (i in 0 until cards.size) {
-                    val scrollAmount = 400f
+                    val scrollAmount = 900f
 
                     Log.d("ScrollableCardCarousel", "스크롤: ${i}번째 카드, scrollAmount=$scrollAmount")
                     lazyListState.animateScrollBy(

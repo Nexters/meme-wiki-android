@@ -1,6 +1,11 @@
-package com.mimu_bird.ui.screen
+package com.mimu_bird.main.ui
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.ViewGroup
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,13 +30,17 @@ import androidx.navigation.NavController
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Gray1
 import com.mimu_bird.designsystem.theme.Gray10
+import com.mimu_bird.main.navigation.MainNavigationAction
+import com.mimu_bird.main.navigation.MainNavigator
+import org.json.JSONObject
 
 @Composable
 fun MemeQuizScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    navigator: MainNavigator
 ) {
-    Scaffold (
+    Scaffold(
         modifier = modifier
             .fillMaxSize()
             .background(color = Gray10)
@@ -58,7 +67,7 @@ fun MemeQuizScreen(
             }
         },
         containerColor = Gray10
-    ){ innerPadding ->
+    ) { innerPadding ->
         AndroidView(
             modifier = Modifier
                 .padding(innerPadding)
@@ -70,17 +79,73 @@ fun MemeQuizScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
+
+                    webChromeClient = WebChromeClient()
                     settings.let {
                         it.javaScriptEnabled = true
                         it.domStorageEnabled = true
                         it.useWideViewPort = true
                         it.loadWithOverviewMode = true
                     }
+
+                    addJavascriptInterface(
+                        MemeQuizWebJavaScriptBridge(
+                            onHandleScriptCode = {
+                                runCatching {
+                                    Log.d("MemeQuizScreen", "")
+                                }
+                            },
+                            webView = this,
+                            navigator = navigator,
+                        ),
+                        "wiki"
+                    )
                 }
             },
             update = {
                 it.loadUrl("https://meme-wiki.net/")
             }
         )
+    }
+}
+
+class MemeQuizWebJavaScriptBridge(
+    private val onHandleScriptCode: () -> Unit,
+    private val webView: WebView,
+    private val navigator: MainNavigator,
+) {
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    @JavascriptInterface
+    fun postMessage(code: String) {
+        println("yeoonju : $code")
+
+        try {
+            val jsonObject = JSONObject(code)
+            val type = jsonObject.getString("type")
+            Log.d("MemeQuizeScreen", "jsonObject:${jsonObject} type:${type}")
+
+            if (type == "WEB_ENTERED") {
+                // 메인 스레드에서 JavaScript 실행
+                mainHandler.post {
+                    webView.evaluateJavascript(
+                        "window.onNativeEntered({\"type\":\"APP_ENTERED\"});"
+                    ) { result ->
+                        Log.d("MemeDetailScreen", "APP_ENTERED script result: $result")
+                    }
+                }
+            }
+
+            if (type == "SHOW_MORE_MEMES") {
+                Log.d("MemeQuizScreen", "메인으로 네비게이팅")
+                // 메인 스레드에서 네비게이션 실행
+                mainHandler.post {
+                    navigator.navigate(MainNavigationAction.NavigateToMain)
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("WebJavaScriptBridge", "Failed to parse JSON message: ${e.message}")
+        }
     }
 }

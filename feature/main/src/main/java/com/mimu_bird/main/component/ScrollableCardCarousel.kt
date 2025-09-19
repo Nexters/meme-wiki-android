@@ -3,9 +3,11 @@ package com.mimu_bird.main.component
 import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,40 +38,13 @@ import kotlinx.coroutines.delay
 
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun ScrollableCardCarousel(
     cards: List<Painter>,
     onClickPage: (Int) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
-
-    // 자동 스크롤 애니메이션
-    LaunchedEffect(cards.size) {
-        if (cards.isNotEmpty()) {
-            Log.d("ScrollableCardCarousel", "자동 스크롤 시작: cards.size=${cards.size}")
-            // 무한 반복을 위한 루프
-            repeat(Int.MAX_VALUE) {
-                // 각 카드를 순차적으로 스크롤
-                for (i in 0 until cards.size) {
-                    val scrollAmount = 900f
-
-                    Log.d("ScrollableCardCarousel", "스크롤: ${i}번째 카드, scrollAmount=$scrollAmount")
-                    lazyListState.animateScrollBy(
-                        value = scrollAmount,
-                        animationSpec = tween(
-                            durationMillis = 1000,
-                            easing = LinearEasing
-                        )
-                    )
-
-                    delay(400)
-                }
-
-                // 스크롤이 끝에 도달하면 처음 위치로 돌아가기
-                lazyListState.animateScrollToItem(0)
-                delay(1000)
-            }
-        }
-    }
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState)
 
     val currentPage = remember {
         derivedStateOf {
@@ -94,12 +69,12 @@ fun ScrollableCardCarousel(
     Column() {
         LazyRow(
             state = lazyListState,
+            flingBehavior = flingBehavior,
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(218.dp),
-            userScrollEnabled = false
+                .height(218.dp)
         ) {
             itemsIndexed(cards) { index, card ->
                 CarouselCardItem(

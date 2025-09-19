@@ -18,7 +18,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 # Compose
 activityCompose = "1.9.3"
-composeBom = "2024.04.01"
+composeBom = "2025.09.00"
 compose-paging = "1.0.0-alpha14"
 compose-navigation = "2.5.3"
 # Network
@@ -34,7 +34,7 @@ hilt = "2.51"
 hilt-navigation-compose = "1.2.0"
 # Etc
 desugar = "1.1.5"
-foundation = "1.8.3"
+foundation = "1.9.1"
 # Splash
 splash = "1.0.1"
 ## Kakao

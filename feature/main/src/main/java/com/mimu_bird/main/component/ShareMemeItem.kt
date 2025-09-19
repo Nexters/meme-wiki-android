@@ -2,6 +2,7 @@ package com.mimu_bird.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,9 +39,11 @@ fun ShareMemItem(
     modifier: Modifier = Modifier,
     color: PastelGradientPalette,
     item: BriefMemeUiModel,
+    onClickItem: (BriefMemeUiModel) -> Unit
 ) {
     Column(
         modifier = modifier
+            .clickable {  onClickItem(item) }
     ) {
         if (item.imageUrl.isNotEmpty()) {
             Box(
@@ -141,7 +144,8 @@ fun ShareMemItemPreview() {
             items(count = 5) {
                 ShareMemItem(
                     item = TEST_BRIEF_MEME_UI,
-                    color = PastelGradientPalette.LIGHT_BLUE
+                    color = PastelGradientPalette.LIGHT_BLUE,
+                    onClickItem = {}
                 )
             }
         }

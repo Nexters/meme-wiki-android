@@ -2,6 +2,8 @@ package com.mimu_bird.main.ui
 
 
 import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -66,31 +68,14 @@ private fun AutoScrollingLazyRow(
     items: List<BriefMemeUiModel>,
     colors: List<PastelGradientPalette>,
     modifier: Modifier = Modifier,
-    reverseLayout: Boolean = false
+    reverseLayout: Boolean = false,
+    onClickItem: (BriefMemeUiModel) -> Unit
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(items.size) {
-        if (items.isNotEmpty() && !items.first().id.startsWith("dummy")) {
-            Log.d(
-                "AutoScrollingLazyRow",
-                "애니메이션 시작: items.size=${items.size}, reverseLayout=$reverseLayout"
-            )
-            repeat(Int.MAX_VALUE) {
-                for (i in 0 until items.size) {
-                    listState.animateScrollBy(
-                        value = 200f,
-                        animationSpec = androidx.compose.animation.core.tween(
-                            durationMillis = 800,
-                            easing = androidx.compose.animation.core.LinearEasing
-                        )
-                    )
-
-                    delay(100)
-                }
-
-                // 스크롤이 끝에 도달하면 처음 위치로 돌아가기
-                listState.animateScrollToItem(0)
-                delay(800)
+        if (items.isNotEmpty()) {
+            while(true) {
+                listState.animateScrollBy(50f, tween(durationMillis = 500, easing = LinearEasing))
             }
         }
     }
@@ -104,10 +89,11 @@ private fun AutoScrollingLazyRow(
         reverseLayout = reverseLayout,
         userScrollEnabled = false
     ) {
-        items(items.size) { index ->
+        items(count = Int.MAX_VALUE) { index ->
             ShareMemItem(
-                item = items[index],
-                color = colors.getOrElse(index) { colors.first() }
+                item = items[index % items.size],
+                color = colors.getOrElse(index) { colors.first() },
+                onClickItem = onClickItem
             )
         }
     }
@@ -356,7 +342,10 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(172.dp),
-                reverseLayout = false
+                reverseLayout = false,
+                onClickItem = {
+                    navigator.navigate(MainNavigationAction.NavigateToDetail(it.id.toInt()))
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -368,7 +357,10 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(172.dp),
-                reverseLayout = true
+                reverseLayout = true,
+                onClickItem = {
+                    navigator.navigate(MainNavigationAction.NavigateToDetail(it.id.toInt()))
+                }
             )
             Spacer(Modifier.height(100.dp))
         }

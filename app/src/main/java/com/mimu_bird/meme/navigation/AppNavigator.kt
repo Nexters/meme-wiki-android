@@ -110,7 +110,12 @@ class AppNavigator(
             }
 
             MyMemeNavigationAction.NavigateMain -> {
-                navController.navigate(Screen.Main.route)
+                navController.navigate(Screen.Main.route) {
+                    launchSingleTop = true
+                    popUpTo(Screen.Main.route) {
+                        inclusive = false // Main 은 남기고 위의 화면만 제거
+                    }
+                }
             }
         }
     }

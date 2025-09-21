@@ -146,15 +146,17 @@ fun MyMemeScreen(
                         .pointerInput(true) {
                             detectDragGestures(
                                 onDragStart = { offset ->
-                                    currentPath.clear()
-                                    currentPath.add(offset)
+                                    if (isEditMode.value) {
+                                        currentPath.clear()
+                                        currentPath.add(offset)
+                                    }
                                 },
                                 onDrag = { change, _ ->
                                     change.consume()
-                                    currentPath.add(change.position)
+                                    if (isEditMode.value) currentPath.add(change.position)
                                 },
                                 onDragEnd = {
-                                    if (currentPath.isNotEmpty()) {
+                                    if (currentPath.isNotEmpty() && isEditMode.value) {
                                         viewModel.addLine(
                                             Line(path = currentPath.toList(), brush = brush.value)
                                         )

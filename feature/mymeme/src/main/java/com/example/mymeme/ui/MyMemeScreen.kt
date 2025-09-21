@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.mymeme.ui.component.MyMemeFooter
 import com.example.mymeme.ui.model.Line
 import com.example.mymeme.ui.navigation.MyMemeNavigationAction
 import com.example.mymeme.ui.navigation.MyMemeNavigator
@@ -43,6 +44,7 @@ fun MyMemeScreen(
 ) {
     val meme = viewModel.meme.collectAsStateWithLifecycle()
     val lines = viewModel.lines.collectAsStateWithLifecycle()
+    val brush = viewModel.brush.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.fetchMemeDetailInfo(id.toInt())
@@ -100,7 +102,8 @@ fun MyMemeScreen(
                                 change.consume()
                                 val line = Line(
                                     start = change.position - amount,
-                                    end = change.position
+                                    end = change.position,
+                                    brush = brush.value
                                 )
                                 viewModel.addLine(line)
                             }
@@ -108,14 +111,23 @@ fun MyMemeScreen(
                 ) {
                     lines.value.forEach { line ->
                         drawLine(
-                            color = line.color,
+                            color = line.brush.drawingColor,
                             start = line.start,
                             end = line.end,
-                            strokeWidth = line.strokeWidth.toPx(),
+                            strokeWidth = line.brush.drawingWidth.toPx(),
                             cap = StrokeCap.Round
                         )
                     }
                 }
+                MyMemeFooter(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 70.dp),
+                    brush = brush.value,
+                    onChangeColor = { viewModel.changeBrushColor(it) },
+                    onChangeAlpha = { viewModel.changeBrushAlpha(it) },
+                    onChangeWidth = { viewModel.changeBrushStroke(it) }
+                )
             }
         }
     }

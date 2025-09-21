@@ -14,7 +14,9 @@ class GetMemeDetailUseCase @Inject constructor(
      * 밈 상세 정보 조회
      * @param id 밈 식별자
      */
-    suspend operator fun invoke(id: Int): MemeDetailModel {
-        return memeDetailRepository.getMemeDetail(id)
+    suspend operator fun invoke(id: Int): Result<MemeDetailModel> {
+        return kotlin.runCatching {
+            memeDetailRepository.getMemeDetail(id)
+        }
     }
 } 

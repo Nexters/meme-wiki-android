@@ -32,7 +32,6 @@ import com.mimu_bird.designsystem.theme.PastelGradientPalette
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.BriefMemeUiModel
-import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
 fun ShareMemItem(
@@ -127,26 +126,6 @@ fun ShareMemItem(
                     .background(Gray8),
                 contentAlignment = Alignment.Center
             ) {
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun ShareMemItemPreview() {
-    Column(Modifier.fillMaxSize()) {
-        LazyRow(
-            Modifier.height(172.dp),
-            contentPadding = PaddingValues(end = 11.dp),
-            horizontalArrangement = Arrangement.spacedBy(11.dp)
-        ) {
-            items(count = 5) {
-                ShareMemItem(
-                    item = TEST_BRIEF_MEME_UI,
-                    color = PastelGradientPalette.LIGHT_BLUE,
-                    onClickItem = {}
-                )
             }
         }
     }

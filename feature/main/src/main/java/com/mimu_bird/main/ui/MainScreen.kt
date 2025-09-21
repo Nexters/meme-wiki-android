@@ -1,7 +1,6 @@
 package com.mimu_bird.main.ui
 
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -39,7 +38,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import com.mimu_bird.designsystem.R
 import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Display1
@@ -57,8 +55,6 @@ import com.mimu_bird.main.navigation.MainNavigator
 import com.mimu_bird.ui.component.CategoryView
 import com.mimu_bird.ui.component.ShareMemItem
 import com.mimu_bird.ui.model.BriefMemeUiModel
-import com.mimu_bird.ui.model.DUMMY_SHARED_MEMES
-import kotlinx.coroutines.delay
 
 /**
  * 자동으로 연속 스크롤되는 LazyRow 컴포넌트
@@ -74,7 +70,7 @@ private fun AutoScrollingLazyRow(
     val listState = rememberLazyListState()
     LaunchedEffect(items.size) {
         if (items.isNotEmpty()) {
-            while(true) {
+            while (true) {
                 listState.animateScrollBy(50f, tween(durationMillis = 500, easing = LinearEasing))
             }
         }
@@ -110,30 +106,22 @@ fun MainScreen(
     val timeUntilNextUpdate by viewModel.timeUntilNextUpdate.collectAsState()
 
     // 상위 5개와 하위 5개로 분리 (서버 데이터가 없으면 더미 데이터 사용)
-    val top5Memes = if (sharedMemes.isNotEmpty()) {
-        sharedMemes.take(5).map { sharedMeme ->
-            BriefMemeUiModel(
-                id = sharedMeme.id.toString(),
-                imageUrl = sharedMeme.imageUrl,
-                title = sharedMeme.name,
-                rank = 0
-            )
-        }
-    } else {
-        DUMMY_SHARED_MEMES.take(5)
+    val top5Memes = sharedMemes.take(5).map { sharedMeme ->
+        BriefMemeUiModel(
+            id = sharedMeme.id.toString(),
+            imageUrl = sharedMeme.imageUrl,
+            title = sharedMeme.name,
+            rank = 0
+        )
     }
-    
-    val bottom5Memes = if (sharedMemes.isNotEmpty()) {
-        sharedMemes.drop((sharedMemes.size - 5).coerceAtLeast(0)).map { sharedMeme ->
-            BriefMemeUiModel(
-                id = sharedMeme.id.toString(),
-                imageUrl = sharedMeme.imageUrl,
-                title = sharedMeme.name,
-                rank = 0
-            )
-        }
-    } else {
-        DUMMY_SHARED_MEMES.take(5)
+
+    val bottom5Memes = sharedMemes.drop((sharedMemes.size - 5).coerceAtLeast(0)).map { sharedMeme ->
+        BriefMemeUiModel(
+            id = sharedMeme.id.toString(),
+            imageUrl = sharedMeme.imageUrl,
+            title = sharedMeme.name,
+            rank = 0
+        )
     }
 
     val topCategoryColor = listOf(

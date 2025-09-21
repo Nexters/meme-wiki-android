@@ -38,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import com.example.mymeme.ui.model.Brush
 import com.example.mymeme.ui.model.BrushColor
 import com.example.mymeme.ui.model.BrushWidth
+import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Caption
+import com.mimu_bird.designsystem.theme.Gray2
 import com.mimu_bird.designsystem.theme.Gray5
 import com.mimu_bird.designsystem.theme.Gray7
 import com.mimu_bird.designsystem.theme.Gray8
@@ -51,6 +53,7 @@ import com.mimu_bird.mymeme.R
 @Composable
 private fun MyMemeFooterPreview() {
     MyMemeFooter(
+        isEditMode = false,
         brush = Brush.DEFAULT,
         isAblePrev = false,
         isAbleRollback = true,
@@ -65,6 +68,7 @@ private fun MyMemeFooterPreview() {
 @Composable
 internal fun MyMemeFooter(
     modifier: Modifier = Modifier,
+    isEditMode: Boolean,
     brush: Brush,
     isAblePrev: Boolean,
     isAbleRollback: Boolean,
@@ -74,7 +78,7 @@ internal fun MyMemeFooter(
     onClickPrev: () -> Unit,
     onClickRollback: () -> Unit
 ) {
-    var isShow by remember { mutableStateOf(false) }
+    var isShow by remember(isEditMode) { mutableStateOf(false) }
 
     Column(
         modifier = modifier,
@@ -105,45 +109,60 @@ internal fun MyMemeFooter(
                 )
                 .padding(horizontal = 24.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(if (isEditMode) 12.dp else 4.dp)
         ) {
-            Icon(
-                modifier = Modifier
-                    .clickable { isShow = true }
-                    .padding(8.dp),
-                painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_pen),
-                contentDescription = "펜",
-                tint = White
-            )
-            Icon(
-                modifier = Modifier
-                    .clickable { }
-                    .padding(8.dp),
-                painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_text),
-                contentDescription = "펜",
-                tint = White
-            )
-            Spacer(
-                modifier = Modifier
-                    .size(width = 1.dp, height = 18.dp)
-                    .background(Gray7),
-            )
-            Icon(
-                modifier = Modifier
-                    .clickable { onClickPrev() }
-                    .padding(8.dp),
-                painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_previous),
-                contentDescription = "펜",
-                tint = if (isAblePrev) White else Gray7
-            )
-            Icon(
-                modifier = Modifier
-                    .clickable { onClickRollback() }
-                    .padding(8.dp),
-                painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_next),
-                contentDescription = "펜",
-                tint = if (isAbleRollback) White else Gray7
-            )
+            if (isEditMode) {
+                Icon(
+                    modifier = Modifier
+                        .clickable { isShow = true }
+                        .padding(8.dp),
+                    painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_pen),
+                    contentDescription = "펜",
+                    tint = White
+                )
+                Icon(
+                    modifier = Modifier
+                        .clickable { }
+                        .padding(8.dp),
+                    painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_text),
+                    contentDescription = "펜",
+                    tint = White
+                )
+                Spacer(
+                    modifier = Modifier
+                        .size(width = 1.dp, height = 18.dp)
+                        .background(Gray7),
+                )
+                Icon(
+                    modifier = Modifier
+                        .clickable { onClickPrev() }
+                        .padding(8.dp),
+                    painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_previous),
+                    contentDescription = "펜",
+                    tint = if (isAblePrev) White else Gray7
+                )
+                Icon(
+                    modifier = Modifier
+                        .clickable { onClickRollback() }
+                        .padding(8.dp),
+                    painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_next),
+                    contentDescription = "펜",
+                    tint = if (isAbleRollback) White else Gray7
+                )
+            } else {
+                Icon(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp),
+                    painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_save),
+                    contentDescription = "다운로드",
+                    tint = White
+                )
+                Text(
+                    text = "저장하기",
+                    style = Body2.toTextStyle(),
+                    color = Gray2
+                )
+            }
         }
     }
 }

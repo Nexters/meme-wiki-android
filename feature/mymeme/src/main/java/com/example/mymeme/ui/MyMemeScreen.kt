@@ -196,6 +196,7 @@ fun MyMemeScreen(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 70.dp),
+                        isEditMode = isEditMode.value,
                         brush = brush.value,
                         isAblePrev = lines.value.isNotEmpty(),
                         isAbleRollback = histories.value.isNotEmpty(),

@@ -2,6 +2,7 @@ package com.example.mymeme.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,16 +17,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -50,7 +47,8 @@ import com.mimu_bird.designsystem.typography.toTextStyle
 fun MyMemeScreen(
     id: String,
     viewModel: MyMemeViewModel = hiltViewModel(),
-    navigator: MyMemeNavigator
+    navigator: MyMemeNavigator,
+    onClickBackPressed: () -> Unit
 ) {
     val meme = viewModel.meme.collectAsStateWithLifecycle()
     val lines = viewModel.lines.collectAsStateWithLifecycle()
@@ -76,7 +74,8 @@ fun MyMemeScreen(
             ) {
                 Text(
                     modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 14.dp),
+                        .padding(vertical = 10.dp, horizontal = 14.dp)
+                        .clickable { onClickBackPressed() },
                     text = "취소",
                     style = Body2.toTextStyle(),
                     color = White
@@ -185,6 +184,7 @@ fun PreviewMyMemeScreen() {
 
     MyMemeScreen(
         id = "1",
-        navigator = mockNavigator
+        navigator = mockNavigator,
+        onClickBackPressed = {}
     )
 }

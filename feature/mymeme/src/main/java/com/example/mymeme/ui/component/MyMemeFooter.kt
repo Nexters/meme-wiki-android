@@ -85,7 +85,7 @@ internal fun MyMemeFooter(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 20.dp, start = 32.dp, end = 32.dp)
-                    .widthIn(312.dp),
+                    .widthIn(max = 312.dp),
                 brush = brush,
                 onChangeColor = onChangeColor,
                 onChangeAlpha = onChangeAlpha,

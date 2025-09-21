@@ -108,6 +108,10 @@ class AppNavigator(
             is MyMemeNavigationAction.NavigateBack -> {
                 navController.popBackStack()
             }
+
+            MyMemeNavigationAction.NavigateMain -> {
+                navController.navigate(Screen.Main.route)
+            }
         }
     }
 

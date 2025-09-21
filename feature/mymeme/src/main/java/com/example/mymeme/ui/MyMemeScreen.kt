@@ -1,5 +1,6 @@
 package com.example.mymeme.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,8 +12,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +31,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +46,7 @@ import com.mimu_bird.designsystem.theme.Body2
 import com.mimu_bird.designsystem.theme.Gray10
 import com.mimu_bird.designsystem.theme.White
 import com.mimu_bird.designsystem.typography.toTextStyle
+import com.mimu_bird.mymeme.R
 
 @Composable
 fun MyMemeScreen(
@@ -54,6 +59,7 @@ fun MyMemeScreen(
     val lines = viewModel.lines.collectAsStateWithLifecycle()
     val brush = viewModel.brush.collectAsStateWithLifecycle()
     val histories = viewModel.histories.collectAsStateWithLifecycle()
+    val isEditMode = viewModel.isEditMode.collectAsStateWithLifecycle()
 
     val currentPath = remember { mutableStateListOf<Offset>() }
 
@@ -61,9 +67,15 @@ fun MyMemeScreen(
         viewModel.fetchMemeDetailInfo(id.toInt())
     }
 
+    BackHandler {
+        if (isEditMode.value) onClickBackPressed()
+        else viewModel.setIsEditMode(true)
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .background(Gray10)
             .windowInsetsPadding(WindowInsets.systemBars),
         topBar = {
             Row(
@@ -72,21 +84,43 @@ fun MyMemeScreen(
                     .background(Gray10),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 14.dp)
-                        .clickable { onClickBackPressed() },
-                    text = "취소",
-                    style = Body2.toTextStyle(),
-                    color = White
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 14.dp),
-                    text = "완료",
-                    style = Body2.toTextStyle(),
-                    color = White
-                )
+                if (isEditMode.value) {
+                    Text(
+                        modifier = Modifier
+                            .padding(vertical = 12.dp, horizontal = 14.dp)
+                            .clickable { onClickBackPressed() },
+                        text = "취소",
+                        style = Body2.toTextStyle(),
+                        color = White
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(vertical = 12.dp, horizontal = 14.dp)
+                            .clickable { viewModel.setIsEditMode(false) },
+                        text = "완료",
+                        style = Body2.toTextStyle(),
+                        color = White
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier
+                            .clickable { viewModel.setIsEditMode(true) }
+                            .padding(vertical = 10.dp, horizontal = 14.dp)
+                            .size(24.dp),
+                        painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_back),
+                        contentDescription = "수정 화면으로 이동",
+                        tint = White
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .clickable { navigator.navigate(MyMemeNavigationAction.NavigateMain) }
+                            .padding(vertical = 10.dp, horizontal = 14.dp)
+                            .size(24.dp),
+                        painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_home_24),
+                        contentDescription = "홈화면 으로 이동",
+                        tint = White
+                    )
+                }
             }
         },
         containerColor = Color.Black
@@ -155,19 +189,21 @@ fun MyMemeScreen(
                         )
                     }
                 }
-                MyMemeFooter(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 70.dp),
-                    brush = brush.value,
-                    isAblePrev = lines.value.isNotEmpty(),
-                    isAbleRollback = histories.value.isNotEmpty(),
-                    onChangeColor = { viewModel.changeBrushColor(it) },
-                    onChangeAlpha = { viewModel.changeBrushAlpha(it) },
-                    onChangeWidth = { viewModel.changeBrushStroke(it) },
-                    onClickPrev = { viewModel.popLine() },
-                    onClickRollback = { viewModel.rollbackLine() }
-                )
+                if (isEditMode.value) {
+                    MyMemeFooter(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 70.dp),
+                        brush = brush.value,
+                        isAblePrev = lines.value.isNotEmpty(),
+                        isAbleRollback = histories.value.isNotEmpty(),
+                        onChangeColor = { viewModel.changeBrushColor(it) },
+                        onChangeAlpha = { viewModel.changeBrushAlpha(it) },
+                        onChangeWidth = { viewModel.changeBrushStroke(it) },
+                        onClickPrev = { viewModel.popLine() },
+                        onClickRollback = { viewModel.rollbackLine() }
+                    )
+                }
             }
         }
     }

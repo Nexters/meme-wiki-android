@@ -7,6 +7,7 @@ import com.mimu_bird.common.navigation.NavigationAction
  */
 sealed class MyMemeNavigationAction : NavigationAction() {
     object NavigateBack : MyMemeNavigationAction()
+    object NavigateMain: MyMemeNavigationAction()
 }
 
 /**

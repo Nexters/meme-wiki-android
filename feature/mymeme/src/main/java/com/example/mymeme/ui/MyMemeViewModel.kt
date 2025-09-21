@@ -38,6 +38,9 @@ class MyMemeViewModel @Inject constructor(
     private val _brush = MutableStateFlow<Brush>(Brush.DEFAULT)
     val brush: StateFlow<Brush> = _brush.asStateFlow()
 
+    private val _isEditMode = MutableStateFlow<Boolean>(true)
+    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+
     internal fun fetchMemeDetailInfo(
         memeId: Int
     ) {
@@ -88,5 +91,11 @@ class MyMemeViewModel @Inject constructor(
         val latestLine = histories.value.last()
         _lines.value += latestLine
         _histories.value = histories.value.slice(0 until histories.value.size - 1)
+    }
+
+    fun setIsEditMode(
+        isEditMode: Boolean
+    ) {
+        _isEditMode.value = isEditMode
     }
 } 

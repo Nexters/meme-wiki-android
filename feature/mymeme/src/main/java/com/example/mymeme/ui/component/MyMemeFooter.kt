@@ -52,9 +52,13 @@ import com.mimu_bird.mymeme.R
 private fun MyMemeFooterPreview() {
     MyMemeFooter(
         brush = Brush.DEFAULT,
+        isAblePrev = false,
+        isAbleRollback = true,
         onChangeColor = {},
         onChangeAlpha = {},
-        onChangeWidth = {}
+        onChangeWidth = {},
+        onClickPrev = {},
+        onClickRollback = {}
     )
 }
 
@@ -62,9 +66,13 @@ private fun MyMemeFooterPreview() {
 internal fun MyMemeFooter(
     modifier: Modifier = Modifier,
     brush: Brush,
+    isAblePrev: Boolean,
+    isAbleRollback: Boolean,
     onChangeColor: (BrushColor) -> Unit,
     onChangeAlpha: (Float) -> Unit,
-    onChangeWidth: (BrushWidth) -> Unit
+    onChangeWidth: (BrushWidth) -> Unit,
+    onClickPrev: () -> Unit,
+    onClickRollback: () -> Unit
 ) {
     var isShow by remember { mutableStateOf(false) }
 
@@ -123,19 +131,19 @@ internal fun MyMemeFooter(
             )
             Icon(
                 modifier = Modifier
-                    .clickable { }
+                    .clickable { onClickPrev() }
                     .padding(8.dp),
                 painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_previous),
                 contentDescription = "펜",
-                tint = Gray7
+                tint = if (isAblePrev) White else Gray7
             )
             Icon(
                 modifier = Modifier
-                    .clickable { }
+                    .clickable { onClickRollback() }
                     .padding(8.dp),
                 painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_next),
                 contentDescription = "펜",
-                tint = Gray7
+                tint = if (isAbleRollback) White else Gray7
             )
         }
     }

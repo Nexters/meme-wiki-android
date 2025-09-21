@@ -16,10 +16,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.mymeme.ui.component.MyMemeFooter
 import com.example.mymeme.ui.model.Line
+import com.example.mymeme.ui.model.pointsToPath
 import com.example.mymeme.ui.navigation.MyMemeNavigationAction
 import com.example.mymeme.ui.navigation.MyMemeNavigator
 import com.mimu_bird.designsystem.theme.Body2
@@ -45,6 +55,9 @@ fun MyMemeScreen(
     val meme = viewModel.meme.collectAsStateWithLifecycle()
     val lines = viewModel.lines.collectAsStateWithLifecycle()
     val brush = viewModel.brush.collectAsStateWithLifecycle()
+    val histories = viewModel.histories.collectAsStateWithLifecycle()
+
+    val currentPath = remember { mutableStateListOf<Offset>() }
 
     LaunchedEffect(Unit) {
         viewModel.fetchMemeDetailInfo(id.toInt())
@@ -98,24 +111,48 @@ fun MyMemeScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .pointerInput(true) {
-                            detectDragGestures { change, amount ->
-                                change.consume()
-                                val line = Line(
-                                    start = change.position - amount,
-                                    end = change.position,
-                                    brush = brush.value
-                                )
-                                viewModel.addLine(line)
-                            }
+                            detectDragGestures(
+                                onDragStart = { offset ->
+                                    currentPath.clear()
+                                    currentPath.add(offset)
+                                },
+                                onDrag = { change, _ ->
+                                    change.consume()
+                                    currentPath.add(change.position)
+                                },
+                                onDragEnd = {
+                                    if (currentPath.isNotEmpty()) {
+                                        viewModel.addLine(
+                                            Line(path = currentPath.toList(), brush = brush.value)
+                                        )
+                                        currentPath.clear()
+                                    }
+                                }
+                            )
                         }
                 ) {
                     lines.value.forEach { line ->
-                        drawLine(
+                        drawPath(
+                            path = pointsToPath(line.path),
                             color = line.brush.drawingColor,
-                            start = line.start,
-                            end = line.end,
-                            strokeWidth = line.brush.drawingWidth.toPx(),
-                            cap = StrokeCap.Round
+                            style = Stroke(
+                                width = line.brush.drawingWidth.toPx(),
+                                cap = StrokeCap.Round,
+                                join = StrokeJoin.Round
+                            )
+                        )
+                    }
+
+                    // 드래그 중 라인
+                    if (currentPath.size > 1) {
+                        drawPath(
+                            path = pointsToPath(currentPath),
+                            color = brush.value.drawingColor,
+                            style = Stroke(
+                                width = brush.value.drawingWidth.toPx(),
+                                cap = StrokeCap.Round,
+                                join = StrokeJoin.Round
+                            )
                         )
                     }
                 }
@@ -124,9 +161,13 @@ fun MyMemeScreen(
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 70.dp),
                     brush = brush.value,
+                    isAblePrev = lines.value.isNotEmpty(),
+                    isAbleRollback = histories.value.isNotEmpty(),
                     onChangeColor = { viewModel.changeBrushColor(it) },
                     onChangeAlpha = { viewModel.changeBrushAlpha(it) },
-                    onChangeWidth = { viewModel.changeBrushStroke(it) }
+                    onChangeWidth = { viewModel.changeBrushStroke(it) },
+                    onClickPrev = { viewModel.popLine() },
+                    onClickRollback = { viewModel.rollbackLine() }
                 )
             }
         }

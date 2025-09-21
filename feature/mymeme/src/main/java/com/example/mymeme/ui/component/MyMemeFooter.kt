@@ -83,7 +83,6 @@ internal fun MyMemeFooter(
         if (isShow) {
             MyMemePalette(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(bottom = 20.dp, start = 32.dp, end = 32.dp)
                     .widthIn(max = 312.dp),
                 brush = brush,
@@ -161,7 +160,6 @@ private fun MyMemePalette(
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
             .background(
                 color = Gray8,
                 shape = RoundedCornerShape(32.dp)

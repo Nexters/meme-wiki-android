@@ -192,6 +192,9 @@ fun MyMemeScreen(
                     onChangeWidth = { viewModel.changeBrushStroke(it) },
                     onClickPrev = { viewModel.popLine() },
                     onClickRollback = { viewModel.rollbackLine() },
+                    onClickAddText = {
+                        Toast.makeText(context, "곧 추가될 예정입니다! 😉", Toast.LENGTH_SHORT).show()
+                    },
                     onClickSave = {
                         coroutineScope.launch {
                             val bitmapAsync = captureController.captureAsync()

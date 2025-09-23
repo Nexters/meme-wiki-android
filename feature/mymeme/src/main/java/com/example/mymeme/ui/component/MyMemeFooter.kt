@@ -62,7 +62,8 @@ private fun MyMemeFooterPreview() {
         onChangeWidth = {},
         onClickPrev = {},
         onClickRollback = {},
-        onClickSave = {}
+        onClickSave = {},
+        onClickAddText = {}
     )
 }
 
@@ -78,7 +79,8 @@ internal fun MyMemeFooter(
     onChangeWidth: (BrushWidth) -> Unit,
     onClickPrev: () -> Unit,
     onClickRollback: () -> Unit,
-    onClickSave: () -> Unit
+    onClickSave: () -> Unit,
+    onClickAddText: () -> Unit
 ) {
     var isShow by remember(isEditMode) { mutableStateOf(false) }
 
@@ -128,7 +130,7 @@ internal fun MyMemeFooter(
                 )
                 Icon(
                     modifier = Modifier
-                        .clickable { }
+                        .clickable { onClickAddText() }
                         .padding(8.dp),
                     painter = painterResource(com.mimu_bird.designsystem.R.drawable.ic_text),
                     contentDescription = "펜",

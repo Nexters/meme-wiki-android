@@ -61,7 +61,8 @@ private fun MyMemeFooterPreview() {
         onChangeAlpha = {},
         onChangeWidth = {},
         onClickPrev = {},
-        onClickRollback = {}
+        onClickRollback = {},
+        onClickSave = {}
     )
 }
 
@@ -76,12 +77,17 @@ internal fun MyMemeFooter(
     onChangeAlpha: (Float) -> Unit,
     onChangeWidth: (BrushWidth) -> Unit,
     onClickPrev: () -> Unit,
-    onClickRollback: () -> Unit
+    onClickRollback: () -> Unit,
+    onClickSave: () -> Unit
 ) {
     var isShow by remember(isEditMode) { mutableStateOf(false) }
 
     Column(
-        modifier = modifier,
+        modifier = modifier
+            .then(
+                if (isEditMode) Modifier
+                else Modifier.clickable { onClickSave() }
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (isShow) {

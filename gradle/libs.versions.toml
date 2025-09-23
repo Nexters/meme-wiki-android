@@ -39,6 +39,8 @@ foundation = "1.9.1"
 splash = "1.0.1"
 ## Kakao
 kakaoSdkVersion = "2.12.0"
+# caption
+capturable = "2.1.0"
 
 [libraries]
 # use in build-logic
@@ -93,6 +95,8 @@ androidx-foundation = { group = "androidx.compose.foundation", name = "foundatio
 # kakao
 kakaoAll = { group = "com.kakao.sdk", name = "v2-all", version="2.11.0"}
 kakaoShare = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakaoSdkVersion" }
+# capture
+capture-able = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

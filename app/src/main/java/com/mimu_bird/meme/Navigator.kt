@@ -86,7 +86,8 @@ fun MemeWikiNavGraph(
             val id = backStackEntry.arguments?.getString("id") ?: ""
             MyMemeScreen(
                 id = id,
-                navigator = appNavigator
+                navigator = appNavigator,
+                onClickBackPressed = { navController.popBackStack() }
             )
         }
     }

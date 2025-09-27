@@ -32,7 +32,6 @@ import com.mimu_bird.designsystem.theme.PastelGradientPalette
 import com.mimu_bird.designsystem.theme.Subhead2
 import com.mimu_bird.designsystem.typography.toTextStyle
 import com.mimu_bird.ui.model.BriefMemeUiModel
-import com.mimu_bird.ui.model.TEST_BRIEF_MEME_UI
 
 @Composable
 fun BestMemeView(
@@ -154,88 +153,5 @@ private fun BestMemeItem(
                 .background(Gray8),
             contentAlignment = Alignment.Center
         ) {}
-    }
-}
-
-@Preview
-@Composable
-fun BestMemeItemPreview() {
-    val colors = listOf(
-        PastelGradientPalette.PINK,
-        PastelGradientPalette.MAGENTA,
-        PastelGradientPalette.YELLOW,
-        PastelGradientPalette.LIGHT_BLUE,
-        PastelGradientPalette.PURPLE,
-        PastelGradientPalette.GREEN
-    )
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(horizontal = 14.dp)
-    ) {
-        Row(
-            Modifier
-                .fillMaxWidth(1f)
-                .padding(bottom = 11.dp)
-        ) {
-            Box(Modifier.weight(0.5f)) {
-                BestMemeItem(
-                    color = PastelGradientPalette.PINK.rightBottom,
-                    item = TEST_BRIEF_MEME_UI,
-                    onClickMeme = {}
-                )
-            }
-            Spacer(Modifier.width(11.dp))
-            Box(Modifier.weight(0.5f)) {
-                BestMemeItem(
-                    color = PastelGradientPalette.MAGENTA.rightBottom,
-                    item = TEST_BRIEF_MEME_UI,
-                    onClickMeme = {}
-                )
-            }
-        }
-        Row(
-            Modifier
-                .fillMaxWidth(1f)
-                .padding(bottom = 11.dp)
-        ) {
-            Box(Modifier.weight(0.5f)) {
-                BestMemeItem(
-                    color = PastelGradientPalette.YELLOW.rightBottom,
-                    item = TEST_BRIEF_MEME_UI,
-                    onClickMeme = {}
-                )
-            }
-            Spacer(Modifier.width(11.dp))
-            Box(Modifier.weight(0.5f)) {
-                BestMemeItem(
-                    color = PastelGradientPalette.LIGHT_BLUE.rightBottom,
-                    item = TEST_BRIEF_MEME_UI,
-                    onClickMeme = {}
-                )
-            }
-        }
-        Row(
-            Modifier
-                .fillMaxWidth(1f)
-                .padding(bottom = 11.dp)
-        ) {
-            Box(Modifier.weight(0.5f)) {
-                BestMemeItem(
-                    color = PastelGradientPalette.PURPLE.rightBottom,
-                    item = TEST_BRIEF_MEME_UI,
-                    onClickMeme = {}
-                )
-            }
-            Spacer(Modifier.width(11.dp))
-            Box(Modifier.weight(0.5f)) {
-                BestMemeItem(
-                    color = PastelGradientPalette.GREEN.rightBottom,
-                    item = TEST_BRIEF_MEME_UI,
-                    onClickMeme = {}
-                )
-            }
-        }
     }
 }
